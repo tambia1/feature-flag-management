@@ -82,6 +82,15 @@
   gap: var(--space-2);
 }
 
+.clause > input {
+  flex: 1 1 8rem;
+  width: auto;
+}
+
+.clause > input:last-of-type {
+  flex-grow: 2;
+}
+
 .joiner {
   width: 2.5rem;
   color: var(--muted);
