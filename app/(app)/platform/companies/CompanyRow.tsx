@@ -61,7 +61,6 @@ export const CompanyRow = ({ company, admins, users, projects, created }: Props)
           </>
         ) : (
           <>
-            {/* Different keys: React must not reuse this button as the Save (submit) button mid-click. */}
             <Button key="edit" variant="link" onClick={() => setEditing(true)}>
               Edit
             </Button>

@@ -87,7 +87,6 @@ export const EnvironmentRow = ({ environment }: Props) => {
           </>
         ) : (
           <>
-            {/* Different keys: React must not reuse this button as the Save (submit) button mid-click. */}
             <Button key="edit" variant="link" onClick={() => setEditing(true)}>
               Edit
             </Button>

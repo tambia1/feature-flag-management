@@ -41,7 +41,6 @@ export const UserRow = ({ user, teams, isSelf }: Props) => {
         <td className={styles.muted}>••••••••</td>
         <td>{teams}</td>
         <td className={styles.actions}>
-          {/* Different keys: React must not reuse this button as the Save (submit) button mid-click. */}
           <Button key="edit" variant="link" onClick={() => setEditing(true)}>
             Edit
           </Button>
