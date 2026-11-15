@@ -23,7 +23,8 @@
 }
 
 .remove {
-  padding: 0 var(--space-2);
+  display: inline-flex;
+  padding: var(--space-1);
   border-radius: var(--radius-full);
   color: var(--muted);
   cursor: pointer;

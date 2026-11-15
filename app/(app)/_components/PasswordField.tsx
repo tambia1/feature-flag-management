@@ -1,5 +1,6 @@
 "use client";
 
+import { RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/app/_components/Button";
 import { Input } from "@/app/_components/Input";
@@ -42,11 +43,12 @@ export const PasswordField = ({ name, label, placeholder, required = false, comp
       <Button
         variant="secondary"
         icon
+        className={styles.generate}
         onClick={() => setValue(generatePassword())}
         aria-label="Generate a password"
         title="Generate a password"
       >
-        ↻
+        <RefreshCw size={16} />
       </Button>
     </span>
   );

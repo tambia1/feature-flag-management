@@ -1,5 +1,9 @@
 @layer components {
   .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
     white-space: nowrap;
     border-radius: var(--radius-sm);
     cursor: pointer;

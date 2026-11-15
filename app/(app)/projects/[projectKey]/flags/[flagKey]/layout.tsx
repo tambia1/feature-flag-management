@@ -1,3 +1,4 @@
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Tabs } from "@/app/_components/Tabs";
 import { getFlagByKey, getProjectContext } from "@/lib/flags/context";
@@ -20,7 +21,7 @@ export default async function FlagLayout({ params, children }: LayoutProps<"/pro
   return (
     <div className={styles.flag}>
       <Link href={`/projects/${projectKey}/${flag.archivedAt ? "archived" : "flags"}`} className={styles.back}>
-        ← {flag.archivedAt ? "Archived flags" : "Flags"}
+        <ArrowLeft size={14} /> {flag.archivedAt ? "Archived flags" : "Flags"}
       </Link>
       <div className={styles.title}>
         <h1 className={styles.key}>{flag.key}</h1>

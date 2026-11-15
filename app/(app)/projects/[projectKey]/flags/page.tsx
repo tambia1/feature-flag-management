@@ -1,3 +1,4 @@
+import { Flag, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/app/_components/Button";
@@ -58,7 +59,7 @@ export default async function FlagsPage({ params, searchParams }: PageProps<"/pr
 
   const newFlagButton = canEditFlags ? (
     <LinkButton href={`/projects/${project.key}/flags/new?env=${environment.key}`} variant="primary">
-      + New flag
+      <Plus size={16} /> New flag
     </LinkButton>
   ) : (
     <Button variant="primary" disabled title="Only editors can create flags">
@@ -69,7 +70,7 @@ export default async function FlagsPage({ params, searchParams }: PageProps<"/pr
   if (project.environments.length === 0 || total === 0) {
     return (
       <Page title="Flags" subtitle={`${project.name} · ${environment.name}`}>
-        <EmptyState icon="⚑" title="No flags yet" text={"Create your first flag to turn a feature\non or off without deploying."}>
+        <EmptyState icon={Flag} title="No flags yet" text={"Create your first flag to turn a feature\non or off without deploying."}>
           {canEditFlags && newFlagButton}
         </EmptyState>
       </Page>

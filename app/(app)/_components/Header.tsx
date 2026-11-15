@@ -1,3 +1,4 @@
+import { Flag } from "lucide-react";
 import Link from "next/link";
 import type { SessionUser } from "@/app/types";
 import type { AccessibleProject } from "@/lib/permissions";
@@ -14,7 +15,7 @@ export const Header = ({ user, projects }: Props) => {
   return (
     <header className={styles.header}>
       <Link href="/" className={styles.logo}>
-        <span aria-hidden="true">⚑</span> Feature Flag Management
+        <Flag size={16} /> Feature Flag Management
       </Link>
       <Pickers projects={projects} />
       <UserMenu name={user.name} companyName={user.companyName} />

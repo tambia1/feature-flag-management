@@ -1,3 +1,4 @@
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { logout } from "../actions";
 import { ThemeToggle } from "./ThemeToggle";
@@ -12,7 +13,7 @@ export const UserMenu = ({ name, companyName }: Props) => {
   return (
     <details className={styles.menu}>
       <summary className={styles.trigger}>
-        {name.split(" ")[0]} ({companyName}) <span aria-hidden="true">▾</span>
+        {name.split(" ")[0]} ({companyName}) <ChevronDown size={14} />
       </summary>
       <div className={styles.panel}>
         <Link href="/account/password" className={styles.item}>

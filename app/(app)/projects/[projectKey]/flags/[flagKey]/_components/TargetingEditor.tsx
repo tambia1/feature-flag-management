@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowDown, ArrowRight, ArrowUp, Plus, X } from "lucide-react";
 import { useActionState, useState } from "react";
 import type { Clause, ClauseOperator, Rule, Serve, Target, Variation } from "@/app/types";
 import { Button } from "@/app/_components/Button";
@@ -99,7 +100,7 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
         {variations.map((variation) => (
           <label key={variation.id} className={styles.targetRow}>
             <span className={styles.value}>{formatValue(variation.value)}</span>
-            <span aria-hidden="true">→</span>
+            <ArrowRight size={16} className={styles.arrow} />
             <Input
               compact
               placeholder="user-12, user-99"
@@ -126,7 +127,7 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
                     disabled={ruleIndex === 0}
                     aria-label={`Move rule ${ruleIndex + 1} up`}
                   >
-                    ↑
+                    <ArrowUp size={16} />
                   </Button>
                   <Button
                     variant="link"
@@ -134,7 +135,7 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
                     disabled={ruleIndex === rules.length - 1}
                     aria-label={`Move rule ${ruleIndex + 1} down`}
                   >
-                    ↓
+                    <ArrowDown size={16} />
                   </Button>
                   <Button variant="link" onClick={() => setRules(rules.filter((_, i) => i !== ruleIndex))}>
                     Remove rule
@@ -173,7 +174,7 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
                     disabled={rule.clauses.length === 1}
                     onClick={() => updateRule(ruleIndex, { ...rule, clauses: rule.clauses.filter((_, i) => i !== clauseIndex) })}
                   >
-                    ×
+                    <X size={16} />
                   </Button>
                 </div>
               ))}
@@ -183,7 +184,7 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
                   updateRule(ruleIndex, { ...rule, clauses: [...rule.clauses, { attribute: "", operator: "is", values: [] }] })
                 }
               >
-                + AND condition
+                <Plus size={14} /> AND condition
               </Button>
               <div className={styles.serve}>
                 <span>Serve</span>
@@ -201,7 +202,7 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
             ])
           }
         >
-          + Add rule
+          <Plus size={16} /> Add rule
         </Button>
       </fieldset>
 

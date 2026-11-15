@@ -1,3 +1,4 @@
+import { Flag } from "lucide-react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
@@ -15,7 +16,7 @@ export default async function LoginPage() {
     <main className={styles.page}>
       <div className={styles.card}>
         <p className={styles.logo}>
-          <span aria-hidden="true">⚑</span> Feature Flag Management
+          <Flag size={14} /> Feature Flag Management
         </p>
         <h1 className={styles.title}>Log in</h1>
         <LoginForm />

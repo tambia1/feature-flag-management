@@ -1,3 +1,4 @@
+import { Folder } from "lucide-react";
 import { redirect } from "next/navigation";
 import { EmptyState } from "@/app/_components/EmptyState";
 import { LinkButton } from "@/app/_components/LinkButton";
@@ -28,7 +29,7 @@ export default async function HomePage() {
   return (
     <Page title="Flags">
       <EmptyState
-        icon="▢"
+        icon={Folder}
         title="No projects yet"
         text={
           user.role === "ADMIN"

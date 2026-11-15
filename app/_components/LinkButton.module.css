@@ -9,10 +9,3 @@
 .link {
   composes: button link from "./Button.module.css";
 }
-
-@layer components {
-  .primary,
-  .secondary {
-    display: inline-block;
-  }
-}

@@ -1,5 +1,6 @@
 "use client";
 
+import { X } from "lucide-react";
 import { useActionState, useState } from "react";
 import type { FlagType } from "@/app/types";
 import { Button } from "@/app/_components/Button";
@@ -95,7 +96,7 @@ export const NewFlagForm = ({ projectId, cancelHref }: Props) => {
               />
               {type !== "BOOLEAN" && variations.length > 2 && (
                 <Button variant="link" onClick={() => removeVariation(index)} aria-label={`Remove variation ${index + 1}`}>
-                  ×
+                  <X size={16} />
                 </Button>
               )}
             </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Button } from "@/app/_components/Button";
 import { Input } from "@/app/_components/Input";
@@ -48,13 +49,13 @@ export const MembersEditor = ({ teamId, members, candidates }: Props) => {
               disabled={isPending}
               aria-label={`Remove ${member.name}`}
             >
-              ×
+              <X size={14} />
             </button>
           </li>
         ))}
         <li>
           <Button variant="link" onClick={() => setAdding(!adding)} aria-expanded={adding}>
-            + Add member
+            <Plus size={14} /> Add member
           </Button>
         </li>
       </ul>

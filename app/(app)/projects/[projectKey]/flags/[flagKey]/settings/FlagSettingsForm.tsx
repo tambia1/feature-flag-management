@@ -1,5 +1,6 @@
 "use client";
 
+import { X } from "lucide-react";
 import { useActionState, useState, useTransition } from "react";
 import type { FormState, Variation } from "@/app/types";
 import { Button } from "@/app/_components/Button";
@@ -77,7 +78,7 @@ export const FlagSettingsForm = ({ flagId, flagKey, typeLabel, isBoolean, name, 
                   disabled={isRemoving}
                   aria-label={`Remove ${formatValue(variation.value)}`}
                 >
-                  ×
+                  <X size={16} />
                 </Button>
               )}
             </div>
@@ -91,7 +92,7 @@ export const FlagSettingsForm = ({ flagId, flagKey, typeLabel, isBoolean, name, 
                 onChange={(event) => setAdded(added.map((item, i) => (i === index ? event.target.value : item)))}
               />
               <Button variant="link" onClick={() => setAdded(added.filter((_, i) => i !== index))} aria-label="Remove new variation">
-                ×
+                <X size={16} />
               </Button>
             </div>
           ))}
