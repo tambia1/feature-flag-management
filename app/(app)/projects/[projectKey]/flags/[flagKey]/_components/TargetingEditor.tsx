@@ -214,7 +214,8 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
       </fieldset>
 
       <fieldset className={styles.section} disabled={!canEdit}>
-        <legend className={styles.legend}>Off value (this environment)</legend>
+        <legend className={styles.legend}>Off value</legend>
+        <p className={styles.help}>Everyone gets this value while the flag is off or archived.</p>
         <Select
           aria-label="Off value"
           value={offVariationId}
