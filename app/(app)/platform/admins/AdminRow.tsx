@@ -36,7 +36,8 @@ export const AdminRow = ({ admin, added, isSelf }: Props) => {
         <td className={styles.muted}>••••••••</td>
         <td>{added}</td>
         <td className={styles.actions}>
-          <Button variant="link" onClick={() => setEditing(true)}>
+          {/* Different keys: React must not reuse this button as the Save (submit) button mid-click. */}
+          <Button key="edit" variant="link" onClick={() => setEditing(true)}>
             Edit
           </Button>
           <span aria-hidden="true"> · </span>
@@ -79,7 +80,7 @@ export const AdminRow = ({ admin, added, isSelf }: Props) => {
       </td>
       <td>{added}</td>
       <td className={styles.actions}>
-        <Button type="submit" form={formId} variant="link" disabled={isPending}>
+        <Button key="save" type="submit" form={formId} variant="link" disabled={isPending}>
           Save
         </Button>
         <span aria-hidden="true"> · </span>

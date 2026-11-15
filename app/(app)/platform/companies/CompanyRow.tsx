@@ -51,7 +51,7 @@ export const CompanyRow = ({ company, admins, users, projects, created }: Props)
       <td className={styles.actions}>
         {editing ? (
           <>
-            <Button type="submit" form={formId} variant="link" disabled={isPending}>
+            <Button key="save" type="submit" form={formId} variant="link" disabled={isPending}>
               Save
             </Button>
             <span aria-hidden="true"> · </span>
@@ -61,7 +61,8 @@ export const CompanyRow = ({ company, admins, users, projects, created }: Props)
           </>
         ) : (
           <>
-            <Button variant="link" onClick={() => setEditing(true)}>
+            {/* Different keys: React must not reuse this button as the Save (submit) button mid-click. */}
+            <Button key="edit" variant="link" onClick={() => setEditing(true)}>
               Edit
             </Button>
             {!company.isPlatform && (
