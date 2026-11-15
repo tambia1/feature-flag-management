@@ -7,15 +7,48 @@
 
 .rollout {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex-basis: 100%;
+  max-width: 36rem;
+}
+
+.parts {
+  display: grid;
+  grid-template-columns: minmax(4rem, max-content) minmax(6rem, 1fr) max-content;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2) var(--space-3);
 }
 
 .part {
+  display: contents;
+}
+
+.value {
+  overflow: hidden;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.slider {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.slider:disabled {
+  cursor: default;
+}
+
+.percent {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
+  color: var(--muted);
   font-size: var(--text-sm);
   line-height: var(--leading-sm);
 }
@@ -23,6 +56,18 @@
 .weight {
   width: 4.5rem;
   min-width: 0;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.total {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
 }
 
 .error {

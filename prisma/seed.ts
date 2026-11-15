@@ -109,6 +109,13 @@ async function seedDemo(password: string) {
         type: "NUMBER" as const,
         values: [100, 25],
       },
+      {
+        key: "checkout-button-color",
+        name: "Checkout button color",
+        description: "Color of the Pay button, split between four colors",
+        type: "STRING" as const,
+        values: ["blue", "green", "orange", "purple"],
+      },
     ];
 
     for (const flag of flags) {
@@ -125,6 +132,15 @@ async function seedDemo(password: string) {
       });
 
       const [on, off] = created.variations;
+      const serve =
+        created.variations.length > 2
+          ? {
+              rollout: created.variations.map((variation, index, all) => ({
+                variationId: variation.id,
+                weight: Math.floor(100 / all.length) + (index < 100 % all.length ? 1 : 0),
+              })),
+            }
+          : { variationId: on.id };
 
       for (const environment of environments) {
         await tx.flagEnvironment.create({
@@ -133,7 +149,7 @@ async function seedDemo(password: string) {
             environmentId: environment.id,
             isOn: environment.key === "dev",
             offVariationId: off.id,
-            rules: [{ id: "default", clauses: [], serve: { variationId: on.id } }],
+            rules: [{ id: "default", clauses: [], serve }],
           },
         });
       }
