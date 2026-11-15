@@ -38,7 +38,7 @@ export const PasswordField = ({ name, label, placeholder, required = false, comp
         placeholder={placeholder}
         required={required}
         compact={compact}
-        minLength={8}
+        minLength={4}
         autoComplete="new-password"
         spellCheck={false}
         onChange={(event) => setValue(event.target.value)}

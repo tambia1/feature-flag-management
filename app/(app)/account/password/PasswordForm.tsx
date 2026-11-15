@@ -17,10 +17,10 @@ export const PasswordForm = () => {
         <Input name="currentPassword" type="password" autoComplete="current-password" required />
       </Field>
       <Field label="New password">
-        <Input name="newPassword" type="password" autoComplete="new-password" minLength={8} required />
+        <Input name="newPassword" type="password" autoComplete="new-password" minLength={4} required />
       </Field>
       <Field label="Confirm new password">
-        <Input name="confirmPassword" type="password" autoComplete="new-password" minLength={8} required />
+        <Input name="confirmPassword" type="password" autoComplete="new-password" minLength={4} required />
       </Field>
       <Message text={state.error} state="error" />
       <Message text={state.success} state="success" />

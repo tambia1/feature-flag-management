@@ -9,7 +9,7 @@ export const auth = betterAuth({
     enabled: true,
     // No public sign-up: company admins create users.
     disableSignUp: true,
-    minPasswordLength: 8,
+    minPasswordLength: 4,
   },
   session: {
     // No cookie cache: deleting a user or session logs them out on the next request.

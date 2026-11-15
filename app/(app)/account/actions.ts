@@ -10,7 +10,7 @@ import { assertUser } from "@/lib/session";
 const schema = z
   .object({
     currentPassword: z.string().min(1, "Enter your current password"),
-    newPassword: z.string().min(8, "New password: at least 8 characters").max(128),
+    newPassword: z.string().min(4, "New password: at least 4 characters").max(128),
     confirmPassword: z.string(),
   })
   .refine((input) => input.newPassword === input.confirmPassword, "The new passwords don't match");

@@ -13,7 +13,7 @@ import { createUserWithPassword, setUserPassword } from "@/lib/users";
 
 const name = (label: string) => z.string().trim().min(1, `Enter ${label}`).max(100);
 const email = z.email("Enter a valid email").max(200);
-const password = z.string().min(8, "Password: at least 8 characters").max(128);
+const password = z.string().min(4, "Password: at least 4 characters").max(128);
 
 async function assertEmailFree(value: string) {
   if (await prisma.user.findUnique({ where: { email: value.toLowerCase() }, select: { id: true } })) {

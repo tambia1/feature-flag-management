@@ -15,7 +15,7 @@ import { createUserWithPassword, setUserPassword } from "@/lib/users";
 
 const name = (label: string) => z.string().trim().min(1, `Enter a ${label}`).max(100);
 const key = z.string().regex(KEY_PATTERN, "Key: lowercase letters, numbers and dashes, e.g. web-app").max(64);
-const password = z.string().min(8, "Password: at least 8 characters").max(128);
+const password = z.string().min(4, "Password: at least 4 characters").max(128);
 const role = z.enum(["ADMIN", "MEMBER"]);
 
 // Every lookup below is scoped to the admin's company: the company always comes from the session, never the form.
