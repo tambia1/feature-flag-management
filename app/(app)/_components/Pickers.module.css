@@ -3,6 +3,7 @@
   flex: 1;
   flex-wrap: wrap;
   gap: var(--space-3);
+  min-height: calc(var(--leading-sm) + 2 * var(--space-1) + 2px);
 }
 
 .picker {
@@ -34,6 +35,7 @@
 
 .select {
   font-weight: 600;
+  height: var(--leading-sm);
   cursor: pointer;
   outline: none;
 }
