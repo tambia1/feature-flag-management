@@ -46,7 +46,7 @@ export default async function CompaniesPage() {
       <p className={styles.hint}>
         Add company creates the company and its first admin. ↻ generates a password.
         <br />
-        Deleting a company asks you to type its name. Our own company can&apos;t be deleted. Every change goes to the platform log.
+        Deleting a company asks you to type its name. Our own company can&apos;t be deleted. Every change goes to our own company&apos;s log.
       </p>
     </Page>
   );

@@ -14,7 +14,7 @@ type Props = {
 
 type Section = {
   title: string;
-  tone: "flags" | "settings" | "platform";
+  tone: "flags" | "settings";
   links: { href: string; label: string }[];
 };
 
@@ -41,26 +41,15 @@ export const SideMenu = ({ user, projects }: Props) => {
 
   if (user.role === "ADMIN") {
     sections.push({
-      title: "Settings · company admin",
+      title: "Settings",
       tone: "settings",
       links: [
+        ...(user.isPlatformAdmin ? [{ href: "/platform/companies", label: "Companies" }] : []),
         { href: "/settings/company", label: "Company" },
         { href: "/settings/users", label: "Users" },
         { href: "/settings/teams", label: "Teams" },
         { href: "/settings/projects", label: "Projects" },
         { href: "/settings/log", label: "Company log" },
-      ],
-    });
-  }
-
-  if (user.isPlatformAdmin) {
-    sections.push({
-      title: "Platform · platform admin",
-      tone: "platform",
-      links: [
-        { href: "/platform/companies", label: "Companies" },
-        { href: "/platform/admins", label: "Platform admins" },
-        { href: "/platform/log", label: "Platform log" },
       ],
     });
   }

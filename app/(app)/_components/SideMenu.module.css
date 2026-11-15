@@ -19,10 +19,6 @@
   --tone: var(--success);
 }
 
-.platform {
-  --tone: light-dark(oklch(55.5% 0.163 48.998), oklch(75% 0.183 55.934));
-}
-
 .title {
   margin-bottom: var(--space-1);
   padding: 0 var(--space-3);

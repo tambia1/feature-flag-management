@@ -9,7 +9,7 @@ import { writePlatformLog } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
 import { publishFlagChange } from "@/lib/pubsub";
 import { assertPlatformAdmin, AuthError } from "@/lib/session";
-import { createUserWithPassword, setUserPassword } from "@/lib/users";
+import { createUserWithPassword } from "@/lib/users";
 
 const name = (label: string) => z.string().trim().min(1, `Enter ${label}`).max(100);
 const email = z.email("Enter a valid email").max(200);
@@ -99,92 +99,6 @@ export async function deleteCompany(_state: FormState, formData: FormData): Prom
     });
 
     await publishFlagChange(company.projects.flatMap((project) => project.environments.map((environment) => environment.id)));
-    refresh();
-  });
-}
-
-async function platformCompanyId(): Promise<string> {
-  return (await prisma.company.findFirstOrThrow({ where: { isPlatform: true }, select: { id: true } })).id;
-}
-
-async function findPlatformAdmin(userId: string) {
-  const user = await prisma.user.findFirst({
-    where: { id: userId, role: "ADMIN", company: { isPlatform: true } },
-    select: { id: true, name: true, email: true, companyId: true },
-  });
-
-  if (!user) throw new AuthError(403);
-  return user;
-}
-
-export async function addPlatformAdmin(_state: FormState, formData: FormData): Promise<FormState> {
-  return runAction(formData, async () => {
-    const admin = await assertPlatformAdmin();
-    const input = z
-      .object({ name: name("a name"), email, password })
-      .parse({ name: text(formData, "name"), email: text(formData, "email"), password: formData.get("password") });
-
-    await assertEmailFree(input.email);
-    const companyId = await platformCompanyId();
-
-    await prisma.$transaction(async (tx) => {
-      const user = await createUserWithPassword(tx, { companyId, ...input, role: "ADMIN" });
-      await writePlatformLog(tx, admin, { action: "added platform admin", targetType: "PlatformAdmin", target: user.email });
-    });
-
-    refresh();
-    return { success: `Added ${input.name}` };
-  });
-}
-
-export async function updatePlatformAdmin(_state: FormState, formData: FormData): Promise<FormState> {
-  return runAction(formData, async () => {
-    const admin = await assertPlatformAdmin();
-    const user = await findPlatformAdmin(text(formData, "userId"));
-    const input = z.object({ name: name("a name"), email }).parse({ name: text(formData, "name"), email: text(formData, "email") });
-    const rawPassword = String(formData.get("password") ?? "");
-    const newPassword = rawPassword ? password.parse(rawPassword) : null;
-
-    const changes: string[] = [];
-    if (input.name !== user.name) changes.push(`name: ${user.name} → ${input.name}`);
-    if (input.email.toLowerCase() !== user.email) changes.push(`email: ${user.email} → ${input.email.toLowerCase()}`);
-    if (newPassword) changes.push("new password");
-
-    if (changes.length === 0) return { success: "No changes" };
-
-    await prisma.$transaction(async (tx) => {
-      await tx.user.update({ where: { id: user.id }, data: { name: input.name, email: input.email.toLowerCase() } });
-      if (newPassword) await setUserPassword(tx, user.id, newPassword);
-      await writePlatformLog(tx, admin, {
-        action: "edited platform admin",
-        targetType: "PlatformAdmin",
-        target: input.email.toLowerCase(),
-        change: changes.join(" · "),
-      });
-    });
-
-    refresh();
-    return { success: "Saved" };
-  });
-}
-
-export async function removePlatformAdmin(_state: FormState, formData: FormData): Promise<FormState> {
-  return runAction(formData, async () => {
-    const admin = await assertPlatformAdmin();
-    const user = await findPlatformAdmin(text(formData, "userId"));
-
-    if (user.id === admin.id) {
-      throw new UserError("You can't remove yourself. Ask another platform admin.");
-    }
-
-    await prisma.$transaction(async (tx) => {
-      const others = await tx.user.count({ where: { companyId: user.companyId, role: "ADMIN", id: { not: user.id } } });
-      if (others === 0) throw new UserError("The last platform admin can't be removed.");
-
-      await tx.user.delete({ where: { id: user.id } });
-      await writePlatformLog(tx, admin, { action: "removed platform admin", targetType: "PlatformAdmin", target: user.email });
-    });
-
     refresh();
   });
 }
