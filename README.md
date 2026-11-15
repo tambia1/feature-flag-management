@@ -16,7 +16,7 @@ SEED_DEMO=1 npm run db:seed   # platform admin + demo company "Acme"
 npm run dev
 ```
 
-Open [http://localhost:3100](http://localhost:3100) and log in as `SEED_ADMIN_EMAIL` (platform admin). With `SEED_DEMO=1`
+Open [http://localhost:3000](http://localhost:3000) and log in as `SEED_ADMIN_EMAIL` (platform admin). With `SEED_DEMO=1`
 you can also log in as `emma@acme.com` (company admin, editor), `james@acme.com` (viewer in production) or
 `liam@acme.com` (no team → no-access message), all with `SEED_ADMIN_PASSWORD`.
 
@@ -26,7 +26,7 @@ No Postgres? `docker compose up -d db redis` starts both (user/password `postgre
 
 | Command                                        | What it does                                                 |
 | ---------------------------------------------- | ------------------------------------------------------------ |
-| `npm run dev`                                  | Dev server on port 3100                                      |
+| `npm run dev`                                  | Dev server on port 3000                                      |
 | `npm run build` / `npm start`                  | Production build / server                                    |
 | `npm run check`                                | Lint + format check + typecheck + unit tests + unused code   |
 | `npm test`                                     | Unit and component tests (Vitest, Testing Library)           |
