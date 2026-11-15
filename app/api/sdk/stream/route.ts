@@ -7,10 +7,6 @@ export const dynamic = "force-dynamic";
 
 const HEARTBEAT_MS = 25_000;
 
-/**
- * GET /api/sdk/stream — Server-Sent Events. Sends "changed" whenever a flag in this
- * environment changes; the SDK then fetches values again from /api/sdk/evaluate.
- */
 export async function GET(request: Request) {
   const sdkKey = readSdkKey(request);
   const environment = sdkKey ? await getFlagsForSdkKey(sdkKey) : null;
@@ -52,9 +48,7 @@ export async function GET(request: Request) {
         sdkMetrics.openStreams.dec();
         try {
           controller.close();
-        } catch {
-          // already closed
-        }
+        } catch {}
       };
 
       request.signal.addEventListener("abort", () => cleanup());

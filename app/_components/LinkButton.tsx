@@ -6,7 +6,6 @@ type Props = ComponentProps<typeof Link> & {
   variant: "primary" | "secondary" | "link";
 };
 
-/** A link that looks like a Button, for actions that navigate (e.g. "+ New flag"). */
 export const LinkButton = ({ variant, className = "", ...props }: Props) => {
   return <Link className={`${styles[variant]} ${className}`} {...props} />;
 };

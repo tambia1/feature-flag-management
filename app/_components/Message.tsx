@@ -6,7 +6,6 @@ type Props = {
   className?: string;
 };
 
-/** A one-line status message. Renders nothing without text. Announced to screen readers. */
 export const Message = ({ text, state = "normal", className = "" }: Props) => {
   if (!text) {
     return null;

@@ -35,7 +35,6 @@ function describeClauses(clauses: Clause[]): string {
   return clauses.map((clause) => `${clause.attribute} ${OPERATOR_LABELS[clause.operator]} ${clause.values.join(" or ")}`).join("  AND  ");
 }
 
-/** A one-line summary of what changed, for history and the log, e.g. "turned on · default rule: 0% → 20% true". */
 export function describeTargetingChange(before: TargetingSnapshot, after: TargetingSnapshot, variations: Variation[]): string {
   const changes: string[] = [];
 

@@ -7,7 +7,6 @@ import { Prisma } from "@/app/generated/prisma/client";
 import { logger } from "./logger";
 import { AuthError } from "./session";
 
-/** The submitted text fields, returned on error so a failed submit keeps what was typed. */
 function formValues(formData: FormData): Record<string, string> {
   const values: Record<string, string> = {};
 
@@ -20,14 +19,8 @@ function formValues(formData: FormData): Record<string, string> {
   return values;
 }
 
-/** Shown under the field / form when user input is wrong. */
 export class UserError extends Error {}
 
-/**
- * Runs a Server Action body and turns every failure into a friendly FormState:
- * validation and permission errors get a clear message; unexpected errors get an error id
- * that matches the server log and Sentry. Redirects and notFound pass through.
- */
 export async function runAction(formData: FormData | null, body: () => Promise<FormState | void>): Promise<FormState> {
   const values = formData ? formValues(formData) : undefined;
 

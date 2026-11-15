@@ -1,8 +1,3 @@
-/**
- * Creates the platform company and its first platform admin (from SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD).
- * With SEED_DEMO=1 it also adds a demo company "Acme" with users, teams, a project and flags.
- * Safe to run twice: it skips what already exists.
- */
 import "dotenv/config";
 import { prisma } from "../lib/prisma";
 import { createUserWithPassword } from "../lib/users";

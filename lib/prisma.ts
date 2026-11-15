@@ -6,8 +6,6 @@ const createPrismaClient = () => {
   return new PrismaClient({ adapter });
 };
 
-// Reuse one client across hot reloads in development
-// so we don't open a new connection pool on every file change.
 const globalForPrisma = globalThis as unknown as {
   prisma?: ReturnType<typeof createPrismaClient>;
 };

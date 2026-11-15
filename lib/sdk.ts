@@ -1,7 +1,6 @@
 import "server-only";
 import { sdkMetrics } from "./metrics";
 
-/** Reads the SDK key from `Authorization: <sdkKey>` (a `Bearer ` prefix is accepted too). */
 export function readSdkKey(request: Request): string | null {
   const header = request.headers.get("authorization")?.trim();
 
@@ -12,8 +11,7 @@ export function readSdkKey(request: Request): string | null {
   return header.replace(/^Bearer\s+/i, "") || null;
 }
 
-// Per SDK key, per server: one customer can't slow the others down.
-const RATE = 200; // requests per second, refilled continuously
+const RATE = 200;
 const BURST = 1000;
 
 type Bucket = { tokens: number; updatedAt: number };

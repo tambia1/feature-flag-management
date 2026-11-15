@@ -8,7 +8,6 @@ type Props = {
   companyName: string;
 };
 
-/** User menu (top right): change password, my teams & roles, theme, log out. */
 export const UserMenu = ({ name, companyName }: Props) => {
   return (
     <details className={styles.menu}>

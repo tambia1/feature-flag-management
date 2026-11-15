@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs/config";
 
 const nextConfig: NextConfig = {
-  // Standalone output for a small Docker image (see Dockerfile).
   output: "standalone",
   poweredByHeader: false,
   serverExternalPackages: ["pino", "pino-pretty", "ioredis", "prom-client"],
@@ -20,7 +19,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Sentry only uploads source maps when SENTRY_AUTH_TOKEN is set (CI); otherwise it just wraps the config.
 export default withSentryConfig(nextConfig, {
   silent: !process.env.CI,
   org: process.env.SENTRY_ORG,

@@ -2,7 +2,6 @@ import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 
-/** End-to-end tests. Locally they start the dev server; in CI they run against the PR's preview deploy (E2E_BASE_URL). */
 export default defineConfig({
   testDir: "e2e",
   fullyParallel: false,

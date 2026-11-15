@@ -8,7 +8,6 @@ type Props = {
   tabs: { href: string; label: string }[];
 };
 
-/** Tabs that keep the selected environment (?env=) when switching. */
 export const FlagTabs = ({ tabs }: Props) => {
   const pathname = usePathname();
   const env = useSearchParams().get("env");

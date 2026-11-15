@@ -1,6 +1,5 @@
 import type { FlagType, JsonValue } from "@/app/types";
 
-/** Turns what the user typed into a variation value of the flag's type, or throws a readable error. */
 export function parseVariationValue(type: FlagType, raw: string): JsonValue {
   const text = raw.trim();
 
@@ -28,7 +27,6 @@ export function parseVariationValue(type: FlagType, raw: string): JsonValue {
   }
 }
 
-/** Shows a variation value in the UI and in logs. */
 export function formatValue(value: JsonValue): string {
   return typeof value === "string" ? value : JSON.stringify(value);
 }
@@ -40,5 +38,4 @@ export const FLAG_TYPES: { value: FlagType; label: string }[] = [
   { value: "JSON", label: "JSON" },
 ];
 
-/** Keys are used in code: lowercase letters, numbers and dashes. */
 export const KEY_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

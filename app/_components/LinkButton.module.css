@@ -1,4 +1,3 @@
-/* `composes` can't sit inside @layer; the composed classes are already layered in Button.module.css. */
 .primary {
   composes: button primary from "./Button.module.css";
 }

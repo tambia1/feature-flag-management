@@ -18,8 +18,6 @@ const key = z.string().regex(KEY_PATTERN, "Key: lowercase letters, numbers and d
 const password = z.string().min(4, "Password: at least 4 characters").max(128);
 const role = z.enum(["ADMIN", "MEMBER"]);
 
-// Every lookup below is scoped to the admin's company: the company always comes from the session, never the form.
-
 async function findUser(companyId: string, userId: string) {
   const user = await prisma.user.findFirst({ where: { id: userId, companyId }, select: { id: true, name: true, email: true, role: true } });
   if (!user) throw new AuthError(403);
@@ -50,7 +48,6 @@ async function findEnvironment(companyId: string, environmentId: string) {
   return environment;
 }
 
-/** A company must always have at least one admin. */
 async function assertNotLastAdmin(tx: Tx, companyId: string, userId: string) {
   const otherAdmins = await tx.user.count({ where: { companyId, role: "ADMIN", id: { not: userId } } });
 
@@ -58,8 +55,6 @@ async function assertNotLastAdmin(tx: Tx, companyId: string, userId: string) {
     throw new UserError("The last admin can't be removed or demoted.");
   }
 }
-
-// ---------- Company ----------
 
 export async function updateCompany(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
@@ -84,8 +79,6 @@ export async function updateCompany(_state: FormState, formData: FormData): Prom
     return { success: "Saved" };
   });
 }
-
-// ---------- Users ----------
 
 const userSchema = z.object({ name: name("name"), email: z.email("Enter a valid email").max(200), role });
 
@@ -167,7 +160,6 @@ export async function deleteUser(_state: FormState, formData: FormData): Promise
         await assertNotLastAdmin(tx, admin.companyId, user.id);
       }
 
-      // Sessions are deleted with the user (CASCADE), so they are logged out right away.
       await tx.user.delete({ where: { id: user.id } });
       await writeLog(tx, admin, { action: "removed user", targetType: "User", target: user.email });
     });
@@ -175,8 +167,6 @@ export async function deleteUser(_state: FormState, formData: FormData): Promise
     refresh();
   });
 }
-
-// ---------- Teams ----------
 
 export async function createTeam(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
@@ -257,7 +247,6 @@ export async function removeTeamMember(_state: FormState, formData: FormData): P
 
 const ROLE_LABEL = { NONE: "none", VIEWER: "viewer", EDITOR: "editor" } as const;
 
-/** Saves the whole permissions grid of one team: a role (none / viewer / editor) per environment. */
 export async function saveTeamPermissions(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertCompanyAdmin();
@@ -306,8 +295,6 @@ export async function saveTeamPermissions(_state: FormState, formData: FormData)
   });
 }
 
-// ---------- Projects & environments ----------
-
 export async function createProject(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertCompanyAdmin();
@@ -353,7 +340,6 @@ export async function deleteProject(_state: FormState, formData: FormData): Prom
     const project = await findProject(admin.companyId, text(formData, "projectId"));
 
     await prisma.$transaction(async (tx) => {
-      // FlagEnvironment first: its off value points to a variation (RESTRICT).
       await tx.flagEnvironment.deleteMany({ where: { flag: { projectId: project.id } } });
       await tx.project.delete({ where: { id: project.id } });
       await writeLog(tx, admin, { action: "removed project", targetType: "Project", target: project.name });
@@ -373,7 +359,6 @@ export async function addEnvironment(_state: FormState, formData: FormData): Pro
     await prisma.$transaction(async (tx) => {
       const environment = await tx.environment.create({ data: { projectId: project.id, ...input, sdkKey: generateSdkKey() } });
 
-      // Every existing flag gets this environment too: OFF, with the starting values of another environment.
       const flags = await tx.flag.findMany({
         where: { projectId: project.id },
         select: {
@@ -433,7 +418,6 @@ export async function renameEnvironment(_state: FormState, formData: FormData): 
   });
 }
 
-/** Creates a new SDK key; the old one stops working right away. */
 export async function rotateSdkKey(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertCompanyAdmin();
@@ -448,7 +432,6 @@ export async function rotateSdkKey(_state: FormState, formData: FormData): Promi
       });
     });
 
-    // Clears the cached old key on every server.
     await publishFlagChange([environment.id]);
     refresh();
   });

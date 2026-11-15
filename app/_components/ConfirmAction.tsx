@@ -11,7 +11,6 @@ import styles from "./ConfirmAction.module.css";
 
 type Props = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
-  /** Hidden form fields sent with the action, such as the id. */
   fields: Record<string, string>;
   triggerLabel: string;
   triggerVariant?: "primary" | "secondary" | "danger" | "link";
@@ -19,14 +18,11 @@ type Props = {
   text: ReactNode;
   confirmLabel: string;
   danger?: boolean;
-  /** Type-to-confirm: the confirm button stays disabled until this is typed. */
   typeToConfirm?: string;
-  /** Ask for a comment, saved to the log. */
   withComment?: boolean;
   disabled?: boolean;
 };
 
-/** A button that opens a confirm dialog, then runs a Server Action. */
 export const ConfirmAction = ({
   action,
   fields,

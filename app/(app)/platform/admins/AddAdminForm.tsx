@@ -22,7 +22,7 @@ export const AddAdminForm = () => {
           <Input name="email" type="email" required defaultValue={state.values?.email} />
         </Field>
         <Field label="Password">
-          <PasswordField key={state.success} name="password" label="Password" required generateOnStart />
+          <PasswordField key={state.success} name="password" label="Password" required />
         </Field>
         <Button type="submit" variant="primary" disabled={isPending} className={styles.submit}>
           {isPending ? "Adding…" : "Add admin"}

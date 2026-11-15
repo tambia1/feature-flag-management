@@ -9,7 +9,6 @@ type NewUser = {
   password: string;
 };
 
-/** Creates a user with an email + password login (the hash is stored where Better Auth reads it). */
 export async function createUserWithPassword(tx: Tx, user: NewUser) {
   const created = await tx.user.create({
     data: {
@@ -34,7 +33,6 @@ export async function createUserWithPassword(tx: Tx, user: NewUser) {
   return created;
 }
 
-/** Sets a new password and logs the user out everywhere. */
 export async function setUserPassword(tx: Tx, userId: string, password: string) {
   await tx.account.updateMany({
     where: { userId, providerId: "credential" },

@@ -7,9 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-// Every top-level table has companyId (tenant isolation).
-// Deleting a company cascades to everything under it, except Log (flat, no FKs).
-
 model Company {
   id         String   @id @default(cuid())
   name       String
@@ -28,8 +25,6 @@ enum Role {
   MEMBER
 }
 
-// User, Session, Account and Verification are the tables Better Auth needs.
-// The password hash lives in Account.password (providerId "credential").
 model User {
   id            String   @id @default(cuid())
   companyId     String
@@ -161,7 +156,6 @@ enum EnvironmentRole {
   EDITOR
 }
 
-// No row = role "none".
 model TeamEnvironmentRole {
   teamId        String
   environmentId String
@@ -182,7 +176,6 @@ enum FlagType {
   JSON
 }
 
-// Flag + Variation are the same in every environment.
 model Flag {
   id          String    @id @default(cuid())
   projectId   String
@@ -215,8 +208,6 @@ model Variation {
   @@map("variations")
 }
 
-// Per environment: on/off, off value, individual targets and rules.
-// The last rule has no conditions and is the default rule (= the on value).
 model FlagEnvironment {
   flagId         String
   environmentId  String
@@ -235,7 +226,6 @@ model FlagEnvironment {
   @@map("flag_environments")
 }
 
-// One row per flag change, shown in the History tab.
 model FlagHistory {
   id            String   @id @default(cuid())
   flagId        String
@@ -255,8 +245,6 @@ model FlagHistory {
   @@map("flag_history")
 }
 
-// Append-only audit log. Flat and self-contained: no FKs, names are copied in,
-// so deletes never touch it. Platform events are stored under the platform company.
 model Log {
   id          String   @id @default(cuid())
   companyId   String

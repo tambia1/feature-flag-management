@@ -10,12 +10,6 @@ type PubSub = {
   publisher?: Redis;
 };
 
-/**
- * "Flag changed" messages between app servers.
- * With REDIS_URL set, every server subscribes to one Redis channel, so a change saved on server 1
- * clears the cache and pushes to SDK streams on every server. Without Redis (one server, local dev)
- * messages stay in this process.
- */
 function createPubSub(): PubSub {
   const local = new EventEmitter();
   local.setMaxListeners(0);
@@ -42,7 +36,6 @@ function createPubSub(): PubSub {
 const globalForPubSub = globalThis as unknown as { pubsub?: PubSub };
 const pubsub = (globalForPubSub.pubsub ??= createPubSub());
 
-/** Tell every server that flags in these environments changed. */
 export async function publishFlagChange(environmentIds: string[]): Promise<void> {
   for (const environmentId of new Set(environmentIds)) {
     if (pubsub.publisher) {

@@ -12,7 +12,6 @@ type Props = {
 
 const PAGE_SIZE = 200;
 
-/** A read-only log: who did what and when. Each company sees only its own entries. */
 export const LogView = async ({ companyId, query, defaultDays }: Props) => {
   const who = typeof query.who === "string" ? query.who : "";
   const type = typeof query.type === "string" ? query.type : "";

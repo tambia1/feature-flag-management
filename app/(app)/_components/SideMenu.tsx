@@ -18,7 +18,6 @@ type Section = {
   links: { href: string; label: string }[];
 };
 
-/** SETTINGS shows only for company admins, PLATFORM only for platform admins. */
 export const SideMenu = ({ user, projects }: Props) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();

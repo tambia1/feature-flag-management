@@ -21,9 +21,6 @@ async function assertEmailFree(value: string) {
   }
 }
 
-// ---------- Companies ----------
-
-/** Creates the company and its first admin. */
 export async function createCompany(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertPlatformAdmin();
@@ -84,7 +81,6 @@ export async function renameCompany(_state: FormState, formData: FormData): Prom
   });
 }
 
-/** Deletes a company and everything under it. Our own (platform) company can't be deleted. */
 export async function deleteCompany(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertPlatformAdmin();
@@ -97,7 +93,6 @@ export async function deleteCompany(_state: FormState, formData: FormData): Prom
     if (company.isPlatform) throw new UserError("Our own company can't be deleted.");
 
     await prisma.$transaction(async (tx) => {
-      // FlagEnvironment first: its off value points to a variation (RESTRICT).
       await tx.flagEnvironment.deleteMany({ where: { flag: { project: { companyId: company.id } } } });
       await tx.company.delete({ where: { id: company.id } });
       await writePlatformLog(tx, admin, { action: "removed company", targetType: "Company", target: company.name });
@@ -107,8 +102,6 @@ export async function deleteCompany(_state: FormState, formData: FormData): Prom
     refresh();
   });
 }
-
-// ---------- Platform admins (= ADMIN users of the platform company) ----------
 
 async function platformCompanyId(): Promise<string> {
   return (await prisma.company.findFirstOrThrow({ where: { isPlatform: true }, select: { id: true } })).id;

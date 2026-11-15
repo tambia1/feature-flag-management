@@ -2,7 +2,6 @@ import { registry } from "@/lib/metrics";
 
 export const dynamic = "force-dynamic";
 
-/** GET /api/metrics — Prometheus scrape endpoint. Set METRICS_TOKEN to require `Authorization: Bearer <token>`. */
 export async function GET(request: Request) {
   const token = process.env.METRICS_TOKEN;
 

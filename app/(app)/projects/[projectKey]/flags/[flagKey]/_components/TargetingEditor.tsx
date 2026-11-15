@@ -36,7 +36,6 @@ const splitList = (text: string) =>
     .filter(Boolean);
 const newId = () => crypto.randomUUID().slice(0, 8);
 
-/** Edits individual targets, rules (checked top to bottom), the default rule and the off value of one environment. */
 export const TargetingEditor = ({ flagId, environmentId, variations, initial, canEdit }: Props) => {
   const [state, formAction, isPending] = useActionState(saveTargeting, {});
   const [confirming, setConfirming] = useState(false);

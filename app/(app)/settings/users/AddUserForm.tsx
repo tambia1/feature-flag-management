@@ -27,7 +27,7 @@ export const AddUserForm = () => {
           <Select name="role" defaultValue={state.values?.role ?? "MEMBER"} options={ROLE_OPTIONS} />
         </Field>
         <Field label="Password">
-          <PasswordField key={state.success} name="password" label="Password" required generateOnStart />
+          <PasswordField key={state.success} name="password" label="Password" required />
         </Field>
         <Button type="submit" variant="primary" disabled={isPending} className={styles.submit}>
           {isPending ? "Adding…" : "Add user"}

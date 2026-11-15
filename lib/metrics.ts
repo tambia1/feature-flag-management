@@ -1,6 +1,5 @@
 import client from "prom-client";
 
-/** Prometheus metrics, scraped from /api/metrics. One registry per process (kept across hot reloads). */
 const globalForMetrics = globalThis as unknown as { metricsRegistry?: client.Registry };
 
 export const registry =

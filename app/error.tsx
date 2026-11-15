@@ -5,7 +5,6 @@ import * as Sentry from "@sentry/nextjs";
 import { Button } from "./_components/Button";
 import styles from "./error.module.css";
 
-/** Unexpected errors: a friendly message and an error id that matches the server logs. */
 export default function ErrorPage({ error, retry }: { error: Error & { digest?: string }; retry: () => void }) {
   useEffect(() => {
     Sentry.captureException(error);

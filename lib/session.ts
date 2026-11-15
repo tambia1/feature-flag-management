@@ -6,7 +6,6 @@ import type { SessionUser } from "@/app/types";
 import { auth } from "./auth";
 import { prisma } from "./prisma";
 
-/** The logged-in user, or null. Cached per request. */
 export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -47,7 +46,6 @@ export class AuthError extends Error {
   }
 }
 
-/** For pages: sends to login when logged out. */
 export async function requireUser(): Promise<SessionUser> {
   const user = await getCurrentUser();
 
@@ -78,7 +76,6 @@ export async function requirePlatformAdmin(): Promise<SessionUser> {
   return user;
 }
 
-/** For actions and route handlers: throws AuthError (401 / 403) instead of redirecting. */
 export async function assertUser(): Promise<SessionUser> {
   const user = await getCurrentUser();
 

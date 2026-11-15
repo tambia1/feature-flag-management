@@ -17,7 +17,6 @@ const posthog = (globalForAnalytics.posthog ??= key
   ? new PostHog(key, { host: process.env.NEXT_PUBLIC_POSTHOG_HOST, flushAt: 20, flushInterval: 10_000 })
   : null);
 
-/** Key product events only. Pass ids, never names, emails or flag values. No-op without a PostHog key. */
 export function track(distinctId: string, event: AnalyticsEvent, properties?: Record<string, string | number | boolean>) {
   posthog?.capture({ distinctId, event, properties });
 }

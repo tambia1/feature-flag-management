@@ -21,10 +21,6 @@ type Props = {
   showLabel?: boolean;
 };
 
-/**
- * Turns a flag on/off in one environment. Updates right away (optimistic) and rolls back on error.
- * In production it first asks to confirm, with a comment saved to the log.
- */
 export const FlagToggle = ({ flagId, flagKey, environmentId, environmentName, isOn, isProduction, disabled, showLabel = false }: Props) => {
   const [optimisticOn, setOptimisticOn] = useOptimistic(isOn);
   const [isPending, startTransition] = useTransition();

@@ -7,7 +7,6 @@
   background: var(--surface);
   color: var(--foreground);
   box-shadow: var(--shadow-lg);
-  /* Dialogs often sit inside table cells; don't inherit their alignment or wrapping. */
   text-align: left;
   white-space: normal;
 }

@@ -7,7 +7,6 @@ type Props = {
   children: ReactNode;
 };
 
-/** A bordered panel, e.g. the "Add user" form or the danger zone. */
 export const Card = ({ title, tone = "normal", children }: Props) => {
   return (
     <section className={`${styles.card} ${styles[tone]}`}>

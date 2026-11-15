@@ -15,7 +15,6 @@ type Props = {
   label: string;
 };
 
-/** The selected item's title with Edit; Edit turns it into an input with Save / Cancel. */
 export const RenameForm = ({ action, idName, id, value, label }: Props) => {
   const [editing, setEditing] = useState(false);
   const [state, formAction, isPending] = useActionState(async (previous: FormState, formData: FormData) => {

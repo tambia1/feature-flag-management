@@ -5,10 +5,6 @@ import { prisma } from "./prisma";
 import { highestRole, roleAllows } from "./roles";
 import { AuthError } from "./session";
 
-/**
- * The user's role in every environment, as environmentId → role.
- * A user gets the highest role from all their teams — admins too. No row = none.
- */
 export const getEnvironmentRoles = cache(async (userId: string): Promise<Map<string, EnvironmentRole>> => {
   const rows = await prisma.teamEnvironmentRole.findMany({
     where: { team: { members: { some: { userId } } } },
@@ -29,7 +25,6 @@ export type AccessibleProject = Project & {
   environments: (Environment & { role: EnvironmentRole })[];
 };
 
-/** Projects (and their environments) where the user has at least viewer. The pickers list only these. */
 export const getAccessibleProjects = cache(async (user: SessionUser): Promise<AccessibleProject[]> => {
   const roles = await getEnvironmentRoles(user.id);
 
@@ -58,7 +53,6 @@ export const getAccessibleProjects = cache(async (user: SessionUser): Promise<Ac
     .filter((project) => project.environments.length > 0);
 });
 
-/** Throws 403 unless the user has `needed` in this environment (checked inside the user's company). */
 export async function assertEnvironmentRole(user: SessionUser, environmentId: string, needed: EnvironmentRole): Promise<void> {
   const environment = await prisma.environment.findFirst({
     where: { id: environmentId, project: { companyId: user.companyId } },
@@ -76,10 +70,6 @@ export async function assertEnvironmentRole(user: SessionUser, environmentId: st
   }
 }
 
-/**
- * Flag-level changes (create, rename, archive, delete) need editor in at least one
- * environment of the project — "no matter which environment".
- */
 export async function assertProjectEditor(user: SessionUser, projectId: string): Promise<void> {
   const project = await prisma.project.findFirst({
     where: { id: projectId, companyId: user.companyId },

@@ -11,9 +11,7 @@ export const ThemeToggle = ({ className = "" }: Props) => {
 
     try {
       localStorage.setItem("theme", dark ? "dark" : "light");
-    } catch {
-      // storage blocked: the theme still changes for this visit
-    }
+    } catch {}
   };
 
   return (

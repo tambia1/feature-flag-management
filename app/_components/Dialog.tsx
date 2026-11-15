@@ -10,7 +10,6 @@ type Props = {
   children: ReactNode;
 };
 
-/** One dialog style for every confirm. Background is dimmed; Esc or Cancel closes. */
 export const Dialog = ({ open, title, onClose, children }: Props) => {
   const ref = useRef<HTMLDialogElement>(null);
 

@@ -13,13 +13,10 @@ type Props = {
   label: string;
   placeholder: string;
   submitLabel: string;
-  /** Hidden fields sent along, e.g. the project id. */
   fields?: Record<string, string>;
-  /** Also ask for a key (used in code), filled from the name. */
   withKey?: { label: string; placeholder: string };
 };
 
-/** "Add team" / "Add project" / "Add environment": a name (and key) plus a submit button. */
 export const CreateNameForm = ({ action, label, placeholder, submitLabel, fields = {}, withKey }: Props) => {
   const [state, formAction, isPending] = useActionState(action, {});
 

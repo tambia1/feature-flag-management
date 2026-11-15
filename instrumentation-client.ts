@@ -8,9 +8,7 @@ if (sentryDsn) {
   Sentry.init({
     dsn: sentryDsn,
     tracesSampleRate: 0.1,
-    // Privacy: no user details, cookies, headers or request bodies.
     dataCollection: { userInfo: false, cookies: false, httpHeaders: false, httpBodies: [] },
-    // Mask user details (privacy).
     beforeSend(event) {
       delete event.user;
       return event;
@@ -21,7 +19,6 @@ if (sentryDsn) {
 if (posthogKey) {
   posthog.init(posthogKey, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    // Key events only, no personal data.
     autocapture: false,
     capture_pageview: true,
     person_profiles: "never",

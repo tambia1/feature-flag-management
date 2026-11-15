@@ -1,6 +1,5 @@
 import { EmptyState } from "@/app/_components/EmptyState";
 
-/** Shown on flag pages when you have no role in any environment of the project — admins included. */
 export const NoAccess = () => {
   return (
     <EmptyState

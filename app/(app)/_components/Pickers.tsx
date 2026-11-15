@@ -9,7 +9,6 @@ type Props = {
   projects: AccessibleProject[];
 };
 
-/** Project + environment pickers. They apply to every flag page and list only what you can access. */
 export const Pickers = ({ projects }: Props) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();

@@ -9,14 +9,9 @@ export type ProjectContext = {
   project: AccessibleProject;
   environment: AccessibleProject["environments"][number];
   role: EnvironmentRole;
-  /** Editor in any environment of the project: can create, rename, archive and delete flags. */
   canEditFlags: boolean;
 };
 
-/**
- * Resolves the project in the URL and the selected environment (?env=key, else the first one you can access).
- * Returns null when you have no role in any environment of the project (the no-access message).
- */
 export const getProjectContext = cache(
   async (user: SessionUser, projectKey: string, environmentKey?: string | null): Promise<ProjectContext | null> => {
     const exists = await prisma.project.findUnique({

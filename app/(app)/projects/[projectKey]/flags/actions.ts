@@ -15,7 +15,6 @@ import { prisma } from "@/lib/prisma";
 import { publishFlagChange } from "@/lib/pubsub";
 import { assertUser, AuthError } from "@/lib/session";
 
-/** Loads a flag inside the user's company, or throws 403. */
 async function findFlag(user: SessionUser, flagId: string) {
   const flag = await prisma.flag.findFirst({
     where: { id: flagId, project: { companyId: user.companyId } },
@@ -39,8 +38,6 @@ async function findFlag(user: SessionUser, flagId: string) {
 }
 
 const environmentIdsOf = (flag: { project: { environments: { id: string }[] } }) => flag.project.environments.map((item) => item.id);
-
-// ---------- Create ----------
 
 const createSchema = z.object({
   key: z.string().regex(KEY_PATTERN, "Key: lowercase letters, numbers and dashes, e.g. new-checkout").max(64),
@@ -105,7 +102,6 @@ export async function createFlag(_state: FormState, formData: FormData): Promise
       const on = flag.variations[onIndex];
       const off = flag.variations[offIndex];
 
-      // Exists in every environment, OFF everywhere; turn it on per environment.
       await tx.flagEnvironment.createMany({
         data: project.environments.map((environment) => ({
           flagId: flag.id,
@@ -126,8 +122,6 @@ export async function createFlag(_state: FormState, formData: FormData): Promise
     redirect(`/projects/${project.key}/flags/${input.key}`);
   });
 }
-
-// ---------- Turn on / off ----------
 
 export async function setFlagOn(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
@@ -184,8 +178,6 @@ export async function setFlagOn(_state: FormState, formData: FormData): Promise<
   });
 }
 
-// ---------- Targeting ----------
-
 const clauseSchema = z.object({
   attribute: z.string().trim().min(1, "Every condition needs an attribute").max(64),
   operator: z.enum(["is", "isNot", "contains", "startsWith", "endsWith", "greaterThan", "lessThan"]),
@@ -202,7 +194,6 @@ const serveSchema = z.union([
   }),
 ]);
 
-// On/off is saved by its own toggle (setFlagOn); this saves everything else.
 const targetingSchema = z.object({
   offVariationId: z.string().min(1),
   targets: z.array(z.object({ variationId: z.string().min(1), keys: z.array(z.string().trim().min(1)).max(1000) })),
@@ -298,8 +289,6 @@ export async function saveTargeting(_state: FormState, formData: FormData): Prom
   });
 }
 
-// ---------- Settings (all environments) ----------
-
 const settingsSchema = z.object({
   name: z.string().min(1, "Enter a name").max(100),
   description: z.string().max(500),
@@ -313,7 +302,6 @@ export async function updateFlagSettings(_state: FormState, formData: FormData):
 
     const input = settingsSchema.parse({ name: text(formData, "name"), description: text(formData, "description") });
 
-    // Existing variations keep their id (rules point to them); new ones are added at the end.
     const existing = flag.variations.map((variation) => ({
       id: variation.id,
       value: parseVariationValue(flag.type, String(formData.get(`variation-${variation.id}`) ?? formatValue(variation.value as JsonValue))),
@@ -406,8 +394,6 @@ export async function removeVariation(_state: FormState, formData: FormData): Pr
   });
 }
 
-// ---------- Archive / restore / delete ----------
-
 export async function archiveFlag(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const user = await assertUser();
@@ -432,7 +418,6 @@ export async function restoreFlag(_state: FormState, formData: FormData): Promis
     const flag = await findFlag(user, text(formData, "flagId"));
     await assertProjectEditor(user, flag.projectId);
 
-    // Back in the list, OFF everywhere.
     await prisma.$transaction(async (tx) => {
       await tx.flag.update({ where: { id: flag.id }, data: { archivedAt: null } });
       await tx.flagEnvironment.updateMany({ where: { flagId: flag.id }, data: { isOn: false } });
@@ -456,7 +441,6 @@ export async function deleteFlag(_state: FormState, formData: FormData): Promise
     }
 
     await prisma.$transaction(async (tx) => {
-      // FlagEnvironment first: its off value points to a variation (RESTRICT).
       await tx.flagEnvironment.deleteMany({ where: { flagId: flag.id } });
       await tx.flag.delete({ where: { id: flag.id } });
       await writeLog(tx, user, { action: "deleted flag", targetType: "Flag", target: flag.key });

@@ -1,6 +1,5 @@
 import { expect, type Page } from "@playwright/test";
 
-/** Seeded demo users (npm run db:seed with SEED_DEMO=1) share the platform admin's seed password. */
 export const PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? "";
 
 export async function login(page: Page, email: string) {

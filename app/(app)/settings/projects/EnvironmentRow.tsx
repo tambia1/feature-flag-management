@@ -14,7 +14,6 @@ type Props = {
   environment: { id: string; name: string; key: string; sdkKey: string };
 };
 
-/** An environment row. Edit changes the name; Rotate (only while editing) creates a new SDK key. */
 export const EnvironmentRow = ({ environment }: Props) => {
   const [editing, setEditing] = useState(false);
   const [copied, setCopied] = useState(false);

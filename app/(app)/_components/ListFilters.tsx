@@ -11,7 +11,6 @@ type Props = {
   placeholder?: string;
 };
 
-/** Search and status filter, kept in the URL so they survive reload and can be shared. */
 export const ListFilters = ({ withStatus = true, placeholder = "Search by key or name" }: Props) => {
   const router = useRouter();
   const pathname = usePathname();

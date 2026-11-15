@@ -5,7 +5,6 @@ export type FlagType = "BOOLEAN" | "STRING" | "NUMBER" | "JSON";
 
 export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
-/** The logged-in user, as every page and action sees it. */
 export type SessionUser = {
   id: string;
   name: string;
@@ -35,7 +34,6 @@ export type Variation = {
   order: number;
 };
 
-/** Attributes the customer's app sends for one user. `key` identifies the user. */
 export type EvaluationContext = {
   key: string;
   [attribute: string]: JsonValue | undefined;
@@ -43,7 +41,6 @@ export type EvaluationContext = {
 
 export type ClauseOperator = "is" | "isNot" | "contains" | "startsWith" | "endsWith" | "greaterThan" | "lessThan";
 
-/** One condition. `values` are ORed: "country is IL or US". */
 export type Clause = {
   attribute: string;
   operator: ClauseOperator;
@@ -52,23 +49,19 @@ export type Clause = {
 
 type Rollout = { variationId: string; weight: number }[];
 
-/** Serve one variation, or split users between variations by percentage (weights add up to 100). */
 export type Serve = { variationId: string } | { rollout: Rollout };
 
-/** Clauses inside a rule are ANDed; rules are checked top to bottom. The last rule has no clauses = default rule. */
 export type Rule = {
   id: string;
   clauses: Clause[];
   serve: Serve;
 };
 
-/** Individual targets: these user keys always get this variation. */
 export type Target = {
   variationId: string;
   keys: string[];
 };
 
-/** Everything evaluation needs for one flag in one environment. */
 export type FlagConfig = {
   key: string;
   archived: boolean;

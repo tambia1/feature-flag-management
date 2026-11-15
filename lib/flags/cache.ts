@@ -10,7 +10,6 @@ type EnvironmentFlags = {
   loadedAt: number;
 };
 
-// Safety net only: changes clear the cache right away through pub/sub.
 const MAX_AGE_MS = 60_000;
 
 type Cache = { bySdkKey: Map<string, EnvironmentFlags>; subscribed: boolean };
@@ -28,10 +27,6 @@ if (!cache.subscribed) {
   });
 }
 
-/**
- * The flags of the environment this SDK key belongs to, or null for an unknown key.
- * Most reads come from memory and never reach the database.
- */
 export async function getFlagsForSdkKey(sdkKey: string): Promise<EnvironmentFlags | null> {
   const cached = cache.bySdkKey.get(sdkKey);
 

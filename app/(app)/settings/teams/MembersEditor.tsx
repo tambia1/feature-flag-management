@@ -12,11 +12,9 @@ type Person = { id: string; name: string };
 type Props = {
   teamId: string;
   members: Person[];
-  /** Company users who aren't in this team. */
   candidates: (Person & { role: string })[];
 };
 
-/** Member chips with ×, and "+ Add member" with a searchable list. Both save right away. */
 export const MembersEditor = ({ teamId, members, candidates }: Props) => {
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");

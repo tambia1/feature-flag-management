@@ -11,10 +11,7 @@ type Props = {
   placeholder?: string;
   required?: boolean;
   compact?: boolean;
-  /** Join a form by id, for inputs inside table rows. */
   form?: string;
-  /** Start with a generated password (Add user forms). */
-  generateOnStart?: boolean;
 };
 
 const CHARACTERS = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789#%&*?";
@@ -24,9 +21,8 @@ function generatePassword(length = 12): string {
   return Array.from(bytes, (value) => CHARACTERS[value % CHARACTERS.length]).join("");
 }
 
-/** A password input with ↻ to generate one. Shown as text so the admin can pass it on. */
-export const PasswordField = ({ name, label, placeholder, required = false, compact = false, form, generateOnStart = false }: Props) => {
-  const [value, setValue] = useState(() => (generateOnStart ? generatePassword() : ""));
+export const PasswordField = ({ name, label, placeholder, required = false, compact = false, form }: Props) => {
+  const [value, setValue] = useState("");
 
   return (
     <span className={styles.field}>

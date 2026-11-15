@@ -10,7 +10,6 @@ const bodySchema = z.object({
   context: z.object({ key: z.string().min(1).max(256) }).catchall(z.union([z.string(), z.number(), z.boolean(), z.null()])),
 });
 
-/** POST /api/sdk/evaluate — every flag's value for one user in the SDK key's environment. */
 export async function POST(request: Request) {
   const stopTimer = sdkMetrics.evaluateDuration.startTimer();
   const respond = (body: unknown, status: number) => {

@@ -14,7 +14,6 @@ type Props = {
 
 const ROLLOUT = "__rollout";
 
-/** Serve one variation, or a percentage rollout across variations. */
 export const ServeEditor = ({ serve, variations, onChange }: Props) => {
   const isRollout = "rollout" in serve;
   const total = isRollout ? serve.rollout.reduce((sum, part) => sum + part.weight, 0) : 100;

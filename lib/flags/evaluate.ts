@@ -1,9 +1,5 @@
 import type { Clause, EvaluationContext, FlagConfig, JsonValue, Serve } from "@/app/types";
 
-/**
- * Picks the value one user gets for one flag:
- * archived or off → off value; individual target → its value; first matching rule → its value.
- */
 export function evaluateFlag(flag: FlagConfig, context: EvaluationContext): JsonValue {
   const variationValue = (id: string) => flag.variations.find((variation) => variation.id === id)?.value ?? null;
   const offValue = variationValue(flag.offVariationId);
@@ -64,7 +60,6 @@ function pickVariation(serve: Serve, flagKey: string, userKey: string): string {
     return serve.variationId;
   }
 
-  // The same user always lands in the same bucket for this flag, so a rollout is stable.
   const bucket = hashToPercent(`${flagKey}.${userKey}`);
   let total = 0;
 
@@ -79,7 +74,6 @@ function pickVariation(serve: Serve, flagKey: string, userKey: string): string {
   return serve.rollout.at(-1)?.variationId ?? "";
 }
 
-/** Stable hash (FNV-1a) of a string to a number in [0, 100). */
 export function hashToPercent(input: string): number {
   let hash = 0x811c9dc5;
 

@@ -10,7 +10,6 @@ import styles from "./PermissionsGrid.module.css";
 type Props = {
   teamId: string;
   projects: { id: string; name: string; environments: { id: string; name: string }[] }[];
-  /** environmentId → role; missing = none. */
   roles: Record<string, string>;
 };
 
@@ -20,7 +19,6 @@ const ROLE_OPTIONS = [
   { value: "EDITOR", label: "editor" },
 ];
 
-/** One role per environment for this team. Saved as a whole grid. */
 export const PermissionsGrid = ({ teamId, projects, roles }: Props) => {
   const [state, formAction, isPending] = useActionState(saveTeamPermissions, {});
 

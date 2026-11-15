@@ -1,13 +1,3 @@
-/**
- * Feature flag SDK for customer apps (browser or Node 18+).
- *
- *   const flags = createFlagClient({ baseUrl: "https://flags.example.com", sdkKey: "sdk-…", context: { key: "user-42", country: "IL" } });
- *   await flags.ready;
- *   if (flags.getFlag("new-checkout", false)) { … }
- *
- * It never throws: if the server is down it keeps the last values it got, and before that the fallback in your code.
- */
-
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 export type FlagContext = { key: string; [attribute: string]: string | number | boolean | null };
@@ -16,19 +6,15 @@ export type FlagClientOptions = {
   baseUrl: string;
   sdkKey: string;
   context: FlagContext;
-  /** Listen for changes and refetch right away (default true). */
   stream?: boolean;
   onError?: (error: unknown) => void;
 };
 
 export type FlagClient = {
-  /** Resolves after the first fetch (or its failure). */
   ready: Promise<void>;
   getFlag<T extends JsonValue>(key: string, fallback: T): T;
   allFlags(): Record<string, JsonValue>;
-  /** Called after values change. Returns an unsubscribe function. */
   onChange(listener: () => void): () => void;
-  /** Use another user/context, e.g. after login. */
   identify(context: FlagContext): Promise<void>;
   close(): void;
 };
@@ -44,9 +30,7 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
   const report = (error: unknown) => {
     try {
       options.onError?.(error);
-    } catch {
-      // never let a listener break the app
-    }
+    } catch {}
   };
 
   const refresh = async () => {
@@ -70,7 +54,6 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
         }
       });
     } catch (error) {
-      // Keep the last values.
       report(error);
     }
   };
@@ -113,7 +96,6 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
       report(error);
     }
 
-    // Reconnect with backoff (max 30s); fetch again in case we missed a change.
     const delay = Math.min(30_000, 1000 * 2 ** attempt);
     setTimeout(() => {
       if (!closed) {

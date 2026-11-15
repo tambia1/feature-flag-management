@@ -7,7 +7,6 @@ type Props = Omit<ComponentProps<"button">, "onChange"> & {
   danger?: boolean;
 };
 
-/** An on/off switch. `label` names it for screen readers. */
 export const Toggle = ({ checked, label, danger = false, className = "", type = "button", ...props }: Props) => {
   return (
     <button

@@ -19,7 +19,6 @@ type Props = {
   isSelf: boolean;
 };
 
-/** A user row. Edit turns it into inputs with Save / Cancel. */
 export const UserRow = ({ user, teams, isSelf }: Props) => {
   const [editing, setEditing] = useState(false);
   const [state, formAction, isPending] = useActionState(async (previous: FormState, formData: FormData) => {
