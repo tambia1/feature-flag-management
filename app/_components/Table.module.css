@@ -1,0 +1,38 @@
+@layer components {
+  .wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+
+  .table {
+    width: 100%;
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .head th {
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .body td {
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .body tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .empty {
+    color: var(--muted);
+    text-align: center;
+  }
+}

@@ -1,0 +1,14 @@
+.select {
+  composes: input from "./Input.module.css";
+}
+
+@layer components {
+  .select {
+    width: auto;
+    cursor: pointer;
+  }
+
+  .compact {
+    padding: var(--space-1) var(--space-2);
+  }
+}

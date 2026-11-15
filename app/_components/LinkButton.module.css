@@ -1,0 +1,19 @@
+/* `composes` can't sit inside @layer; the composed classes are already layered in Button.module.css. */
+.primary {
+  composes: button primary from "./Button.module.css";
+}
+
+.secondary {
+  composes: button secondary from "./Button.module.css";
+}
+
+.link {
+  composes: button link from "./Button.module.css";
+}
+
+@layer components {
+  .primary,
+  .secondary {
+    display: inline-block;
+  }
+}

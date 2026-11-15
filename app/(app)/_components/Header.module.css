@@ -1,0 +1,22 @@
+.header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-3) var(--space-6);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.logo {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 48rem) {
+  .header {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "react-hooks", "jsx-a11y", "nextjs", "import", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "import/no-unassigned-import": "off",
+    "import/namespace": "off",
+    "import/no-named-as-default": "off",
+    "no-underscore-dangle": [
+      "warn",
+      {
+        "allow": ["_count"]
+      }
+    ],
+    "jsx-a11y/prefer-tag-over-role": "off"
+  },
+  "ignorePatterns": ["app/generated/**", ".next/**", "sdk/dist/**", "node_modules/**"]
+}

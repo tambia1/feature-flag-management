@@ -1,0 +1,31 @@
+.settings {
+  display: grid;
+  grid-template-columns: minmax(0, 32rem) minmax(0, 20rem);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+.action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+@media (max-width: 64rem) {
+  .settings {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

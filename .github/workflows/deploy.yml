@@ -1,0 +1,46 @@
+name: Deploy
+
+# Runs after a PR passes the merge queue and lands on master.
+on:
+  push:
+    branches: [master, main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - name: Deploy to AWS
+        run: ./ops/deploy.sh production
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+
+  notify:
+    needs: deploy
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack message (success / fail)
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          STATUS="${{ needs.deploy.result }}"
+          ICON=$([ "$STATUS" = "success" ] && echo ":white_check_mark:" || echo ":x:")
+          curl -sS -X POST -H 'Content-Type: application/json' \
+            -d "{\"text\": \"$ICON Deploy $STATUS: ${{ github.repository }}@${GITHUB_SHA::7} by ${{ github.actor }}\"}" \
+            "$SLACK_WEBHOOK_URL"

@@ -1,0 +1,14 @@
+{
+  "name": "@feature-flags/sdk",
+  "version": "0.1.0",
+  "description": "Read feature flags from Feature Flag Management. Never throws; falls back to the last values, then your code's fallback.",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  }
+}

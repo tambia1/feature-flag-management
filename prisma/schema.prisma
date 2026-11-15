@@ -1,0 +1,276 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Every top-level table has companyId (tenant isolation).
+// Deleting a company cascades to everything under it, except Log (flat, no FKs).
+
+model Company {
+  id         String   @id @default(cuid())
+  name       String
+  isPlatform Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  users    User[]
+  teams    Team[]
+  projects Project[]
+
+  @@map("companies")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+// User, Session, Account and Verification are the tables Better Auth needs.
+// The password hash lives in Account.password (providerId "credential").
+model User {
+  id            String   @id @default(cuid())
+  companyId     String
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  role          Role     @default(MEMBER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sessions    Session[]
+  accounts    Account[]
+  teamMembers TeamMember[]
+
+  @@index([companyId])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  password              String?
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verifications")
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  companyId String
+  name      String
+  createdAt DateTime @default(now())
+
+  company Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  members TeamMember[]
+  roles   TeamEnvironmentRole[]
+
+  @@unique([companyId, name])
+  @@map("teams")
+}
+
+model TeamMember {
+  teamId String
+  userId String
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
+  @@index([userId])
+  @@map("team_members")
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  companyId String
+  name      String
+  key       String
+  createdAt DateTime @default(now())
+
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  environments Environment[]
+  flags        Flag[]
+
+  @@unique([companyId, key])
+  @@map("projects")
+}
+
+model Environment {
+  id        String   @id @default(cuid())
+  projectId String
+  name      String
+  key       String
+  sdkKey    String   @unique
+  createdAt DateTime @default(now())
+
+  project Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  roles   TeamEnvironmentRole[]
+  flags   FlagEnvironment[]
+  history FlagHistory[]
+
+  @@unique([projectId, key])
+  @@map("environments")
+}
+
+enum EnvironmentRole {
+  VIEWER
+  EDITOR
+}
+
+// No row = role "none".
+model TeamEnvironmentRole {
+  teamId        String
+  environmentId String
+  role          EnvironmentRole
+
+  team        Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, environmentId])
+  @@index([environmentId])
+  @@map("team_environment_roles")
+}
+
+enum FlagType {
+  BOOLEAN
+  STRING
+  NUMBER
+  JSON
+}
+
+// Flag + Variation are the same in every environment.
+model Flag {
+  id          String    @id @default(cuid())
+  projectId   String
+  key         String
+  name        String
+  description String    @default("")
+  type        FlagType
+  archivedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  project      Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  variations   Variation[]
+  environments FlagEnvironment[]
+  history      FlagHistory[]
+
+  @@unique([projectId, key])
+  @@map("flags")
+}
+
+model Variation {
+  id     String @id @default(cuid())
+  flagId String
+  value  Json
+  order  Int
+
+  flag     Flag              @relation(fields: [flagId], references: [id], onDelete: Cascade)
+  offIn    FlagEnvironment[]
+
+  @@index([flagId])
+  @@map("variations")
+}
+
+// Per environment: on/off, off value, individual targets and rules.
+// The last rule has no conditions and is the default rule (= the on value).
+model FlagEnvironment {
+  flagId         String
+  environmentId  String
+  isOn           Boolean  @default(false)
+  offVariationId String
+  targets        Json     @default("[]")
+  rules          Json     @default("[]")
+  updatedAt      DateTime @updatedAt
+
+  flag         Flag        @relation(fields: [flagId], references: [id], onDelete: Cascade)
+  environment  Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  offVariation Variation   @relation(fields: [offVariationId], references: [id], onDelete: Restrict)
+
+  @@id([flagId, environmentId])
+  @@index([environmentId])
+  @@map("flag_environments")
+}
+
+// One row per flag change, shown in the History tab.
+model FlagHistory {
+  id            String   @id @default(cuid())
+  flagId        String
+  environmentId String?
+  userId        String
+  userName      String
+  change        String
+  before        Json?
+  after         Json?
+  comment       String?
+  createdAt     DateTime @default(now())
+
+  flag        Flag         @relation(fields: [flagId], references: [id], onDelete: Cascade)
+  environment Environment? @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+  @@index([flagId, createdAt])
+  @@map("flag_history")
+}
+
+// Append-only audit log. Flat and self-contained: no FKs, names are copied in,
+// so deletes never touch it. Platform events are stored under the platform company.
+model Log {
+  id          String   @id @default(cuid())
+  companyId   String
+  companyName String
+  userId      String
+  userName    String
+  userEmail   String
+  action      String
+  targetType  String
+  target      String
+  change      String?
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  @@index([companyId, createdAt])
+  @@map("logs")
+}

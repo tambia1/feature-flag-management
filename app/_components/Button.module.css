@@ -1,0 +1,63 @@
+@layer components {
+  .button {
+    white-space: nowrap;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+
+  .button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .primary {
+    background: var(--accent);
+    padding: var(--space-2) var(--space-4);
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .secondary {
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .danger {
+    background: var(--danger);
+    padding: var(--space-2) var(--space-4);
+    font-weight: 500;
+    color: #fff;
+  }
+
+  .link {
+    padding: 0;
+    color: var(--link);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .icon {
+    padding: calc(var(--space-1) * 1.5);
+  }
+
+  @media (hover: hover) {
+    .primary:not(:disabled):hover {
+      background: var(--accent-hover);
+    }
+
+    .secondary:not(:disabled):hover {
+      background: var(--hover);
+    }
+
+    .danger:not(:disabled):hover {
+      opacity: 0.9;
+    }
+
+    .link:not(:disabled):hover {
+      text-decoration: underline;
+    }
+  }
+}

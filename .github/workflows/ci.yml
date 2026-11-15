@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+  merge_group:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, format, types, unit tests, build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: { POSTGRES_USER: postgres, POSTGRES_PASSWORD: postgres, POSTGRES_DB: feature_flag_db }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/feature_flag_db
+      BETTER_AUTH_SECRET: ci-secret-not-for-production-use-0123456789
+      BETTER_AUTH_URL: http://localhost:3100
+      SEED_ADMIN_EMAIL: admin@platform.local
+      SEED_ADMIN_PASSWORD: ci-password-123
+      SEED_DEMO: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - name: Prisma validate + migration check
+        run: |
+          npx prisma validate
+          npx prisma migrate deploy
+          # Fails if schema.prisma has changes without a migration.
+          npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
+      - run: npm test
+      - run: npm run knip
+      - run: npm run build
+      - name: Integration tests (app + database)
+        run: |
+          npm run db:seed
+          npx playwright install --with-deps chromium
+          npm start &
+          npx wait-on http://localhost:3100/api/health
+          E2E_BASE_URL=http://localhost:3100 npm run test:e2e
+
+  preview:
+    name: Preview deploy + e2e
+    if: github.event_name == 'pull_request' && vars.PREVIEW_DEPLOY_ENABLED == 'true'
+    needs: checks
+    runs-on: ubuntu-latest
+    environment: preview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - name: Deploy preview
+        id: deploy
+        run: ./ops/deploy.sh preview "pr-${{ github.event.number }}"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+      - name: E2E against the preview (Playwright)
+        run: |
+          npx playwright install --with-deps chromium
+          E2E_BASE_URL=${{ steps.deploy.outputs.url }} npm run test:e2e
+        env:
+          SEED_ADMIN_PASSWORD: ${{ secrets.PREVIEW_SEED_PASSWORD }}

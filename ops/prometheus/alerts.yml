@@ -1,0 +1,26 @@
+# Alerts from the design. Route "page" to on-call and "slack" to the team channel in Alertmanager.
+groups:
+  - name: sdk
+    rules:
+      - alert: SdkErrorRateHigh
+        expr: sum(rate(sdk_evaluate_duration_seconds_count{status=~"5.."}[5m])) / sum(rate(sdk_evaluate_duration_seconds_count[5m])) > 0.001
+        for: 5m
+        labels: { severity: page }
+        annotations: { summary: "SDK errors above 0.1%" }
+      - alert: SdkLatencyHigh
+        expr: histogram_quantile(0.99, sum by (le) (rate(sdk_evaluate_duration_seconds_bucket[5m]))) > 0.05
+        for: 10m
+        labels: { severity: page }
+        annotations: { summary: "SDK evaluate p99 above 50ms" }
+      - alert: FlagCacheHitRateLow
+        expr: sum(rate(sdk_flag_cache_hits_total[10m])) / (sum(rate(sdk_flag_cache_hits_total[10m])) + sum(rate(sdk_flag_cache_misses_total[10m]))) < 0.9
+        for: 15m
+        labels: { severity: slack }
+        annotations: { summary: "Flag cache hit rate below 90%" }
+  - name: app
+    rules:
+      - alert: AppDown
+        expr: up{job="app"} == 0
+        for: 2m
+        labels: { severity: page }
+        annotations: { summary: "An app server is down" }

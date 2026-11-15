@@ -1,0 +1,13 @@
+@layer components {
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .label {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--muted);
+  }
+}

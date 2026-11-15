@@ -1,0 +1,89 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { Button } from "@/app/_components/Button";
+import { Input } from "@/app/_components/Input";
+import { Message } from "@/app/_components/Message";
+import { addTeamMember, removeTeamMember } from "../actions";
+import styles from "./MembersEditor.module.css";
+
+type Person = { id: string; name: string };
+
+type Props = {
+  teamId: string;
+  members: Person[];
+  /** Company users who aren't in this team. */
+  candidates: (Person & { role: string })[];
+};
+
+/** Member chips with ×, and "+ Add member" with a searchable list. Both save right away. */
+export const MembersEditor = ({ teamId, members, candidates }: Props) => {
+  const [adding, setAdding] = useState(false);
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState<string>();
+  const [isPending, startTransition] = useTransition();
+
+  const run = (action: typeof addTeamMember, userId: string) => {
+    setError(undefined);
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.set("teamId", teamId);
+      formData.set("userId", userId);
+      const result = await action({}, formData);
+      setError(result.error);
+    });
+  };
+
+  const matches = candidates.filter((user) => user.name.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div className={styles.members}>
+      <ul className={styles.chips}>
+        {members.length === 0 && <li className={styles.empty}>No members yet.</li>}
+        {members.map((member) => (
+          <li key={member.id} className={styles.chip}>
+            {member.name}
+            <button
+              type="button"
+              className={styles.remove}
+              onClick={() => run(removeTeamMember, member.id)}
+              disabled={isPending}
+              aria-label={`Remove ${member.name}`}
+            >
+              ×
+            </button>
+          </li>
+        ))}
+        <li>
+          <Button variant="link" onClick={() => setAdding(!adding)} aria-expanded={adding}>
+            + Add member
+          </Button>
+        </li>
+      </ul>
+      {adding && (
+        <div className={styles.picker}>
+          <Input
+            compact
+            type="search"
+            placeholder="Search users…"
+            aria-label="Search users"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <ul className={styles.options}>
+            {matches.length === 0 && <li className={styles.empty}>Only users not in this team are listed. No matches.</li>}
+            {matches.map((user) => (
+              <li key={user.id}>
+                <button type="button" className={styles.option} onClick={() => run(addTeamMember, user.id)} disabled={isPending}>
+                  <span>{user.name}</span>
+                  <span className={styles.role}>{user.role.toLowerCase()}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <Message text={error} state="error" />
+    </div>
+  );
+};

@@ -1,0 +1,44 @@
+.shell {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "header header"
+    "menu content";
+  min-height: 100dvh;
+}
+
+.content {
+  grid-area: content;
+  padding: var(--space-6) var(--space-8);
+  min-width: 0;
+}
+
+.skipLink {
+  position: absolute;
+  left: var(--space-2);
+  top: -3rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  z-index: 10;
+}
+
+.skipLink:focus-visible {
+  top: var(--space-2);
+}
+
+@media (max-width: 48rem) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "header"
+      "menu"
+      "content";
+  }
+
+  .content {
+    padding: var(--space-4);
+  }
+}

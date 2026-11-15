@@ -1,0 +1,15 @@
+.key {
+  color: var(--link);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
