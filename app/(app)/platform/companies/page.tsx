@@ -7,7 +7,6 @@ import { Card } from "../../_components/Card";
 import { Page } from "../../_components/Page";
 import { AddCompanyForm } from "./AddCompanyForm";
 import { CompanyRow } from "./CompanyRow";
-import styles from "./page.module.css";
 
 export const metadata: Metadata = { title: "Companies" };
 
@@ -43,11 +42,6 @@ export default async function CompaniesPage() {
           />
         ))}
       </Table>
-      <p className={styles.hint}>
-        Add company creates the company and its first admin. ↻ generates a password.
-        <br />
-        Deleting a company asks you to type its name. Our own company can&apos;t be deleted. Every change goes to our own company&apos;s log.
-      </p>
     </Page>
   );
 }

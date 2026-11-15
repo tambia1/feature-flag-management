@@ -88,11 +88,6 @@ export default async function ArchivedFlagsPage({ params, searchParams }: PagePr
           </tr>
         ))}
       </Table>
-      <p className={styles.hint}>
-        Archived flags serve their off value in every environment. Restore puts the flag back in the list, OFF.
-        <br />
-        Delete is permanent — apps then get the fallback in their code. Editors only; both ask to confirm.
-      </p>
     </Page>
   );
 }

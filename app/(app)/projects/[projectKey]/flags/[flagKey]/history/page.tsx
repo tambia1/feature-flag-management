@@ -92,7 +92,6 @@ export default async function HistoryPage({ params, searchParams }: PageProps<"/
           )}
         </section>
       )}
-      <p className={styles.hint}>Read-only. Click a row to see before / after. These are the company log entries for this flag.</p>
     </div>
   );
 }

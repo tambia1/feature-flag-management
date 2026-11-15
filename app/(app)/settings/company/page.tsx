@@ -26,7 +26,6 @@ export default async function CompanyPage() {
           {company._count.projects} projects · {company._count.users} users
         </dd>
       </dl>
-      <p className={styles.hint}>Only company admins see this page. Only platform admins can delete a company.</p>
     </Page>
   );
 }

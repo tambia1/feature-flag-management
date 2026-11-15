@@ -26,7 +26,6 @@ export default async function FlagSettingsPage({ params, searchParams }: PagePro
   return (
     <div className={styles.settings}>
       <div className={styles.main}>
-        <p className={styles.hint}>These settings apply to all environments.</p>
         <FlagSettingsForm
           flagId={flag.id}
           flagKey={flag.key}
@@ -37,11 +36,6 @@ export default async function FlagSettingsPage({ params, searchParams }: PagePro
           variations={flag.variations.map((variation) => ({ ...variation, value: variation.value as JsonValue }))}
           canEdit={canEdit && !flag.archivedAt}
         />
-        <p className={styles.hint}>
-          Only editors can change settings. Archive and delete ask to confirm.
-          <br />
-          On and off values are set per environment, on the Targeting tab.
-        </p>
       </div>
       <Card title="Danger zone" tone="danger">
         {flag.archivedAt ? (
@@ -58,7 +52,6 @@ export default async function FlagSettingsPage({ params, searchParams }: PagePro
                 danger={false}
                 disabled={!canEdit}
               />
-              <p className={styles.hint}>Back in the flag list, OFF everywhere.</p>
             </div>
             <div className={styles.action}>
               <ConfirmAction
@@ -71,7 +64,6 @@ export default async function FlagSettingsPage({ params, searchParams }: PagePro
                 confirmLabel="Delete flag"
                 disabled={!canEdit}
               />
-              <p className={styles.hint}>Permanent — apps get the fallback value from their code.</p>
             </div>
           </>
         ) : (
@@ -87,10 +79,6 @@ export default async function FlagSettingsPage({ params, searchParams }: PagePro
                 confirmLabel="Archive"
                 disabled={!canEdit}
               />
-              <p className={styles.hint}>Hidden from the flag list. Every environment serves the off value. Can be restored.</p>
-            </div>
-            <div className={styles.action}>
-              <p className={styles.hint}>Archive first, then delete. Delete is permanent — apps get the fallback value from their code.</p>
             </div>
           </>
         )}

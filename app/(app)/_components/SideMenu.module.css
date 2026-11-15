@@ -30,6 +30,12 @@
   text-transform: uppercase;
 }
 
+.section ul {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
 .link {
   display: block;
   padding: var(--space-1) var(--space-3);
@@ -61,7 +67,7 @@
   }
 
   .section ul {
-    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
   }
 }

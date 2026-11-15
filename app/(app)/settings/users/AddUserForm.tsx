@@ -35,7 +35,6 @@ export const AddUserForm = () => {
       </div>
       <Message text={state.error} state="error" />
       <Message text={state.success} state="success" />
-      <p className={styles.hint}>↻ generates a password; the user can keep it or change it.</p>
     </form>
   );
 };

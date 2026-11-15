@@ -8,7 +8,6 @@ import { Card } from "../../_components/Card";
 import { Page } from "../../_components/Page";
 import { AddUserForm } from "./AddUserForm";
 import { UserRow } from "./UserRow";
-import styles from "./page.module.css";
 
 export const metadata: Metadata = { title: "Users" };
 
@@ -47,11 +46,6 @@ export default async function UsersPage({ searchParams }: PageProps<"/settings/u
           />
         ))}
       </Table>
-      <p className={styles.hint}>
-        Edit turns the row into inputs (teams are edited on the Teams screen). New password: empty = keep current, ↻ generates one.
-        <br />
-        Every change goes to the company log. The last admin can&apos;t be removed or demoted.
-      </p>
     </Page>
   );
 }

@@ -101,11 +101,6 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/setting
           </section>
         )}
       </div>
-      <p className={styles.hint}>
-        Each environment gets its own SDK key when it&apos;s added. Rotate (while editing) creates a new key and the old one stops working.
-        <br />
-        Deleting a project asks you to type its name — it removes its flags and environments. Every change goes to the company log.
-      </p>
     </Page>
   );
 }

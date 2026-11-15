@@ -11,12 +11,6 @@
   gap: var(--space-4);
 }
 
-.hint {
-  color: var(--muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-}
-
 .action {
   display: flex;
   flex-direction: column;

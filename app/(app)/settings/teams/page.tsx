@@ -83,11 +83,6 @@ export default async function TeamsPage({ searchParams }: PageProps<"/settings/t
           </section>
         )}
       </div>
-      <p className={styles.hint}>
-        Each team has one role per environment: none / viewer / editor. A user gets the highest role from all their teams — admins too.
-        <br />
-        New projects and environments start with role none for every team. Every change goes to the company log.
-      </p>
     </Page>
   );
 }

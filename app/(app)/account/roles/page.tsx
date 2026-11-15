@@ -59,9 +59,6 @@ export default async function MyRolesPage() {
             </tr>
           ))}
         </Table>
-        <p className={styles.hint}>
-          Each cell is the highest role from your teams. Read-only — ask your company admin to change teams or roles.
-        </p>
       </section>
     </Page>
   );

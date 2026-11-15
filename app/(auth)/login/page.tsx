@@ -19,11 +19,6 @@ export default async function LoginPage() {
         </p>
         <h1 className={styles.title}>Log in</h1>
         <LoginForm />
-        <p className={styles.hint}>
-          No sign-up. Forgot your password?
-          <br />
-          Ask your company admin.
-        </p>
       </div>
     </main>
   );

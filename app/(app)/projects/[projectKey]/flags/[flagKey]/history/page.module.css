@@ -43,9 +43,3 @@
 .diff dt {
   color: var(--muted);
 }
-
-.hint {
-  color: var(--muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-}

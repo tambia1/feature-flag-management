@@ -1,8 +1,8 @@
 import Link from "next/link";
+import { Tabs } from "@/app/_components/Tabs";
 import { getFlagByKey, getProjectContext } from "@/lib/flags/context";
 import { requireUser } from "@/lib/session";
 import { NoAccess } from "../../../../_components/NoAccess";
-import { FlagTabs } from "./_components/FlagTabs";
 import styles from "./layout.module.css";
 
 export default async function FlagLayout({ params, children }: LayoutProps<"/projects/[projectKey]/flags/[flagKey]">) {
@@ -27,7 +27,9 @@ export default async function FlagLayout({ params, children }: LayoutProps<"/pro
         <span className={styles.name}>{flag.name}</span>
         {flag.archivedAt && <span className={styles.badge}>Archived</span>}
       </div>
-      <FlagTabs
+      <Tabs
+        label="Flag"
+        keepParams={["env"]}
         tabs={[
           { href: base, label: "Targeting" },
           { href: `${base}/history`, label: "History" },
