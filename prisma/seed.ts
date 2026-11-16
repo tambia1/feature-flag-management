@@ -8,6 +8,8 @@ const PASSWORD = "1234";
 
 type DemoCompany = {
   name: string;
+  iconUrl: string;
+  iconThumbUrl: string;
   users: { name: string; email: string; role: CompanyRole; teams: string[] }[];
   project: { name: string; key: string };
   environments: { name: string; key: string }[];
@@ -18,6 +20,8 @@ type DemoCompany = {
 const demoCompanies: DemoCompany[] = [
   {
     name: "Acme",
+    iconUrl: "https://api.dicebear.com/9.x/shapes/png?seed=Acme&size=1024",
+    iconThumbUrl: "https://api.dicebear.com/9.x/shapes/png?seed=Acme&size=64",
     users: [
       { name: "Emma Smith", email: "emma@acme.com", role: "ADMIN", teams: ["Frontend", "Release"] },
       { name: "James Brown", email: "james@acme.com", role: "MEMBER", teams: ["Frontend"] },
@@ -66,6 +70,8 @@ const demoCompanies: DemoCompany[] = [
   },
   {
     name: "Nova",
+    iconUrl: "https://api.dicebear.com/9.x/shapes/png?seed=Nova&size=1024",
+    iconThumbUrl: "https://api.dicebear.com/9.x/shapes/png?seed=Nova&size=64",
     users: [
       { name: "Olivia Green", email: "olivia@nova.com", role: "ADMIN", teams: ["Mobile", "QA"] },
       { name: "Noah Wilson", email: "noah@nova.com", role: "MEMBER", teams: ["Mobile"] },
@@ -137,7 +143,10 @@ async function seedDemoCompany(demo: DemoCompany) {
   }
 
   await prisma.$transaction(async (tx) => {
-    const company = await tx.company.create({ data: { name: demo.name }, select: { id: true } });
+    const company = await tx.company.create({
+      data: { name: demo.name, iconUrl: demo.iconUrl, iconThumbUrl: demo.iconThumbUrl },
+      select: { id: true },
+    });
 
     const users = [];
     for (const user of demo.users) {

@@ -8,10 +8,12 @@ datasource db {
 }
 
 model Company {
-  id         String   @id @default(cuid())
-  name       String
-  isPlatform Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id           String   @id @default(cuid())
+  name         String
+  isPlatform   Boolean  @default(false)
+  iconUrl      String?
+  iconThumbUrl String?
+  createdAt    DateTime @default(now())
 
   users    User[]
   teams    Team[]
@@ -201,8 +203,8 @@ model Variation {
   value  Json
   order  Int
 
-  flag     Flag              @relation(fields: [flagId], references: [id], onDelete: Cascade)
-  offIn    FlagEnvironment[]
+  flag  Flag              @relation(fields: [flagId], references: [id], onDelete: Cascade)
+  offIn FlagEnvironment[]
 
   @@index([flagId])
   @@map("variations")

@@ -21,7 +21,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
       email: true,
       role: true,
       companyId: true,
-      company: { select: { name: true, isPlatform: true } },
+      company: { select: { name: true, isPlatform: true, iconThumbUrl: true } },
     },
   });
 
@@ -36,6 +36,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     role: user.role,
     companyId: user.companyId,
     companyName: user.company.name,
+    companyIconUrl: user.company.iconThumbUrl,
     isPlatformAdmin: user.company.isPlatform && user.role === "ADMIN",
   };
 });

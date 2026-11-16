@@ -19,6 +19,7 @@ export default async function CompaniesPage() {
       id: true,
       name: true,
       isPlatform: true,
+      iconThumbUrl: true,
       createdAt: true,
       users: { where: { role: "ADMIN" }, select: { name: true }, orderBy: { createdAt: "asc" } },
       _count: { select: { users: true, projects: true } },
@@ -35,7 +36,7 @@ export default async function CompaniesPage() {
         {companies.map((company) => (
           <CompanyRow
             key={company.id}
-            company={{ id: company.id, name: company.name, isPlatform: company.isPlatform }}
+            company={{ id: company.id, name: company.name, isPlatform: company.isPlatform, iconThumbUrl: company.iconThumbUrl }}
             admins={company.users.map((user) => user.name.split(" ")[0]).join(", ") || "—"}
             users={company._count.users}
             projects={company._count.projects}

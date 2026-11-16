@@ -1,0 +1,29 @@
+.icon {
+  flex: none;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--hover);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.small {
+  width: var(--space-6);
+  height: var(--space-6);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+}
+
+.large {
+  width: calc(var(--space-8) * 2);
+  height: calc(var(--space-8) * 2);
+  border-radius: var(--radius-md);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-2xl);
+}

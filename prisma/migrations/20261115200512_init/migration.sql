@@ -12,6 +12,8 @@ CREATE TABLE "companies" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "isPlatform" BOOLEAN NOT NULL DEFAULT false,
+    "iconUrl" TEXT,
+    "iconThumbUrl" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "companies_pkey" PRIMARY KEY ("id")

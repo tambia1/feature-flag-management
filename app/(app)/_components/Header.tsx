@@ -18,7 +18,7 @@ export const Header = ({ user, projects }: Props) => {
         <Flag size={16} /> Feature Flag Management
       </Link>
       <Pickers projects={projects} />
-      <UserMenu name={user.name} companyName={user.companyName} />
+      <UserMenu name={user.name} companyName={user.companyName} companyIconUrl={user.companyIconUrl} />
     </header>
   );
 };

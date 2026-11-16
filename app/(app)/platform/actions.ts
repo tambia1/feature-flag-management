@@ -8,6 +8,7 @@ import { track } from "@/lib/analytics";
 import { writePlatformLog } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
 import { publishFlagChange } from "@/lib/pubsub";
+import { deleteIconFiles, prepareIcon, removeCompanyIcon, setCompanyIcon, storeIcon } from "@/lib/company-icon";
 import { addCompanyUser, editCompanyUser, removeCompanyUser } from "@/lib/company-users";
 import { assertPlatformAdmin, AuthError } from "@/lib/session";
 import { createUserWithPassword } from "@/lib/users";
@@ -34,10 +35,13 @@ export async function createCompany(_state: FormState, formData: FormData): Prom
 
     await assertEmailFree(input.adminEmail);
 
-    await prisma.$transaction(async (tx) => {
-      const company = await tx.company.create({ data: { name: input.name } });
+    const iconFile = formData.get("icon");
+    const icon = iconFile instanceof File && iconFile.size > 0 ? await prepareIcon(iconFile) : null;
+
+    const company = await prisma.$transaction(async (tx) => {
+      const created = await tx.company.create({ data: { name: input.name }, select: { id: true } });
       const user = await createUserWithPassword(tx, {
-        companyId: company.id,
+        companyId: created.id,
         name: input.adminName,
         email: input.adminEmail,
         role: "ADMIN",
@@ -49,7 +53,12 @@ export async function createCompany(_state: FormState, formData: FormData): Prom
         target: input.name,
         change: `admin ${user.email}`,
       });
+      return created;
     });
+
+    if (icon) {
+      await prisma.company.update({ where: { id: company.id }, data: await storeIcon(company.id, icon) });
+    }
 
     track(admin.id, "company created");
     refresh();
@@ -57,25 +66,38 @@ export async function createCompany(_state: FormState, formData: FormData): Prom
   });
 }
 
-export async function renameCompany(_state: FormState, formData: FormData): Promise<FormState> {
+export async function updateCompany(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertPlatformAdmin();
-    const company = await prisma.company.findUnique({ where: { id: text(formData, "companyId") }, select: { id: true, name: true } });
-
-    if (!company) throw new AuthError(403);
-
+    const company = await findCompany(text(formData, "companyId"));
     const newName = name("a company name").parse(text(formData, "name"));
-    if (newName === company.name) return { success: "No changes" };
+    const icon = formData.get("icon");
+    const hasNewIcon = icon instanceof File && icon.size > 0;
+    const removeIcon = !hasNewIcon && text(formData, "removeIcon") === "1";
 
-    await prisma.$transaction(async (tx) => {
-      await tx.company.update({ where: { id: company.id }, data: { name: newName } });
-      await writePlatformLog(tx, admin, {
-        action: "renamed company",
-        targetType: "Company",
-        target: newName,
-        change: `${company.name} → ${newName}`,
+    if (newName === company.name && !hasNewIcon && !removeIcon) return { success: "No changes" };
+
+    if (hasNewIcon) {
+      await setCompanyIcon(company.id, icon, (tx) =>
+        writePlatformLog(tx, admin, { action: "changed company icon", targetType: "Company", target: company.name }),
+      );
+    } else if (removeIcon) {
+      await removeCompanyIcon(company.id, (tx) =>
+        writePlatformLog(tx, admin, { action: "removed company icon", targetType: "Company", target: company.name }),
+      );
+    }
+
+    if (newName !== company.name) {
+      await prisma.$transaction(async (tx) => {
+        await tx.company.update({ where: { id: company.id }, data: { name: newName } });
+        await writePlatformLog(tx, admin, {
+          action: "renamed company",
+          targetType: "Company",
+          target: newName,
+          change: `${company.name} → ${newName}`,
+        });
       });
-    });
+    }
 
     refresh();
     return { success: "Saved" };
@@ -87,7 +109,14 @@ export async function deleteCompany(_state: FormState, formData: FormData): Prom
     const admin = await assertPlatformAdmin();
     const company = await prisma.company.findUnique({
       where: { id: text(formData, "companyId") },
-      select: { id: true, name: true, isPlatform: true, projects: { select: { environments: { select: { id: true } } } } },
+      select: {
+        id: true,
+        name: true,
+        isPlatform: true,
+        iconUrl: true,
+        iconThumbUrl: true,
+        projects: { select: { environments: { select: { id: true } } } },
+      },
     });
 
     if (!company) throw new AuthError(403);
@@ -99,6 +128,7 @@ export async function deleteCompany(_state: FormState, formData: FormData): Prom
       await writePlatformLog(tx, admin, { action: "removed company", targetType: "Company", target: company.name });
     });
 
+    await deleteIconFiles(company);
     await publishFlagChange(company.projects.flatMap((project) => project.environments.map((environment) => environment.id)));
     refresh();
   });

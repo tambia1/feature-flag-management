@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { requirePlatformAdmin } from "@/lib/session";
 import { AddUserForm } from "../../../_components/AddUserForm";
 import { Card } from "../../../_components/Card";
+import { CompanyIcon } from "../../../_components/CompanyIcon";
 import { ListFilters } from "../../../_components/ListFilters";
 import { Page } from "../../../_components/Page";
 import { UserRow } from "../../../_components/UserRow";
@@ -21,7 +22,7 @@ export default async function CompanyUsersPage({ params, searchParams }: PagePro
   const { companyId } = await params;
   const search = searchString((await searchParams).search).trim();
 
-  const company = await prisma.company.findUnique({ where: { id: companyId }, select: { id: true, name: true } });
+  const company = await prisma.company.findUnique({ where: { id: companyId }, select: { id: true, name: true, iconThumbUrl: true } });
 
   if (!company) {
     notFound();
@@ -44,7 +45,7 @@ export default async function CompanyUsersPage({ params, searchParams }: PagePro
       <Link href="/platform/companies" className={styles.back}>
         <ArrowLeft size={14} /> Companies
       </Link>
-      <Page title={company.name} subtitle="Users">
+      <Page title={company.name} icon={<CompanyIcon name={company.name} url={company.iconThumbUrl} size="large" />} subtitle="Users">
         <Card title="Add user">
           <AddUserForm action={createCompanyUser} fields={fields} />
         </Card>

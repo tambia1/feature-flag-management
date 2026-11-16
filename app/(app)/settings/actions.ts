@@ -10,6 +10,7 @@ import { generateSdkKey } from "@/lib/sdk-key";
 import { KEY_PATTERN } from "@/lib/flags/values";
 import { prisma } from "@/lib/prisma";
 import { publishFlagChange } from "@/lib/pubsub";
+import { iconFile, removeCompanyIcon, setCompanyIcon } from "@/lib/company-icon";
 import { addCompanyUser, editCompanyUser, findUser, removeCompanyUser } from "@/lib/company-users";
 import { assertCompanyAdmin, AuthError } from "@/lib/session";
 
@@ -61,6 +62,28 @@ export async function updateCompany(_state: FormState, formData: FormData): Prom
 
     refresh();
     return { success: "Saved" };
+  });
+}
+
+export async function updateCompanyIcon(_state: FormState, formData: FormData): Promise<FormState> {
+  return runAction(formData, async () => {
+    const admin = await assertCompanyAdmin();
+    await setCompanyIcon(admin.companyId, iconFile(formData), (tx) =>
+      writeLog(tx, admin, { action: "changed company icon", targetType: "Company", target: admin.companyName }),
+    );
+    refresh();
+    return { success: "Icon updated" };
+  });
+}
+
+export async function deleteCompanyIcon(_state: FormState, formData: FormData): Promise<FormState> {
+  return runAction(formData, async () => {
+    const admin = await assertCompanyAdmin();
+    await removeCompanyIcon(admin.companyId, (tx) =>
+      writeLog(tx, admin, { action: "removed company icon", targetType: "Company", target: admin.companyName }),
+    );
+    refresh();
+    return { success: "Icon removed" };
   });
 }
 

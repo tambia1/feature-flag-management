@@ -18,7 +18,6 @@ type Props = {
   text: ReactNode;
   confirmLabel: string;
   danger?: boolean;
-  typeToConfirm?: string;
   withComment?: boolean;
   disabled?: boolean;
 };
@@ -32,12 +31,10 @@ export const ConfirmAction = ({
   text,
   confirmLabel,
   danger = true,
-  typeToConfirm,
   withComment = false,
   disabled = false,
 }: Props) => {
   const [open, setOpen] = useState(false);
-  const [typed, setTyped] = useState("");
   const [state, formAction, isPending] = useActionState(async (previous: FormState, formData: FormData) => {
     const result = await action(previous, formData);
 
@@ -50,14 +47,7 @@ export const ConfirmAction = ({
 
   return (
     <>
-      <Button
-        variant={triggerVariant}
-        onClick={() => {
-          setTyped("");
-          setOpen(true);
-        }}
-        disabled={disabled}
-      >
+      <Button variant={triggerVariant} onClick={() => setOpen(true)} disabled={disabled}>
         {triggerLabel}
       </Button>
       <Dialog open={open} title={title} onClose={() => setOpen(false)}>
@@ -66,11 +56,6 @@ export const ConfirmAction = ({
             <input key={name} type="hidden" name={name} value={value} />
           ))}
           <div className={styles.text}>{text}</div>
-          {typeToConfirm && (
-            <Field label={`Type ${typeToConfirm} to confirm:`}>
-              <Input value={typed} onChange={(event) => setTyped(event.target.value)} autoComplete="off" />
-            </Field>
-          )}
           {withComment && (
             <Field label="Comment (saved to the log)">
               <Input name="comment" maxLength={500} />
@@ -81,11 +66,7 @@ export const ConfirmAction = ({
             <Button variant="secondary" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant={danger ? "danger" : "primary"}
-              disabled={isPending || (typeToConfirm !== undefined && typed !== typeToConfirm)}
-            >
+            <Button type="submit" variant={danger ? "danger" : "primary"} disabled={isPending}>
               {isPending ? "Working…" : confirmLabel}
             </Button>
           </div>

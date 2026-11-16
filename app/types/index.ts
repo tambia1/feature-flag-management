@@ -12,6 +12,7 @@ export type SessionUser = {
   role: CompanyRole;
   companyId: string;
   companyName: string;
+  companyIconUrl: string | null;
   isPlatformAdmin: boolean;
 };
 

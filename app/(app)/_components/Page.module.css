@@ -13,6 +13,12 @@
   gap: var(--space-4);
 }
 
+.heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
 .title {
   font-size: var(--text-2xl);
   line-height: var(--leading-2xl);

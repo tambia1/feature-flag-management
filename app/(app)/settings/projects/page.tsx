@@ -75,8 +75,7 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/setting
                 triggerLabel="Delete"
                 title="Delete project"
                 text={`This deletes "${project.name}",\nits ${project.environments.length} environments and ${project._count.flags} flags.\nThis can't be undone.`}
-                confirmLabel="Delete project"
-                typeToConfirm={project.name}
+                confirmLabel="Delete"
               />
             </div>
             <p className={styles.hint}>Key: {project.key} (can&apos;t change — used in code)</p>

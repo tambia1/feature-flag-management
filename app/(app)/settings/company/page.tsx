@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { formatMonth } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { requireCompanyAdmin } from "@/lib/session";
+import { CompanyIconForm } from "./CompanyIconForm";
 import { Page } from "../../_components/Page";
+import { deleteCompanyIcon, updateCompanyIcon } from "../actions";
 import { CompanyForm } from "./CompanyForm";
 import styles from "./page.module.css";
 
@@ -12,11 +14,17 @@ export default async function CompanyPage() {
   const admin = await requireCompanyAdmin();
   const company = await prisma.company.findUniqueOrThrow({
     where: { id: admin.companyId },
-    select: { name: true, createdAt: true, _count: { select: { projects: true, users: true } } },
+    select: { name: true, iconThumbUrl: true, createdAt: true, _count: { select: { projects: true, users: true } } },
   });
 
   return (
     <Page title="Company">
+      <CompanyIconForm
+        name={company.name}
+        iconUrl={company.iconThumbUrl}
+        uploadAction={updateCompanyIcon}
+        removeAction={deleteCompanyIcon}
+      />
       <CompanyForm name={company.name} />
       <dl className={styles.facts}>
         <dt>Created</dt>
