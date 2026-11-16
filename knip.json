@@ -2,5 +2,6 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["e2e/**/*.ts", "instrumentation*.ts", "sdk/src/index.ts"],
   "project": ["**/*.{ts,tsx}"],
+  "ignore": ["docs/**"],
   "ignoreDependencies": ["pino-pretty"]
 }
