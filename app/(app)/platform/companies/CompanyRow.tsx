@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import type { FormState } from "@/app/types";
 import { Button } from "@/app/_components/Button";
@@ -39,7 +40,9 @@ export const CompanyRow = ({ company, admins, users, projects, created }: Props)
           </>
         ) : (
           <>
-            {company.name}
+            <Link href={`/platform/companies/${company.id}`} className={styles.name}>
+              {company.name}
+            </Link>
             {company.isPlatform && <span className={styles.muted}> (platform)</span>}
           </>
         )}

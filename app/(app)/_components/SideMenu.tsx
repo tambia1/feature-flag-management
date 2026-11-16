@@ -43,10 +43,7 @@ export const SideMenu = ({ user, projects }: Props) => {
     sections.push({
       title: "Platform",
       tone: "platform",
-      links: [
-        { href: "/platform/companies", label: "Companies" },
-        { href: "/platform/dashboard", label: "Dashboard" },
-      ],
+      links: [{ href: "/platform/companies", label: "Companies" }],
     });
   }
 
@@ -68,7 +65,7 @@ export const SideMenu = ({ user, projects }: Props) => {
     const path = href.split("?")[0];
     return path === "/"
       ? pathname === "/"
-      : pathname === path || (path.endsWith("/flags") && pathname.startsWith(`${path}/`) && !pathname.endsWith("/new"));
+      : pathname === path || (pathname.startsWith(`${path}/`) && !pathname.endsWith("/new"));
   };
 
   return (

@@ -77,3 +77,10 @@ export type FormState = {
   success?: string;
   values?: Record<string, string>;
 };
+
+export type ActivityKey = "users" | "projects" | "teams" | "operations";
+
+export type CompanyActivity = {
+  months: string[];
+  series: { key: ActivityKey; label: string; values: number[] }[];
+};

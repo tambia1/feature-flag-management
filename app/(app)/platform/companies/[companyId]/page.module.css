@@ -16,10 +16,10 @@
   font-weight: 600;
 }
 
-.number {
-  font-variant-numeric: tabular-nums;
+.key {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-.muted {
-  color: var(--muted);
+.number {
+  font-variant-numeric: tabular-nums;
 }
