@@ -1,20 +1,5 @@
-import { notFound } from "next/navigation";
-import { cache } from "react";
 import type { CompanyActivity } from "@/app/types";
 import { prisma } from "@/lib/prisma";
-
-export const getCompany = cache(async (companyId: string) => {
-  const company = await prisma.company.findUnique({
-    where: { id: companyId },
-    select: { id: true, name: true, isPlatform: true, createdAt: true },
-  });
-
-  if (!company) {
-    notFound();
-  }
-
-  return company;
-});
 
 const MONTHS = 12;
 

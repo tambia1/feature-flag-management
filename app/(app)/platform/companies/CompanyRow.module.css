@@ -1,14 +1,3 @@
-.name {
-  color: var(--link);
-  font-weight: 500;
-}
-
-@media (hover: hover) {
-  .name:hover {
-    text-decoration: underline;
-  }
-}
-
 .muted {
   color: var(--muted);
 }

@@ -1,34 +1,33 @@
 import type { Metadata } from "next";
 import { Table } from "@/app/_components/Table";
-import { getCompany } from "@/lib/companies";
 import { formatWhen } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { requireCompanyAdmin } from "@/lib/session";
 import { StatTile } from "./StatTile";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = { title: "Company statistics" };
+export const metadata: Metadata = { title: "Dashboard" };
 
 const DAYS = 30;
 
-export default async function CompanyStatisticsPage({ params }: PageProps<"/platform/companies/[companyId]">) {
-  const { companyId } = await params;
-  const company = await getCompany(companyId);
+export default async function DashboardPage() {
+  const { companyId } = await requireCompanyAdmin();
   const since = new Date(Date.now() - DAYS * 24 * 60 * 60 * 1000);
 
   const [users, teams, projects, recentChanges, lastChange] = await Promise.all([
-    prisma.user.findMany({ where: { companyId: company.id }, select: { role: true } }),
+    prisma.user.findMany({ where: { companyId }, select: { role: true } }),
     prisma.team.findMany({
-      where: { companyId: company.id },
+      where: { companyId },
       orderBy: { name: "asc" },
       select: { id: true, name: true, _count: { select: { members: true } } },
     }),
     prisma.project.findMany({
-      where: { companyId: company.id },
+      where: { companyId },
       orderBy: { name: "asc" },
       select: { id: true, name: true, key: true, _count: { select: { environments: true } }, flags: { select: { archivedAt: true } } },
     }),
-    prisma.log.count({ where: { companyId: company.id, createdAt: { gte: since } } }),
-    prisma.log.findFirst({ where: { companyId: company.id }, orderBy: { createdAt: "desc" }, select: { createdAt: true } }),
+    prisma.log.count({ where: { companyId, createdAt: { gte: since } } }),
+    prisma.log.findFirst({ where: { companyId }, orderBy: { createdAt: "desc" }, select: { createdAt: true } }),
   ]);
 
   const projectRows = projects.map((project) => ({

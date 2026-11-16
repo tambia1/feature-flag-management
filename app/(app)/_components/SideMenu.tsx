@@ -52,6 +52,7 @@ export const SideMenu = ({ user, projects }: Props) => {
       title: "Settings",
       tone: "settings",
       links: [
+        { href: "/settings/dashboard", label: "Dashboard" },
         { href: "/settings/company", label: "Company" },
         { href: "/settings/users", label: "Users" },
         { href: "/settings/teams", label: "Teams" },
@@ -63,9 +64,7 @@ export const SideMenu = ({ user, projects }: Props) => {
 
   const isActive = (href: string) => {
     const path = href.split("?")[0];
-    return path === "/"
-      ? pathname === "/"
-      : pathname === path || (pathname.startsWith(`${path}/`) && !pathname.endsWith("/new"));
+    return path === "/" ? pathname === "/" : pathname === path || (pathname.startsWith(`${path}/`) && !pathname.endsWith("/new"));
   };
 
   return (

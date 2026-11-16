@@ -22,6 +22,7 @@ export default async function CompaniesPage() {
       createdAt: true,
       users: { where: { role: "ADMIN" }, select: { name: true }, orderBy: { createdAt: "asc" } },
       _count: { select: { users: true, projects: true } },
+      projects: { select: { _count: { select: { flags: { where: { archivedAt: null } } } } } },
     },
   });
 
@@ -30,7 +31,7 @@ export default async function CompaniesPage() {
       <Card title="Add company">
         <AddCompanyForm />
       </Card>
-      <Table headers={["Name", "Admins", "Users", "Projects", "Created", ""]} isEmpty={companies.length === 0}>
+      <Table headers={["Name", "Admins", "Users", "Projects", "Flags", "Created", ""]} isEmpty={companies.length === 0}>
         {companies.map((company) => (
           <CompanyRow
             key={company.id}
@@ -38,6 +39,7 @@ export default async function CompaniesPage() {
             admins={company.users.map((user) => user.name.split(" ")[0]).join(", ") || "—"}
             users={company._count.users}
             projects={company._count.projects}
+            flags={company.projects.reduce((sum, project) => sum + project._count.flags, 0)}
             created={formatMonth(company.createdAt)}
           />
         ))}

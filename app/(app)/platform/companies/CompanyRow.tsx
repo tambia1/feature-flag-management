@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState, useState } from "react";
 import type { FormState } from "@/app/types";
 import { Button } from "@/app/_components/Button";
@@ -15,10 +14,11 @@ type Props = {
   admins: string;
   users: number;
   projects: number;
+  flags: number;
   created: string;
 };
 
-export const CompanyRow = ({ company, admins, users, projects, created }: Props) => {
+export const CompanyRow = ({ company, admins, users, projects, flags, created }: Props) => {
   const [editing, setEditing] = useState(false);
   const [state, formAction, isPending] = useActionState(async (previous: FormState, formData: FormData) => {
     const result = await renameCompany(previous, formData);
@@ -40,9 +40,7 @@ export const CompanyRow = ({ company, admins, users, projects, created }: Props)
           </>
         ) : (
           <>
-            <Link href={`/platform/companies/${company.id}`} className={styles.name}>
-              {company.name}
-            </Link>
+            {company.name}
             {company.isPlatform && <span className={styles.muted}> (platform)</span>}
           </>
         )}
@@ -50,6 +48,7 @@ export const CompanyRow = ({ company, admins, users, projects, created }: Props)
       <td>{admins}</td>
       <td>{users}</td>
       <td>{projects}</td>
+      <td>{flags}</td>
       <td>{created}</td>
       <td className={styles.actions}>
         {editing ? (
