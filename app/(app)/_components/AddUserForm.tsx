@@ -6,16 +6,24 @@ import { Field } from "@/app/_components/Field";
 import { Input } from "@/app/_components/Input";
 import { Message } from "@/app/_components/Message";
 import { Select } from "@/app/_components/Select";
-import { PasswordField } from "../../_components/PasswordField";
-import { createUser } from "../actions";
-import { ROLE_OPTIONS } from "./roles";
+import type { FormAction } from "@/app/types";
+import { PasswordField } from "./PasswordField";
+import { ROLE_OPTIONS } from "./userRoles";
 import styles from "./AddUserForm.module.css";
 
-export const AddUserForm = () => {
-  const [state, formAction, isPending] = useActionState(createUser, {});
+type Props = {
+  action: FormAction;
+  fields?: Record<string, string>;
+};
+
+export const AddUserForm = ({ action, fields = {} }: Props) => {
+  const [state, formAction, isPending] = useActionState(action, {});
 
   return (
     <form action={formAction} className={styles.form}>
+      {Object.entries(fields).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={value} />
+      ))}
       <div className={styles.fields}>
         <Field label="Name">
           <Input name="name" required maxLength={100} defaultValue={state.values?.name} />

@@ -6,8 +6,9 @@ import { requireCompanyAdmin } from "@/lib/session";
 import { ListFilters } from "../../_components/ListFilters";
 import { Card } from "../../_components/Card";
 import { Page } from "../../_components/Page";
-import { AddUserForm } from "./AddUserForm";
-import { UserRow } from "./UserRow";
+import { AddUserForm } from "../../_components/AddUserForm";
+import { UserRow } from "../../_components/UserRow";
+import { createUser, deleteUser, updateUser } from "../actions";
 
 export const metadata: Metadata = { title: "Users" };
 
@@ -29,7 +30,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/settings/u
   return (
     <Page title="Users">
       <Card title="Add user">
-        <AddUserForm />
+        <AddUserForm action={createUser} />
       </Card>
       <ListFilters withStatus={false} placeholder="Search by name or email" />
       <Table
@@ -43,6 +44,8 @@ export default async function UsersPage({ searchParams }: PageProps<"/settings/u
             user={{ id: user.id, name: user.name, email: user.email, role: user.role }}
             teams={user.teamMembers.map((member) => member.team.name).join(", ") || "—"}
             isSelf={user.id === admin.id}
+            updateAction={updateUser}
+            deleteAction={deleteUser}
           />
         ))}
       </Table>

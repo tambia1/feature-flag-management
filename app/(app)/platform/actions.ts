@@ -8,6 +8,7 @@ import { track } from "@/lib/analytics";
 import { writePlatformLog } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
 import { publishFlagChange } from "@/lib/pubsub";
+import { addCompanyUser, editCompanyUser, removeCompanyUser } from "@/lib/company-users";
 import { assertPlatformAdmin, AuthError } from "@/lib/session";
 import { createUserWithPassword } from "@/lib/users";
 
@@ -99,6 +100,38 @@ export async function deleteCompany(_state: FormState, formData: FormData): Prom
     });
 
     await publishFlagChange(company.projects.flatMap((project) => project.environments.map((environment) => environment.id)));
+    refresh();
+  });
+}
+
+async function findCompany(companyId: string) {
+  const company = await prisma.company.findUnique({ where: { id: companyId }, select: { id: true, name: true } });
+  if (!company) throw new AuthError(403);
+  return company;
+}
+
+export async function createCompanyUser(_state: FormState, formData: FormData): Promise<FormState> {
+  return runAction(formData, async () => {
+    const admin = await assertPlatformAdmin();
+    const result = await addCompanyUser(admin, await findCompany(text(formData, "companyId")), formData);
+    refresh();
+    return result;
+  });
+}
+
+export async function updateCompanyUser(_state: FormState, formData: FormData): Promise<FormState> {
+  return runAction(formData, async () => {
+    const admin = await assertPlatformAdmin();
+    const result = await editCompanyUser(admin, await findCompany(text(formData, "companyId")), formData);
+    refresh();
+    return result;
+  });
+}
+
+export async function deleteCompanyUser(_state: FormState, formData: FormData): Promise<FormState> {
+  return runAction(formData, async () => {
+    const admin = await assertPlatformAdmin();
+    await removeCompanyUser(admin, await findCompany(text(formData, "companyId")), formData);
     refresh();
   });
 }

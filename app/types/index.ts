@@ -84,3 +84,5 @@ export type CompanyActivity = {
   months: string[];
   series: { key: ActivityKey; label: string; values: number[] }[];
 };
+
+export type FormAction = (state: FormState, formData: FormData) => Promise<FormState>;

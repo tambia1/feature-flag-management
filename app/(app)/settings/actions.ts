@@ -3,26 +3,18 @@
 import { refresh } from "next/cache";
 import { z } from "zod";
 import type { FormState } from "@/app/types";
-import { runAction, text, UserError } from "@/lib/actions";
+import { runAction, text } from "@/lib/actions";
 import { track } from "@/lib/analytics";
 import { writeLog } from "@/lib/audit";
 import { generateSdkKey } from "@/lib/sdk-key";
 import { KEY_PATTERN } from "@/lib/flags/values";
-import { prisma, type Tx } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { publishFlagChange } from "@/lib/pubsub";
+import { addCompanyUser, editCompanyUser, findUser, removeCompanyUser } from "@/lib/company-users";
 import { assertCompanyAdmin, AuthError } from "@/lib/session";
-import { createUserWithPassword, setUserPassword } from "@/lib/users";
 
 const name = (label: string) => z.string().trim().min(1, `Enter a ${label}`).max(100);
 const key = z.string().regex(KEY_PATTERN, "Key: lowercase letters, numbers and dashes, e.g. web-app").max(64);
-const password = z.string().min(4, "Password: at least 4 characters").max(128);
-const role = z.enum(["ADMIN", "MEMBER"]);
-
-async function findUser(companyId: string, userId: string) {
-  const user = await prisma.user.findFirst({ where: { id: userId, companyId }, select: { id: true, name: true, email: true, role: true } });
-  if (!user) throw new AuthError(403);
-  return user;
-}
 
 async function findTeam(companyId: string, teamId: string) {
   const team = await prisma.team.findFirst({ where: { id: teamId, companyId }, select: { id: true, name: true } });
@@ -46,14 +38,6 @@ async function findEnvironment(companyId: string, environmentId: string) {
   });
   if (!environment) throw new AuthError(403);
   return environment;
-}
-
-async function assertNotLastAdmin(tx: Tx, companyId: string, userId: string) {
-  const otherAdmins = await tx.user.count({ where: { companyId, role: "ADMIN", id: { not: userId } } });
-
-  if (otherAdmins === 0) {
-    throw new UserError("The last admin can't be removed or demoted.");
-  }
 }
 
 export async function updateCompany(_state: FormState, formData: FormData): Promise<FormState> {
@@ -80,90 +64,29 @@ export async function updateCompany(_state: FormState, formData: FormData): Prom
   });
 }
 
-const userSchema = z.object({ name: name("name"), email: z.email("Enter a valid email").max(200), role });
-
 export async function createUser(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertCompanyAdmin();
-    const input = userSchema.parse({ name: text(formData, "name"), email: text(formData, "email"), role: text(formData, "role") });
-    const newPassword = password.parse(formData.get("password"));
-
-    if (await prisma.user.findUnique({ where: { email: input.email.toLowerCase() }, select: { id: true } })) {
-      throw new UserError("A user with this email already exists.");
-    }
-
-    const created = await prisma.$transaction(async (tx) => {
-      const user = await createUserWithPassword(tx, { companyId: admin.companyId, ...input, password: newPassword });
-      await writeLog(tx, admin, { action: "added user", targetType: "User", target: user.email, change: input.role.toLowerCase() });
-      return user;
-    });
-
+    const result = await addCompanyUser(admin, { id: admin.companyId, name: admin.companyName }, formData);
     track(admin.id, "user invited");
     refresh();
-    return { success: `Added ${created.name}` };
+    return result;
   });
 }
 
 export async function updateUser(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertCompanyAdmin();
-    const user = await findUser(admin.companyId, text(formData, "userId"));
-    const input = userSchema.parse({ name: text(formData, "name"), email: text(formData, "email"), role: text(formData, "role") });
-    const rawPassword = String(formData.get("password") ?? "");
-    const newPassword = rawPassword ? password.parse(rawPassword) : null;
-
-    const changes: string[] = [];
-    if (input.name !== user.name) changes.push(`name: ${user.name} → ${input.name}`);
-    if (input.email.toLowerCase() !== user.email) changes.push(`email: ${user.email} → ${input.email.toLowerCase()}`);
-    if (input.role !== user.role) changes.push(`${user.role.toLowerCase()} → ${input.role.toLowerCase()}`);
-    if (newPassword) changes.push("new password");
-
-    if (changes.length === 0) {
-      return { success: "No changes" };
-    }
-
-    await prisma.$transaction(async (tx) => {
-      if (user.role === "ADMIN" && input.role !== "ADMIN") {
-        await assertNotLastAdmin(tx, admin.companyId, user.id);
-      }
-
-      await tx.user.update({ where: { id: user.id }, data: { name: input.name, email: input.email.toLowerCase(), role: input.role } });
-
-      if (newPassword) {
-        await setUserPassword(tx, user.id, newPassword);
-      }
-
-      await writeLog(tx, admin, {
-        action: input.role !== user.role ? "changed role" : "edited user",
-        targetType: "User",
-        target: input.email.toLowerCase(),
-        change: changes.join(" · "),
-      });
-    });
-
+    const result = await editCompanyUser(admin, { id: admin.companyId, name: admin.companyName }, formData);
     refresh();
-    return { success: "Saved" };
+    return result;
   });
 }
 
 export async function deleteUser(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertCompanyAdmin();
-    const user = await findUser(admin.companyId, text(formData, "userId"));
-
-    if (user.id === admin.id) {
-      throw new UserError("You can't delete yourself. Ask another admin.");
-    }
-
-    await prisma.$transaction(async (tx) => {
-      if (user.role === "ADMIN") {
-        await assertNotLastAdmin(tx, admin.companyId, user.id);
-      }
-
-      await tx.user.delete({ where: { id: user.id } });
-      await writeLog(tx, admin, { action: "removed user", targetType: "User", target: user.email });
-    });
-
+    await removeCompanyUser(admin, { id: admin.companyId, name: admin.companyName }, formData);
     refresh();
   });
 }

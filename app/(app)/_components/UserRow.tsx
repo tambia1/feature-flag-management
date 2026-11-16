@@ -1,28 +1,29 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import type { FormState } from "@/app/types";
-import type { CompanyRole } from "@/app/types";
+import type { CompanyRole, FormAction, FormState } from "@/app/types";
 import { Button } from "@/app/_components/Button";
 import { ConfirmAction } from "@/app/_components/ConfirmAction";
 import { Input } from "@/app/_components/Input";
 import { Message } from "@/app/_components/Message";
 import { Select } from "@/app/_components/Select";
-import { PasswordField } from "../../_components/PasswordField";
-import { deleteUser, updateUser } from "../actions";
-import { ROLE_OPTIONS } from "./roles";
+import { PasswordField } from "./PasswordField";
+import { ROLE_OPTIONS } from "./userRoles";
 import styles from "./UserRow.module.css";
 
 type Props = {
   user: { id: string; name: string; email: string; role: CompanyRole };
   teams: string;
   isSelf: boolean;
+  updateAction: FormAction;
+  deleteAction: FormAction;
+  fields?: Record<string, string>;
 };
 
-export const UserRow = ({ user, teams, isSelf }: Props) => {
+export const UserRow = ({ user, teams, isSelf, updateAction, deleteAction, fields = {} }: Props) => {
   const [editing, setEditing] = useState(false);
   const [state, formAction, isPending] = useActionState(async (previous: FormState, formData: FormData) => {
-    const result = await updateUser(previous, formData);
+    const result = await updateAction(previous, formData);
     if (!result.error) setEditing(false);
     return result;
   }, {});
@@ -45,8 +46,8 @@ export const UserRow = ({ user, teams, isSelf }: Props) => {
           </Button>
           <span aria-hidden="true"> · </span>
           <ConfirmAction
-            action={deleteUser}
-            fields={{ userId: user.id }}
+            action={deleteAction}
+            fields={{ ...fields, userId: user.id }}
             triggerLabel="Delete"
             title="Delete user?"
             text={`Delete ${user.name} (${user.email})?\nThey are logged out right away and lose all access.`}
@@ -63,6 +64,9 @@ export const UserRow = ({ user, teams, isSelf }: Props) => {
       <td>
         <form id={formId} action={formAction}>
           <input type="hidden" name="userId" value={user.id} />
+          {Object.entries(fields).map(([name, value]) => (
+            <input key={name} type="hidden" name={name} value={value} />
+          ))}
         </form>
         <Input form={formId} name="name" compact aria-label="Name" required defaultValue={state.values?.name ?? user.name} />
       </td>
