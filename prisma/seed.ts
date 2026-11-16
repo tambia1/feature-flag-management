@@ -1,20 +1,44 @@
 import "dotenv/config";
-import { prisma } from "../lib/prisma";
+import { prisma, type Tx } from "../lib/prisma";
 import { createUserWithPassword } from "../lib/users";
 import { generateSdkKey } from "../lib/sdk-key";
 import type { CompanyRole, EnvironmentRole, FlagType } from "../app/types";
 
 const PASSWORD = "1234";
 
-type DemoCompany = {
-  name: string;
-  iconUrl: string;
-  iconThumbUrl: string;
-  users: { name: string; email: string; role: CompanyRole; teams: string[] }[];
+type SeedProject = {
   project: { name: string; key: string };
   environments: { name: string; key: string }[];
   teams: { name: string; roles: Record<string, EnvironmentRole> }[];
   flags: { key: string; name: string; description: string; type: FlagType; values: (boolean | string | number)[] }[];
+};
+
+type DemoCompany = SeedProject & {
+  name: string;
+  iconUrl: string;
+  iconThumbUrl: string;
+  users: { name: string; email: string; role: CompanyRole; teams: string[] }[];
+};
+
+type SeedUser = { id: string; name: string; teams: string[] };
+
+const platformProject: SeedProject = {
+  project: { name: "Platform Project", key: "platform-project" },
+  environments: [
+    { name: "Development", key: "development" },
+    { name: "Staging", key: "staging" },
+    { name: "Production", key: "production" },
+  ],
+  teams: [{ name: "Developers", roles: { development: "EDITOR", staging: "EDITOR", production: "EDITOR" } }],
+  flags: [
+    {
+      key: "sidemenu-groups-lines",
+      name: "Sidemenu Groups Lines",
+      description: "Show/hide Sidemenu Groups Lines",
+      type: "BOOLEAN",
+      values: [true, false],
+    },
+  ],
 };
 
 const demoCompanies: DemoCompany[] = [
@@ -122,11 +146,22 @@ async function main() {
 
   const platformId = platform.id;
 
-  if (!(await prisma.user.findUnique({ where: { email: "a@a.com" }, select: { id: true } }))) {
-    await prisma.$transaction((tx) =>
+  let admin = await prisma.user.findUnique({ where: { email: "a@a.com" }, select: { id: true, name: true } });
+
+  if (!admin) {
+    admin = await prisma.$transaction((tx) =>
       createUserWithPassword(tx, { companyId: platformId, name: "admin", email: "a@a.com", role: "ADMIN", password: PASSWORD }),
     );
     console.log("Created platform admin a@a.com");
+  }
+
+  const platformAdmin = { ...admin, teams: platformProject.teams.map((team) => team.name) };
+
+  if (await prisma.project.findFirst({ where: { companyId: platformId, key: platformProject.project.key }, select: { id: true } })) {
+    console.log(`${platformProject.project.name} already exists`);
+  } else {
+    await prisma.$transaction((tx) => seedProject(tx, platformId, [platformAdmin], platformProject));
+    console.log(`Created ${platformProject.project.name} with team Developers (a@a.com)`);
   }
 
   if (process.env.SEED_DEMO === "1") {
@@ -162,78 +197,82 @@ async function seedDemoCompany(demo: DemoCompany) {
       });
     }
 
-    const project = await tx.project.create({
-      data: { companyId: company.id, name: demo.project.name, key: demo.project.key },
-      select: { id: true },
-    });
-
-    const environments = [];
-    for (const environment of demo.environments) {
-      environments.push(
-        await tx.environment.create({
-          data: { projectId: project.id, name: environment.name, key: environment.key, sdkKey: generateSdkKey() },
-          select: { id: true, key: true },
-        }),
-      );
-    }
-
-    for (const team of demo.teams) {
-      const created = await tx.team.create({ data: { companyId: company.id, name: team.name }, select: { id: true } });
-
-      await tx.teamMember.createMany({
-        data: users.filter((user) => user.teams.includes(team.name)).map((user) => ({ teamId: created.id, userId: user.id })),
-      });
-
-      await tx.teamEnvironmentRole.createMany({
-        data: environments
-          .filter((environment) => team.roles[environment.key])
-          .map((environment) => ({ teamId: created.id, environmentId: environment.id, role: team.roles[environment.key] })),
-      });
-    }
-
-    const admin = users[0];
-
-    for (const flag of demo.flags) {
-      const created = await tx.flag.create({
-        data: {
-          projectId: project.id,
-          key: flag.key,
-          name: flag.name,
-          description: flag.description,
-          type: flag.type,
-          variations: { create: flag.values.map((value, order) => ({ value, order })) },
-        },
-        select: { id: true, variations: { orderBy: { order: "asc" }, select: { id: true } } },
-      });
-
-      const [on, off] = created.variations;
-      const serve =
-        created.variations.length > 2
-          ? {
-              rollout: created.variations.map((variation, index, all) => ({
-                variationId: variation.id,
-                weight: Math.floor(100 / all.length) + (index < 100 % all.length ? 1 : 0),
-              })),
-            }
-          : { variationId: on.id };
-
-      for (const environment of environments) {
-        await tx.flagEnvironment.create({
-          data: {
-            flagId: created.id,
-            environmentId: environment.id,
-            isOn: environment.key === "dev",
-            offVariationId: off.id,
-            rules: [{ id: "default", clauses: [], serve }],
-          },
-        });
-      }
-
-      await tx.flagHistory.create({ data: { flagId: created.id, userId: admin.id, userName: admin.name, change: "created flag" } });
-    }
+    await seedProject(tx, company.id, users, demo);
   });
 
   console.log(`Created demo company ${demo.name} (${demo.users.map((user) => user.email).join(", ")})`);
+}
+
+async function seedProject(tx: Tx, companyId: string, users: SeedUser[], seed: SeedProject) {
+  const project = await tx.project.create({
+    data: { companyId, name: seed.project.name, key: seed.project.key },
+    select: { id: true },
+  });
+
+  const environments = [];
+  for (const environment of seed.environments) {
+    environments.push(
+      await tx.environment.create({
+        data: { projectId: project.id, name: environment.name, key: environment.key, sdkKey: generateSdkKey() },
+        select: { id: true, key: true },
+      }),
+    );
+  }
+
+  for (const team of seed.teams) {
+    const created = await tx.team.create({ data: { companyId, name: team.name }, select: { id: true } });
+
+    await tx.teamMember.createMany({
+      data: users.filter((user) => user.teams.includes(team.name)).map((user) => ({ teamId: created.id, userId: user.id })),
+    });
+
+    await tx.teamEnvironmentRole.createMany({
+      data: environments
+        .filter((environment) => team.roles[environment.key])
+        .map((environment) => ({ teamId: created.id, environmentId: environment.id, role: team.roles[environment.key] })),
+    });
+  }
+
+  const admin = users[0];
+
+  for (const flag of seed.flags) {
+    const created = await tx.flag.create({
+      data: {
+        projectId: project.id,
+        key: flag.key,
+        name: flag.name,
+        description: flag.description,
+        type: flag.type,
+        variations: { create: flag.values.map((value, order) => ({ value, order })) },
+      },
+      select: { id: true, variations: { orderBy: { order: "asc" }, select: { id: true } } },
+    });
+
+    const [on, off] = created.variations;
+    const serve =
+      created.variations.length > 2
+        ? {
+            rollout: created.variations.map((variation, index, all) => ({
+              variationId: variation.id,
+              weight: Math.floor(100 / all.length) + (index < 100 % all.length ? 1 : 0),
+            })),
+          }
+        : { variationId: on.id };
+
+    for (const [index, environment] of environments.entries()) {
+      await tx.flagEnvironment.create({
+        data: {
+          flagId: created.id,
+          environmentId: environment.id,
+          isOn: index === 0,
+          offVariationId: off.id,
+          rules: [{ id: "default", clauses: [], serve }],
+        },
+      });
+    }
+
+    await tx.flagHistory.create({ data: { flagId: created.id, userId: admin.id, userName: admin.name, change: "created flag" } });
+  }
 }
 
 main()
