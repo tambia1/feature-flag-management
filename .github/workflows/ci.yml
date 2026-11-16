@@ -22,8 +22,6 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/feature_flag_db
       BETTER_AUTH_SECRET: ci-secret-not-for-production-use-0123456789
       BETTER_AUTH_URL: http://localhost:3000
-      SEED_ADMIN_EMAIL: admin@platform.local
-      SEED_ADMIN_PASSWORD: ci-password-123
       SEED_DEMO: "1"
     steps:
       - uses: actions/checkout@v4
@@ -72,5 +70,3 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
           E2E_BASE_URL=${{ steps.deploy.outputs.url }} npm run test:e2e
-        env:
-          SEED_ADMIN_PASSWORD: ${{ secrets.PREVIEW_SEED_PASSWORD }}

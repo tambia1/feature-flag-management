@@ -10,15 +10,16 @@ Needs Node 24 and Postgres (Redis is optional).
 
 ```bash
 npm install
-cp .env.example .env          # then fill in DATABASE_URL, BETTER_AUTH_SECRET and SEED_ADMIN_PASSWORD
+cp .env.example .env          # then fill in DATABASE_URL and BETTER_AUTH_SECRET
 npm run db:migrate            # creates the database and tables
-SEED_DEMO=1 npm run db:seed   # platform admin + demo company "Acme"
+SEED_DEMO=1 npm run db:seed   # platform admin + demo companies "Acme" and "Nova"
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and log in as `SEED_ADMIN_EMAIL` (platform admin). With `SEED_DEMO=1`
-you can also log in as `emma@acme.com` (company admin, editor), `james@acme.com` (viewer in production) or
-`liam@acme.com` (no team → no-access message), all with `SEED_ADMIN_PASSWORD`.
+Open [http://localhost:3000](http://localhost:3000) and log in as `a@a.com` (platform admin). With `SEED_DEMO=1`
+you can also log in as `emma@acme.com` (company admin, editor), `james@acme.com` (viewer in production),
+`liam@acme.com` (no team → no-access message), or `olivia@nova.com`, `noah@nova.com` and `mia@nova.com` in Nova.
+Every seeded user's password is `1234`.
 
 No Postgres? `docker compose up -d db redis` starts both (user/password `postgres`).
 

@@ -2,123 +2,189 @@ import "dotenv/config";
 import { prisma } from "../lib/prisma";
 import { createUserWithPassword } from "../lib/users";
 import { generateSdkKey } from "../lib/sdk-key";
+import type { CompanyRole, EnvironmentRole, FlagType } from "../app/types";
 
-async function main() {
-  const email = process.env.SEED_ADMIN_EMAIL;
-  const password = process.env.SEED_ADMIN_PASSWORD;
+const PASSWORD = "1234";
 
-  if (!email || !password) {
-    throw new Error("Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD in .env");
-  }
+type DemoCompany = {
+  name: string;
+  users: { name: string; email: string; role: CompanyRole; teams: string[] }[];
+  project: { name: string; key: string };
+  environments: { name: string; key: string }[];
+  teams: { name: string; roles: Record<string, EnvironmentRole> }[];
+  flags: { key: string; name: string; description: string; type: FlagType; values: (boolean | string | number)[] }[];
+};
 
-  let platform = await prisma.company.findFirst({ where: { isPlatform: true } });
-
-  if (!platform) {
-    platform = await prisma.company.create({ data: { name: "Our company", isPlatform: true } });
-    console.log("Created the platform company");
-  }
-
-  if (!(await prisma.user.findUnique({ where: { email } }))) {
-    await prisma.$transaction((tx) =>
-      createUserWithPassword(tx, { companyId: platform.id, name: "Platform admin", email, role: "ADMIN", password }),
-    );
-    console.log(`Created platform admin ${email}`);
-  }
-
-  if (process.env.SEED_DEMO === "1") {
-    await seedDemo(password);
-  }
-}
-
-async function seedDemo(password: string) {
-  if (await prisma.company.findFirst({ where: { name: "Acme" } })) {
-    console.log("Demo company already exists");
-    return;
-  }
-
-  await prisma.$transaction(async (tx) => {
-    const acme = await tx.company.create({ data: { name: "Acme" } });
-
-    const emma = await createUserWithPassword(tx, {
-      companyId: acme.id,
-      name: "Emma Smith",
-      email: "emma@acme.com",
-      role: "ADMIN",
-      password,
-    });
-    const james = await createUserWithPassword(tx, {
-      companyId: acme.id,
-      name: "James Brown",
-      email: "james@acme.com",
-      role: "MEMBER",
-      password,
-    });
-    await createUserWithPassword(tx, { companyId: acme.id, name: "Liam Taylor", email: "liam@acme.com", role: "MEMBER", password });
-
-    const project = await tx.project.create({ data: { companyId: acme.id, name: "Web app", key: "web-app" } });
-    const environments = [];
-
-    for (const [name, key] of [
-      ["development", "dev"],
-      ["staging", "stg"],
-      ["production", "prod"],
-    ]) {
-      environments.push(await tx.environment.create({ data: { projectId: project.id, name, key, sdkKey: generateSdkKey() } }));
-    }
-
-    const frontend = await tx.team.create({ data: { companyId: acme.id, name: "Frontend" } });
-    const release = await tx.team.create({ data: { companyId: acme.id, name: "Release" } });
-
-    await tx.teamMember.createMany({
-      data: [
-        { teamId: frontend.id, userId: emma.id },
-        { teamId: frontend.id, userId: james.id },
-        { teamId: release.id, userId: emma.id },
-      ],
-    });
-
-    const [dev, stg, prod] = environments;
-    await tx.teamEnvironmentRole.createMany({
-      data: [
-        { teamId: frontend.id, environmentId: dev.id, role: "EDITOR" },
-        { teamId: frontend.id, environmentId: stg.id, role: "EDITOR" },
-        { teamId: frontend.id, environmentId: prod.id, role: "VIEWER" },
-        { teamId: release.id, environmentId: prod.id, role: "EDITOR" },
-      ],
-    });
-
-    const flags = [
+const demoCompanies: DemoCompany[] = [
+  {
+    name: "Acme",
+    users: [
+      { name: "Emma Smith", email: "emma@acme.com", role: "ADMIN", teams: ["Frontend", "Release"] },
+      { name: "James Brown", email: "james@acme.com", role: "MEMBER", teams: ["Frontend"] },
+      { name: "Liam Taylor", email: "liam@acme.com", role: "MEMBER", teams: [] },
+    ],
+    project: { name: "Web app", key: "web-app" },
+    environments: [
+      { name: "development", key: "dev" },
+      { name: "staging", key: "stg" },
+      { name: "production", key: "prod" },
+    ],
+    teams: [
+      { name: "Frontend", roles: { dev: "EDITOR", stg: "EDITOR", prod: "VIEWER" } },
+      { name: "Release", roles: { prod: "EDITOR" } },
+    ],
+    flags: [
       {
         key: "new-checkout",
         name: "New checkout flow",
         description: "Redesigned one-page checkout",
-        type: "BOOLEAN" as const,
+        type: "BOOLEAN",
         values: [true, false],
       },
       {
         key: "banner-text",
         name: "Homepage banner",
         description: "Text in the homepage banner",
-        type: "STRING" as const,
+        type: "STRING",
         values: ["Welcome!", "Big sale today!"],
       },
       {
         key: "max-upload-mb",
         name: "Upload limit",
         description: "Max upload size per file (MB)",
-        type: "NUMBER" as const,
+        type: "NUMBER",
         values: [100, 25],
       },
       {
         key: "checkout-button-color",
         name: "Checkout button color",
         description: "Color of the Pay button, split between four colors",
-        type: "STRING" as const,
+        type: "STRING",
         values: ["blue", "green", "orange", "purple"],
       },
-    ];
+    ],
+  },
+  {
+    name: "Nova",
+    users: [
+      { name: "Olivia Green", email: "olivia@nova.com", role: "ADMIN", teams: ["Mobile", "QA"] },
+      { name: "Noah Wilson", email: "noah@nova.com", role: "MEMBER", teams: ["Mobile"] },
+      { name: "Mia Clark", email: "mia@nova.com", role: "MEMBER", teams: ["QA"] },
+    ],
+    project: { name: "Mobile app", key: "mobile-app" },
+    environments: [
+      { name: "development", key: "dev" },
+      { name: "production", key: "prod" },
+    ],
+    teams: [
+      { name: "Mobile", roles: { dev: "EDITOR", prod: "EDITOR" } },
+      { name: "QA", roles: { dev: "EDITOR", prod: "VIEWER" } },
+    ],
+    flags: [
+      {
+        key: "dark-mode",
+        name: "Dark mode",
+        description: "Let users switch the app to a dark theme",
+        type: "BOOLEAN",
+        values: [true, false],
+      },
+      {
+        key: "onboarding-steps",
+        name: "Onboarding steps",
+        description: "Number of screens in the first-run onboarding",
+        type: "NUMBER",
+        values: [3, 5],
+      },
+      {
+        key: "home-layout",
+        name: "Home screen layout",
+        description: "Layout of the home screen, split between three designs",
+        type: "STRING",
+        values: ["grid", "list", "cards"],
+      },
+    ],
+  },
+];
 
-    for (const flag of flags) {
+async function main() {
+  let platform = await prisma.company.findFirst({ where: { isPlatform: true }, select: { id: true } });
+
+  if (!platform) {
+    platform = await prisma.company.create({ data: { name: "Platform", isPlatform: true }, select: { id: true } });
+    console.log("Created the platform company");
+  }
+
+  const platformId = platform.id;
+
+  if (!(await prisma.user.findUnique({ where: { email: "a@a.com" }, select: { id: true } }))) {
+    await prisma.$transaction((tx) =>
+      createUserWithPassword(tx, { companyId: platformId, name: "admin", email: "a@a.com", role: "ADMIN", password: PASSWORD }),
+    );
+    console.log("Created platform admin a@a.com");
+  }
+
+  if (process.env.SEED_DEMO === "1") {
+    for (const company of demoCompanies) {
+      await seedDemoCompany(company);
+    }
+  }
+}
+
+async function seedDemoCompany(demo: DemoCompany) {
+  if (await prisma.company.findFirst({ where: { name: demo.name }, select: { id: true } })) {
+    console.log(`Demo company ${demo.name} already exists`);
+    return;
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const company = await tx.company.create({ data: { name: demo.name }, select: { id: true } });
+
+    const users = [];
+    for (const user of demo.users) {
+      users.push({
+        ...(await createUserWithPassword(tx, {
+          companyId: company.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          password: PASSWORD,
+        })),
+        teams: user.teams,
+      });
+    }
+
+    const project = await tx.project.create({
+      data: { companyId: company.id, name: demo.project.name, key: demo.project.key },
+      select: { id: true },
+    });
+
+    const environments = [];
+    for (const environment of demo.environments) {
+      environments.push(
+        await tx.environment.create({
+          data: { projectId: project.id, name: environment.name, key: environment.key, sdkKey: generateSdkKey() },
+          select: { id: true, key: true },
+        }),
+      );
+    }
+
+    for (const team of demo.teams) {
+      const created = await tx.team.create({ data: { companyId: company.id, name: team.name }, select: { id: true } });
+
+      await tx.teamMember.createMany({
+        data: users.filter((user) => user.teams.includes(team.name)).map((user) => ({ teamId: created.id, userId: user.id })),
+      });
+
+      await tx.teamEnvironmentRole.createMany({
+        data: environments
+          .filter((environment) => team.roles[environment.key])
+          .map((environment) => ({ teamId: created.id, environmentId: environment.id, role: team.roles[environment.key] })),
+      });
+    }
+
+    const admin = users[0];
+
+    for (const flag of demo.flags) {
       const created = await tx.flag.create({
         data: {
           projectId: project.id,
@@ -154,11 +220,11 @@ async function seedDemo(password: string) {
         });
       }
 
-      await tx.flagHistory.create({ data: { flagId: created.id, userId: emma.id, userName: emma.name, change: "created flag" } });
+      await tx.flagHistory.create({ data: { flagId: created.id, userId: admin.id, userName: admin.name, change: "created flag" } });
     }
   });
 
-  console.log("Created demo company Acme (emma@acme.com, james@acme.com, liam@acme.com — same password as the platform admin)");
+  console.log(`Created demo company ${demo.name} (${demo.users.map((user) => user.email).join(", ")})`);
 }
 
 main()

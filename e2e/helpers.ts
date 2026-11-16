@@ -1,6 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 
-export const PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? "";
+export const PASSWORD = "1234";
 
 export async function login(page: Page, email: string) {
   await page.goto("/login");
