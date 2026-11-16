@@ -1,7 +1,8 @@
 import "server-only";
 import { EventEmitter } from "node:events";
-import Redis from "ioredis";
+import type Redis from "ioredis";
 import { logger } from "./logger";
+import { getRedis } from "./redis";
 
 const CHANNEL = "flag-changed";
 
@@ -14,18 +15,14 @@ function createPubSub(): PubSub {
   const local = new EventEmitter();
   local.setMaxListeners(0);
 
-  const url = process.env.REDIS_URL;
+  const publisher = getRedis();
 
-  if (!url) {
+  if (!publisher) {
     return { local };
   }
 
-  const publisher = new Redis(url, { lazyConnect: false, maxRetriesPerRequest: 2 });
-  const subscriber = new Redis(url);
-
-  for (const client of [publisher, subscriber]) {
-    client.on("error", (err) => logger.warn({ err }, "Redis connection error"));
-  }
+  const subscriber = publisher.duplicate();
+  subscriber.on("error", (err) => logger.warn({ err }, "Redis connection error"));
 
   subscriber.subscribe(CHANNEL).catch((err) => logger.error({ err }, "Redis subscribe failed"));
   subscriber.on("message", (_channel, environmentId: string) => local.emit(CHANNEL, environmentId));

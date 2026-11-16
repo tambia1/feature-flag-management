@@ -2,7 +2,7 @@ import styles from "./StatTile.module.css";
 
 type Props = {
   label: string;
-  value: number;
+  value: number | string;
   detail?: string;
 };
 
@@ -12,7 +12,7 @@ export const StatTile = ({ label, value, detail }: Props) => {
   return (
     <div className={styles.tile}>
       <dt className={styles.label}>{label}</dt>
-      <dd className={styles.value}>{compact.format(value)}</dd>
+      <dd className={styles.value}>{typeof value === "number" ? compact.format(value) : value}</dd>
       {detail && <dd className={styles.detail}>{detail}</dd>}
     </div>
   );

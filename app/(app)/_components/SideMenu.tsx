@@ -45,7 +45,11 @@ export const SideMenu = ({ user, projects }: Props) => {
     sections.push({
       title: "Platform",
       tone: "platform",
-      links: [{ href: "/platform/companies", label: "Companies" }, ...(showTest ? [{ href: "/platform/test", label: "Test" }] : [])],
+      links: [
+        { href: "/platform/companies", label: "Companies" },
+        { href: "/platform/status", label: "Status" },
+        ...(showTest ? [{ href: "/platform/test", label: "Test" }] : []),
+      ],
     });
   }
 

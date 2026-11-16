@@ -3,7 +3,7 @@ import { Table } from "@/app/_components/Table";
 import { formatWhen } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { requireCompanyAdmin } from "@/lib/session";
-import { StatTile } from "./StatTile";
+import { StatTile } from "../../_components/StatTile";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = { title: "Dashboard" };

@@ -81,3 +81,26 @@ export type CompanyActivity = {
 };
 
 export type FormAction = (state: FormState, formData: FormData) => Promise<FormState>;
+
+export type ServerStatus = {
+  id: string;
+  host: string;
+  pid: number;
+  startedAt: number;
+  reportedAt: number;
+  openStreams: number;
+  requestsPerSecond: number;
+  averageResponseMs: number | null;
+  errors: number;
+  rateLimited: number;
+  memoryMb: number;
+  eventLoopDelayMs: number;
+};
+
+export type ServiceState = "up" | "down" | "off";
+
+export type ServiceCheck = {
+  name: string;
+  state: ServiceState;
+  detail: string;
+};
