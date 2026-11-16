@@ -1,8 +1,8 @@
 import { Table } from "@/app/_components/Table";
 import { formatWhen } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import { LogFilters } from "./LogFilters";
-import styles from "./LogView.module.css";
+import { LogsFilters } from "./LogsFilters";
+import styles from "./LogsView.module.css";
 
 type Props = {
   companyId: string;
@@ -12,7 +12,7 @@ type Props = {
 
 const PAGE_SIZE = 200;
 
-export const LogView = async ({ companyId, query, defaultDays }: Props) => {
+export const LogsView = async ({ companyId, query, defaultDays }: Props) => {
   const who = typeof query.who === "string" ? query.who : "";
   const type = typeof query.type === "string" ? query.type : "";
   const days = Number(typeof query.days === "string" ? query.days : defaultDays) || 0;
@@ -40,7 +40,7 @@ export const LogView = async ({ companyId, query, defaultDays }: Props) => {
 
   return (
     <>
-      <LogFilters
+      <LogsFilters
         people={people.map((person) => ({ value: person.userId, label: person.userName }))}
         types={types.map((item) => ({ value: item.targetType, label: item.targetType }))}
         defaultDays={defaultDays}

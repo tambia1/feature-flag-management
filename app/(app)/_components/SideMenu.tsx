@@ -57,7 +57,7 @@ export const SideMenu = ({ user, projects }: Props) => {
         { href: "/settings/users", label: "Users" },
         { href: "/settings/teams", label: "Teams" },
         { href: "/settings/projects", label: "Projects" },
-        { href: "/settings/log", label: "Company log" },
+        { href: "/settings/logs", label: "Logs" },
       ],
     });
   }

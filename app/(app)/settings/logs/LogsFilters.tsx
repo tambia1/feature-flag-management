@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Select } from "@/app/_components/Select";
-import styles from "./LogFilters.module.css";
+import styles from "./LogsFilters.module.css";
 
 type Option = { value: string; label: string };
 
@@ -12,7 +12,7 @@ type Props = {
   defaultDays: number;
 };
 
-export const LogFilters = ({ people, types, defaultDays }: Props) => {
+export const LogsFilters = ({ people, types, defaultDays }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
