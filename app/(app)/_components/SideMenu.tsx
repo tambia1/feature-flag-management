@@ -44,8 +44,8 @@ export const SideMenu = ({ user, projects }: Props) => {
       title: "Settings",
       tone: "settings",
       links: [
-        ...(user.isPlatformAdmin ? [{ href: "/platform/companies", label: "Companies" }] : []),
         { href: "/settings/company", label: "Company" },
+        ...(user.isPlatformAdmin ? [{ href: "/platform/companies", label: "Companies" }] : []),
         { href: "/settings/users", label: "Users" },
         { href: "/settings/teams", label: "Teams" },
         { href: "/settings/projects", label: "Projects" },
