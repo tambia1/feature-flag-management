@@ -215,7 +215,6 @@ model FlagEnvironment {
   environmentId  String
   isOn           Boolean  @default(false)
   offVariationId String
-  targets        Json     @default("[]")
   rules          Json     @default("[]")
   updatedAt      DateTime @updatedAt
 

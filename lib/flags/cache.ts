@@ -1,5 +1,5 @@
 import "server-only";
-import type { FlagConfig, JsonValue, Rule, Target } from "@/app/types";
+import type { FlagConfig, JsonValue, Rule } from "@/app/types";
 import { prisma } from "../prisma";
 import { onFlagChange } from "../pubsub";
 import { sdkMetrics } from "../metrics";
@@ -62,7 +62,6 @@ async function loadFlagConfigs(environmentId: string): Promise<FlagConfig[]> {
     select: {
       isOn: true,
       offVariationId: true,
-      targets: true,
       rules: true,
       flag: {
         select: {
@@ -80,7 +79,6 @@ async function loadFlagConfigs(environmentId: string): Promise<FlagConfig[]> {
     isOn: row.isOn,
     offVariationId: row.offVariationId,
     variations: row.flag.variations.map((variation) => ({ ...variation, value: variation.value as JsonValue })),
-    targets: row.targets as Target[],
     rules: row.rules as Rule[],
   }));
 }

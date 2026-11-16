@@ -58,18 +58,12 @@ export type Rule = {
   serve: Serve;
 };
 
-export type Target = {
-  variationId: string;
-  keys: string[];
-};
-
 export type FlagConfig = {
   key: string;
   archived: boolean;
   isOn: boolean;
   offVariationId: string;
   variations: Variation[];
-  targets: Target[];
   rules: Rule[];
 };
 

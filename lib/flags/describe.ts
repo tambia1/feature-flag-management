@@ -1,4 +1,4 @@
-import type { Clause, JsonValue, Rule, Serve, Target, Variation } from "@/app/types";
+import type { Clause, JsonValue, Rule, Serve, Variation } from "@/app/types";
 import { formatValue } from "./values";
 
 export const OPERATOR_LABELS: Record<Clause["operator"], string> = {
@@ -14,7 +14,6 @@ export const OPERATOR_LABELS: Record<Clause["operator"], string> = {
 export type TargetingSnapshot = {
   isOn: boolean;
   offVariationId: string;
-  targets: Target[];
   rules: Rule[];
 };
 
@@ -46,10 +45,6 @@ export function describeTargetingChange(before: TargetingSnapshot, after: Target
     changes.push(`off value: ${valueOf(variations, before.offVariationId)} → ${valueOf(variations, after.offVariationId)}`);
   }
 
-  if (JSON.stringify(before.targets) !== JSON.stringify(after.targets)) {
-    changes.push("changed individual targets");
-  }
-
   const beforeRules = before.rules.slice(0, -1);
   const afterRules = after.rules.slice(0, -1);
 
@@ -73,12 +68,6 @@ export function describeTargetingChange(before: TargetingSnapshot, after: Target
 
 export function describeTargeting(snapshot: TargetingSnapshot, variations: Variation[]): string[] {
   const lines = [`${snapshot.isOn ? "On" : "Off"} · off value ${valueOf(variations, snapshot.offVariationId)}`];
-
-  for (const target of snapshot.targets) {
-    if (target.keys.length > 0) {
-      lines.push(`targets: ${valueOf(variations, target.variationId)} → ${target.keys.join(", ")}`);
-    }
-  }
 
   snapshot.rules.forEach((rule, index) => {
     lines.push(

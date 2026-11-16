@@ -11,7 +11,6 @@ const base: FlagConfig = {
     { id: "on", value: true, order: 0 },
     { id: "off", value: false, order: 1 },
   ],
-  targets: [],
   rules: [{ id: "default", clauses: [], serve: { variationId: "on" } }],
 };
 
@@ -28,8 +27,14 @@ describe("evaluateFlag", () => {
     expect(evaluateFlag(base, { key: "u1" })).toBe(true);
   });
 
-  it("individual targets win over rules", () => {
-    const flag: FlagConfig = { ...base, targets: [{ variationId: "off", keys: ["user-12"] }] };
+  it("matches a rule on the user key", () => {
+    const flag: FlagConfig = {
+      ...base,
+      rules: [
+        { id: "r1", clauses: [{ attribute: "key", operator: "is", values: ["user-12"] }], serve: { variationId: "off" } },
+        ...base.rules,
+      ],
+    };
     expect(evaluateFlag(flag, { key: "user-12" })).toBe(false);
     expect(evaluateFlag(flag, { key: "user-13" })).toBe(true);
   });

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { JsonValue, Rule, Target } from "@/app/types";
+import type { JsonValue, Rule } from "@/app/types";
 import { isProduction } from "@/lib/environments";
 import { getFlagByKey, getProjectContext, searchString } from "@/lib/flags/context";
 import { formatValue } from "@/lib/flags/values";
@@ -26,7 +26,7 @@ export default async function TargetingPage({ params, searchParams }: PageProps<
   const [settings, allEnvironments, created] = await Promise.all([
     prisma.flagEnvironment.findUniqueOrThrow({
       where: { flagId_environmentId: { flagId: flag.id, environmentId: environment.id } },
-      select: { isOn: true, offVariationId: true, targets: true, rules: true },
+      select: { isOn: true, offVariationId: true, rules: true },
     }),
     prisma.flagEnvironment.findMany({
       where: { flagId: flag.id, environmentId: { in: project.environments.map((item) => item.id) } },
@@ -63,11 +63,11 @@ export default async function TargetingPage({ params, searchParams }: PageProps<
           <p className={styles.hint}>This flag is archived: every environment serves the off value. Restore it from Settings.</p>
         )}
         <TargetingEditor
-          key={`${environment.id}-${JSON.stringify([settings.offVariationId, settings.targets, settings.rules])}`}
+          key={`${environment.id}-${JSON.stringify([settings.offVariationId, settings.rules])}`}
           flagId={flag.id}
           environmentId={environment.id}
           variations={variations}
-          initial={{ offVariationId: settings.offVariationId, targets: settings.targets as Target[], rules: settings.rules as Rule[] }}
+          initial={{ offVariationId: settings.offVariationId, rules: settings.rules as Rule[] }}
           canEdit={canEdit}
         />
         {role !== "EDITOR" && <p className={styles.hint}>Read-only: you are a viewer in {environment.name}.</p>}

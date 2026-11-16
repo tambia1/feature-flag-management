@@ -327,7 +327,6 @@ export async function addEnvironment(_state: FormState, formData: FormData): Pro
             environmentId: environment.id,
             isOn: false,
             offVariationId: template?.offVariationId ?? off.id,
-            targets: [],
             rules: [{ id: "default", clauses: [], serve: defaultRule as object }],
           },
         });

@@ -26,23 +26,6 @@
   line-height: var(--leading-sm);
 }
 
-.targetRow {
-  display: grid;
-  grid-template-columns: 10rem auto minmax(0, 24rem);
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.arrow {
-  color: var(--muted);
-}
-
-.value {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-}
-
 .rules {
   display: flex;
   flex-direction: column;

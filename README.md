@@ -56,8 +56,8 @@ environment changes. The SDK never throws: it keeps the last values, then falls 
   the session, role and company on the server (`lib/session.ts`, `lib/permissions.ts`). The company always comes from the
   session, never from the URL or form.
 - **Auth**: Better Auth with email + password and database sessions (no public sign-up; admins create users).
-- **Flags**: `Flag` + `Variation` are shared by all environments; `FlagEnvironment` holds on/off, the off value, individual
-  targets and rules per environment. Evaluation is in `lib/flags/evaluate.ts`.
+- **Flags**: `Flag` + `Variation` are shared by all environments; `FlagEnvironment` holds on/off, the off value and the
+  rules per environment. Evaluation is in `lib/flags/evaluate.ts`.
 - **Change flow**: save → Postgres → publish "flag changed" (Redis pub/sub when `REDIS_URL` is set, in-process otherwise)
   → every server clears its in-memory flag cache → pushes `changed` to open SDK streams → apps fetch new values.
 - **Logs**: every change is written to the append-only company log in the same transaction. Platform events go to the

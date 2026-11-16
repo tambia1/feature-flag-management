@@ -8,12 +8,6 @@ export function evaluateFlag(flag: FlagConfig, context: EvaluationContext): Json
     return offValue;
   }
 
-  for (const target of flag.targets) {
-    if (target.keys.includes(context.key)) {
-      return variationValue(target.variationId);
-    }
-  }
-
   for (const rule of flag.rules) {
     if (rule.clauses.every((clause) => matchesClause(clause, context))) {
       return variationValue(pickVariation(rule.serve, flag.key, context.key));

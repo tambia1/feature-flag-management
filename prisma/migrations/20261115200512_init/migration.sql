@@ -159,7 +159,6 @@ CREATE TABLE "flag_environments" (
     "environmentId" TEXT NOT NULL,
     "isOn" BOOLEAN NOT NULL DEFAULT false,
     "offVariationId" TEXT NOT NULL,
-    "targets" JSONB NOT NULL DEFAULT '[]',
     "rules" JSONB NOT NULL DEFAULT '[]',
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

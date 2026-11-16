@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import type { FormState, JsonValue, Rule, SessionUser, Target, Variation } from "@/app/types";
+import type { FormState, JsonValue, Rule, SessionUser, Variation } from "@/app/types";
 import type { Prisma } from "@/app/generated/prisma/client";
 import { runAction, text, UserError } from "@/lib/actions";
 import { track } from "@/lib/analytics";
@@ -108,7 +108,6 @@ export async function createFlag(_state: FormState, formData: FormData): Promise
           environmentId: environment.id,
           isOn: false,
           offVariationId: off.id,
-          targets: [],
           rules: [{ id: "default", clauses: [], serve: { variationId: on.id } }],
         })),
       });
@@ -196,7 +195,6 @@ const serveSchema = z.union([
 
 const targetingSchema = z.object({
   offVariationId: z.string().min(1),
-  targets: z.array(z.object({ variationId: z.string().min(1), keys: z.array(z.string().trim().min(1)).max(1000) })),
   rules: z
     .array(z.object({ id: z.string().min(1), clauses: z.array(clauseSchema), serve: serveSchema }))
     .min(1)
@@ -207,7 +205,6 @@ const targetingSchema = z.object({
 function usedVariationIds(snapshot: z.infer<typeof targetingSchema>): string[] {
   return [
     snapshot.offVariationId,
-    ...snapshot.targets.map((target) => target.variationId),
     ...snapshot.rules.flatMap((rule) =>
       "variationId" in rule.serve ? [rule.serve.variationId] : rule.serve.rollout.map((part) => part.variationId),
     ),
@@ -242,13 +239,12 @@ export async function saveTargeting(_state: FormState, formData: FormData): Prom
     await prisma.$transaction(async (tx) => {
       const current = await tx.flagEnvironment.findUniqueOrThrow({
         where: { flagId_environmentId: { flagId: flag.id, environmentId } },
-        select: { isOn: true, offVariationId: true, targets: true, rules: true },
+        select: { isOn: true, offVariationId: true, rules: true },
       });
 
       const before: TargetingSnapshot = {
         isOn: current.isOn,
         offVariationId: current.offVariationId,
-        targets: current.targets as Target[],
         rules: current.rules as Rule[],
       };
       const after: TargetingSnapshot = { ...input, isOn: current.isOn };
@@ -260,7 +256,7 @@ export async function saveTargeting(_state: FormState, formData: FormData): Prom
 
       await tx.flagEnvironment.update({
         where: { flagId_environmentId: { flagId: flag.id, environmentId } },
-        data: { offVariationId: after.offVariationId, targets: after.targets, rules: after.rules },
+        data: { offVariationId: after.offVariationId, rules: after.rules },
       });
       await tx.flagHistory.create({
         data: {
@@ -369,13 +365,11 @@ export async function removeVariation(_state: FormState, formData: FormData): Pr
 
     const environments = await prisma.flagEnvironment.findMany({
       where: { flagId: flag.id },
-      select: { offVariationId: true, targets: true, rules: true },
+      select: { offVariationId: true, rules: true },
     });
 
     const inUse = environments.some(
-      (environment) =>
-        environment.offVariationId === variation.id ||
-        JSON.stringify([environment.targets, environment.rules]).includes(`"${variation.id}"`),
+      (environment) => environment.offVariationId === variation.id || JSON.stringify(environment.rules).includes(`"${variation.id}"`),
     );
 
     if (inUse) {

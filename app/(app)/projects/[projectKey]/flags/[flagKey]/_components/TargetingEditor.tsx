@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowDown, ArrowRight, ArrowUp, Plus, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Plus, X } from "lucide-react";
 import { useActionState, useState } from "react";
-import type { Clause, ClauseOperator, Rule, Serve, Target, Variation } from "@/app/types";
+import type { Clause, ClauseOperator, Rule, Serve, Variation } from "@/app/types";
 import { Button } from "@/app/_components/Button";
 import { Dialog } from "@/app/_components/Dialog";
 import { Field } from "@/app/_components/Field";
@@ -17,7 +17,6 @@ import styles from "./TargetingEditor.module.css";
 
 type Settings = {
   offVariationId: string;
-  targets: Target[];
   rules: Rule[];
 };
 
@@ -42,39 +41,19 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
   const [confirming, setConfirming] = useState(false);
 
   const [offVariationId, setOffVariationId] = useState(initial.offVariationId);
-  const [targetText, setTargetText] = useState<Record<string, string>>(() =>
-    Object.fromEntries(
-      variations.map((variation) => [
-        variation.id,
-        initial.targets.find((target) => target.variationId === variation.id)?.keys.join(", ") ?? "",
-      ]),
-    ),
-  );
   const [rules, setRules] = useState<Rule[]>(initial.rules.slice(0, -1));
   const [defaultServe, setDefaultServe] = useState<Serve>(initial.rules.at(-1)?.serve ?? { variationId: variations[0].id });
 
-  const targets: Target[] = variations
-    .map((variation) => ({ variationId: variation.id, keys: splitList(targetText[variation.id] ?? "") }))
-    .filter((target) => target.keys.length > 0);
-  const targeting = { offVariationId, targets, rules: [...rules, { id: "default", clauses: [], serve: defaultServe }] };
+  const targeting = { offVariationId, rules: [...rules, { id: "default", clauses: [], serve: defaultServe }] };
   const isDirty =
     JSON.stringify(targeting) !==
     JSON.stringify({
       offVariationId: initial.offVariationId,
-      targets: initial.targets.filter((target) => target.keys.length > 0),
       rules: initial.rules,
     });
 
   const reset = () => {
     setOffVariationId(initial.offVariationId);
-    setTargetText(
-      Object.fromEntries(
-        variations.map((variation) => [
-          variation.id,
-          initial.targets.find((target) => target.variationId === variation.id)?.keys.join(", ") ?? "",
-        ]),
-      ),
-    );
     setRules(initial.rules.slice(0, -1));
     setDefaultServe(initial.rules.at(-1)?.serve ?? { variationId: variations[0].id });
   };
@@ -93,24 +72,6 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
       <input type="hidden" name="flagId" value={flagId} />
       <input type="hidden" name="environmentId" value={environmentId} />
       <input type="hidden" name="targeting" value={JSON.stringify(targeting)} />
-
-      <fieldset className={styles.section} disabled={!canEdit}>
-        <legend className={styles.legend}>Individual targets</legend>
-        <p className={styles.help}>These user keys always get this value. Separate keys with commas.</p>
-        {variations.map((variation) => (
-          <label key={variation.id} className={styles.targetRow}>
-            <span className={styles.value}>{formatValue(variation.value)}</span>
-            <ArrowRight size={16} className={styles.arrow} />
-            <Input
-              compact
-              placeholder="user-12, user-99"
-              value={targetText[variation.id] ?? ""}
-              onChange={(event) => setTargetText({ ...targetText, [variation.id]: event.target.value })}
-              aria-label={`User keys that get ${formatValue(variation.value)}`}
-            />
-          </label>
-        ))}
-      </fieldset>
 
       <fieldset className={styles.section} disabled={!canEdit}>
         <legend className={styles.legend}>Rules (checked top to bottom)</legend>
@@ -208,9 +169,7 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
 
       <fieldset className={styles.section} disabled={!canEdit}>
         <legend className={styles.legend}>Default rule</legend>
-        <p className={styles.help}>
-          Everyone who doesn&apos;t match a target or rule, while the flag is on. A rollout splits users by their key.
-        </p>
+        <p className={styles.help}>Everyone who doesn&apos;t match a rule, while the flag is on. A rollout splits users by their key.</p>
         <ServeEditor serve={defaultServe} variations={variations} onChange={setDefaultServe} />
       </fieldset>
 

@@ -10,7 +10,6 @@ const variations: Variation[] = [
 const base: TargetingSnapshot = {
   isOn: false,
   offVariationId: "f",
-  targets: [],
   rules: [{ id: "default", clauses: [], serve: { variationId: "t" } }],
 };
 
@@ -43,11 +42,10 @@ describe("describeTargetingChange", () => {
 });
 
 describe("describeTargeting", () => {
-  it("lists targets, rules and the default rule", () => {
+  it("lists rules and the default rule", () => {
     const lines = describeTargeting(
       {
         ...base,
-        targets: [{ variationId: "t", keys: ["user-12"] }],
         rules: [
           { id: "r1", clauses: [{ attribute: "country", operator: "is", values: ["IL", "US"] }], serve: { variationId: "t" } },
           ...base.rules,
@@ -56,6 +54,6 @@ describe("describeTargeting", () => {
       variations,
     );
 
-    expect(lines).toEqual(["Off · off value false", "targets: true → user-12", "1. IF country is IL or US → true", "default rule true"]);
+    expect(lines).toEqual(["Off · off value false", "1. IF country is IL or US → true", "default rule true"]);
   });
 });
