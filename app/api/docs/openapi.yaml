@@ -1,0 +1,163 @@
+openapi: 3.0.3
+info:
+  title: Feature Flag Management API
+  version: 0.1.0
+  description: |
+    The admin screens use Server Actions, so they are not listed here.
+    These are the HTTP endpoints: health, metrics and the SDK endpoints that customer apps call.
+
+    SDK endpoints need an environment's SDK key (Settings → Projects).
+    Click **Authorize** and paste it to try them.
+
+tags:
+  - name: Health
+  - name: SDK
+  - name: Metrics
+
+paths:
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Check the server and database
+      responses:
+        "200":
+          description: Database is reachable
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+              example: { status: ok }
+        "503":
+          description: Database is not reachable
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Health" }
+              example: { status: error, database: unreachable }
+
+  /api/sdk/evaluate:
+    post:
+      tags: [SDK]
+      summary: Get the value of every flag for a user
+      description: Evaluates every flag in the SDK key's environment for the given context. Limited to 200 requests per second per SDK key.
+      security:
+        - sdkKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/EvaluateRequest" }
+            example:
+              context: { key: user-42, country: IL }
+      responses:
+        "200":
+          description: Flag key → value
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+              example: { new-checkout: true, banner-color: blue }
+        "400":
+          description: 'Body is not `{ "context": { "key": ... } }`'
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401":
+          description: Missing or unknown SDK key
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "429":
+          description: Too many requests
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/sdk/stream:
+    get:
+      tags: [SDK]
+      summary: Listen for flag changes (Server-Sent Events)
+      description: |
+        Keeps the connection open. Sends `ready` when connected, then `changed` whenever a flag in the environment changes,
+        and a `: ping` comment every 25 seconds. When you get `changed`, call `/api/sdk/evaluate` again.
+        Swagger UI cannot show a stream that never ends; try it with `curl -N`.
+      security:
+        - sdkKey: []
+      responses:
+        "200":
+          description: Event stream
+          content:
+            text/event-stream:
+              schema: { type: string }
+              example: "event: ready\ndata: {}\n\nevent: changed\ndata: {}\n\n"
+        "401":
+          description: Missing or unknown SDK key
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /api/metrics:
+    get:
+      tags: [Metrics]
+      summary: Prometheus metrics
+      description: "Needs `Authorization: Bearer <METRICS_TOKEN>` only when `METRICS_TOKEN` is set."
+      security:
+        - metricsToken: []
+        - {}
+      responses:
+        "200":
+          description: Metrics in Prometheus text format
+          content:
+            text/plain:
+              schema: { type: string }
+        "401":
+          description: Wrong or missing token
+          content:
+            text/plain:
+              schema: { type: string }
+
+components:
+  securitySchemes:
+    sdkKey:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: The environment's SDK key (`sdk-…`)
+    metricsToken:
+      type: http
+      scheme: bearer
+      description: The value of `METRICS_TOKEN`
+
+  schemas:
+    Health:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [ok, error] }
+        database: { type: string, enum: [unreachable] }
+
+    EvaluateRequest:
+      type: object
+      required: [context]
+      properties:
+        context:
+          type: object
+          required: [key]
+          properties:
+            key: { type: string, minLength: 1, maxLength: 256, description: A stable id for the user }
+          additionalProperties:
+            nullable: true
+            oneOf:
+              - { type: string }
+              - { type: number }
+              - { type: boolean }
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
