@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import type { SessionUser } from "@/app/types";
 import type { AccessibleProject } from "@/lib/permissions";
 import { projectKeyFromPath } from "@/lib/environments";
+import { useFlag } from "./FlagsProvider";
 import styles from "./SideMenu.module.css";
 
 type Props = {
@@ -21,6 +22,7 @@ type Section = {
 export const SideMenu = ({ user, projects }: Props) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const showTest = useFlag("test", false);
 
   const projectKey = projectKeyFromPath(pathname) ?? projects[0]?.key;
   const env = searchParams.get("env");
@@ -43,7 +45,7 @@ export const SideMenu = ({ user, projects }: Props) => {
     sections.push({
       title: "Platform",
       tone: "platform",
-      links: [{ href: "/platform/companies", label: "Companies" }],
+      links: [{ href: "/platform/companies", label: "Companies" }, ...(showTest ? [{ href: "/platform/test", label: "Test" }] : [])],
     });
   }
 

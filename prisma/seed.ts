@@ -8,7 +8,7 @@ const PASSWORD = "1234";
 
 type SeedProject = {
   project: { name: string; key: string };
-  environments: { name: string; key: string }[];
+  environments: { name: string; key: string; sdkKey?: string }[];
   teams: { name: string; roles: Record<string, EnvironmentRole> }[];
   flags: { key: string; name: string; description: string; type: FlagType; values: (boolean | string | number)[] }[];
 };
@@ -25,16 +25,16 @@ type SeedUser = { id: string; name: string; teams: string[] };
 const platformProject: SeedProject = {
   project: { name: "Platform Project", key: "platform-project" },
   environments: [
-    { name: "Development", key: "development" },
+    { name: "Development", key: "development", sdkKey: process.env.NEXT_PUBLIC_FLAGS_SDK_KEY },
     { name: "Staging", key: "staging" },
     { name: "Production", key: "production" },
   ],
   teams: [{ name: "Developers", roles: { development: "EDITOR", staging: "EDITOR", production: "EDITOR" } }],
   flags: [
     {
-      key: "sidemenu-groups-lines",
-      name: "Sidemenu Groups Lines",
-      description: "Show/hide Sidemenu Groups Lines",
+      key: "test",
+      name: "Test",
+      description: "Flag for testing the SDK",
       type: "BOOLEAN",
       values: [true, false],
     },
@@ -213,7 +213,7 @@ async function seedProject(tx: Tx, companyId: string, users: SeedUser[], seed: S
   for (const environment of seed.environments) {
     environments.push(
       await tx.environment.create({
-        data: { projectId: project.id, name: environment.name, key: environment.key, sdkKey: generateSdkKey() },
+        data: { projectId: project.id, name: environment.name, key: environment.key, sdkKey: environment.sdkKey || generateSdkKey() },
         select: { id: true, key: true },
       }),
     );
