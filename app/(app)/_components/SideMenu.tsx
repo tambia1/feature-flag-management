@@ -15,7 +15,7 @@ type Props = {
 
 type Section = {
   title: string;
-  tone: "flags" | "settings" | "platform";
+  tone: "flags" | "settings" | "platform" | "docs";
   links: { href: string; label: string }[];
 };
 
@@ -63,6 +63,12 @@ export const SideMenu = ({ user, projects }: Props) => {
       ],
     });
   }
+
+  sections.push({
+    title: "Docs",
+    tone: "docs",
+    links: [{ href: "/docs/sdk", label: "SDK" }],
+  });
 
   const isActive = (href: string) => {
     const path = href.split("?")[0];

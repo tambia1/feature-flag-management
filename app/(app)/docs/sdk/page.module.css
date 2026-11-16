@@ -1,0 +1,31 @@
+.docs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 56rem;
+}
+
+.docs p,
+.docs li {
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+}
+
+.docs ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-left: var(--space-6);
+  list-style: disc;
+}
+
+.docs p code,
+.docs li code,
+.docs td code {
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--hover);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+}

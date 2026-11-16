@@ -5,13 +5,14 @@
   grid-template-areas:
     "header header"
     "menu content";
-  min-height: 100dvh;
+  height: 100dvh;
 }
 
 .content {
   grid-area: content;
   padding: var(--space-6) var(--space-8);
   min-width: 0;
+  overflow-y: auto;
 }
 
 .skipLink {
