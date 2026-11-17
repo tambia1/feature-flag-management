@@ -91,7 +91,7 @@ async function tick(sampler: Sampler): Promise<void> {
 
   const redis = getRedis();
 
-  if (redis) {
+  if (redis?.status === "ready") {
     await redis.hset(SERVERS_KEY, sampler.id, JSON.stringify(sampler.latest));
   }
 }
