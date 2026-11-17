@@ -1,7 +1,5 @@
-# Local stack that mirrors production: 2 app servers behind Nginx (the ALB stand-in), Postgres, Redis,
-# and the observability tools from the design (Loki, Prometheus + Grafana, Tempo, Uptime Kuma).
-#   docker compose up -d db redis            # just the databases, then `npm run dev`
-#   docker compose --profile full up -d      # everything
+name: feature-flag-management
+
 services:
   db:
     image: postgres:17-alpine
@@ -14,10 +12,15 @@ services:
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
     ports: ["6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+    restart: unless-stopped
 
   app1: &app
     profiles: [full]
@@ -30,7 +33,7 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
     depends_on:
       db: { condition: service_healthy }
-      redis: { condition: service_started }
+      redis: { condition: service_healthy }
     logging:
       driver: json-file
 

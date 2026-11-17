@@ -1,8 +1,40 @@
 ## Getting Started
 
-First, run the development server (this will run frontend and backend):
+Needs [Docker](https://docs.docker.com/get-docker/) and [Node.js](https://nodejs.org/) 24.
+
+The first time, get the code:
 
 ```bash
+git clone https://github.com/tambia1/feature-flag-management.git
+cd feature-flag-management
+```
+
+Create .env file and fill it like we have in .env.example
+
+Then install and start required applications: Postgres and Redis.
+
+```bash
+docker compose up -d
+```
+
+Then install the libraries and create the database:
+
+```bash
+npm i
+npm run db:deploy
+npm run db:seed
+```
+
+Then run the development server (this will run frontend and backend):
+
+```bash
+npm run dev
+```
+
+After restarting the computer, run the same two commands again:
+
+```bash
+docker compose up -d
 npm run dev
 ```
 
@@ -23,10 +55,10 @@ Open [http://localhost:51212](http://localhost:51212) with your browser to see t
 
 ## Redis
 
-Redis is needed when we have 2 or more server, so every server hears when a flag changes.
-(It is used for BubSub only, not cache)
+Redis is needed when we have 2 or more servers, so every server hears when a flag changes.
+(It is used for Pub/Sub only, not cache)
 
-Set `REDIS_URL=redis://localhost:6379` in `.env` and restart `npm run dev`.
+Redis starts with `docker compose up -d`, and `REDIS_URL=redis://localhost:6379` in `.env` connects the app to it.
 
 To see Redis, run Redis Commander:
 
@@ -45,7 +77,5 @@ PUBSUB NUMSUB flag-changed
 To watch the messages when a flag changes:
 
 ```bash
-redis-cli SUBSCRIBE flag-changed
+docker compose exec redis redis-cli SUBSCRIBE flag-changed
 ```
-
-To stop using Redis, set `REDIS_URL=` back to empty in `.env`.
