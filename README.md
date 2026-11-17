@@ -2,6 +2,23 @@
 
 Needs [Docker](https://docs.docker.com/get-docker/) and [Node.js](https://nodejs.org/) 24.
 
+On Linux, after installing Docker, start it (now and at every boot) and let your user run it without `sudo`, then log
+out and back in:
+
+```bash
+sudo systemctl enable --now docker
+sudo usermod -aG docker $USER
+```
+
+Ports `5432` (Postgres) and `6379` (Redis) must be free.
+If Postgres or Redis is already installed on your computer,
+stop it, for example:
+
+```bash
+sudo systemctl disable --now postgresql-18
+sudo systemctl disable --now redis
+```
+
 The first time, get the code:
 
 ```bash
