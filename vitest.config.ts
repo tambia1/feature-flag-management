@@ -9,7 +9,7 @@ export default defineConfig({
   },
   test: {
     include: ["**/*.test.{ts,tsx}"],
-    exclude: ["node_modules", ".next", "e2e", "sdk/node_modules"],
+    exclude: ["node_modules", ".next", "e2e", "sdk/node_modules", "docs"],
     environment: "node",
   },
 });

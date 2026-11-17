@@ -164,10 +164,8 @@ async function main() {
     console.log(`Created ${platformProject.project.name} with team Developers (a@a.com)`);
   }
 
-  if (process.env.SEED_DEMO === "1") {
-    for (const company of demoCompanies) {
-      await seedDemoCompany(company);
-    }
+  for (const company of demoCompanies) {
+    await seedDemoCompany(company);
   }
 }
 
