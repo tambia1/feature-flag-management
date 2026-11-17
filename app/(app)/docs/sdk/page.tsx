@@ -51,6 +51,7 @@ export const flags = createFlagClient({
   baseUrl: "${baseUrl}",
   sdkKey: "sdk-…",
   context: { key: "user-42", email: "dana@example.com", country: "IL" },
+  application: "checkout-web",
 });
 
 await flags.ready;
@@ -179,6 +180,15 @@ flags.close();`}
               <td>Yes</td>
               <td>
                 The user: <code>key</code> plus any attributes your rules use (strings, numbers, booleans)
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <code>application</code>
+              </td>
+              <td>No</td>
+              <td>
+                Your app&apos;s name, e.g. <code>checkout-web</code>. Shown on the Contexts page, so you can tell apps apart
               </td>
             </tr>
             <tr>

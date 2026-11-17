@@ -36,6 +36,7 @@ export const SideMenu = ({ user, projects }: Props) => {
         ? [
             { href: `/projects/${projectKey}/flags${query}`, label: "Flags" },
             { href: `/projects/${projectKey}/archived${query}`, label: "Archived" },
+            { href: `/projects/${projectKey}/contexts${query}`, label: "Contexts" },
           ]
         : [{ href: "/", label: "Flags" }],
     },

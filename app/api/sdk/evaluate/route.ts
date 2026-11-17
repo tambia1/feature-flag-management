@@ -1,13 +1,15 @@
 import { z } from "zod";
 import type { EvaluationContext } from "@/app/types";
 import { getFlagsForSdkKey } from "@/lib/flags/cache";
-import { evaluateAll } from "@/lib/flags/evaluate";
+import { recordContext } from "@/lib/flags/contexts";
+import { evaluateAllDetails } from "@/lib/flags/evaluate";
 import { logger } from "@/lib/logger";
 import { sdkMetrics } from "@/lib/metrics";
 import { readSdkKey, SDK_CORS_HEADERS, takeRateLimitToken } from "@/lib/sdk";
 
 const bodySchema = z.object({
   context: z.object({ key: z.string().min(1).max(256) }).catchall(z.union([z.string(), z.number(), z.boolean(), z.null()])),
+  application: z.string().trim().max(100).optional(),
 });
 
 export async function POST(request: Request) {
@@ -40,7 +42,11 @@ export async function POST(request: Request) {
       return respond({ error: "Unknown SDK key" }, 401);
     }
 
-    return respond(evaluateAll(environment.flags, parsed.data.context as EvaluationContext), 200);
+    const context = parsed.data.context as EvaluationContext;
+    const results = evaluateAllDetails(environment.flags, context);
+    recordContext(environment.environmentId, parsed.data.application ?? "", context, results);
+
+    return respond(Object.fromEntries(Object.entries(results).map(([key, result]) => [key, result.value])), 200);
   } catch (err) {
     logger.error({ err }, "SDK evaluate failed");
     return respond({ error: "Server error" }, 500);

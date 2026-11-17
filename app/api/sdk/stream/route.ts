@@ -1,4 +1,5 @@
 import { getFlagsForSdkKey } from "@/lib/flags/cache";
+import { trackStream } from "@/lib/flags/streams";
 import { sdkMetrics } from "@/lib/metrics";
 import { onFlagChange } from "@/lib/pubsub";
 import { readSdkKey, SDK_CORS_HEADERS } from "@/lib/sdk";
@@ -15,6 +16,7 @@ export async function GET(request: Request) {
     return Response.json({ error: "Unknown SDK key" }, { status: 401, headers: SDK_CORS_HEADERS });
   }
 
+  const application = (new URL(request.url).searchParams.get("application") ?? "").trim().slice(0, 100);
   const encoder = new TextEncoder();
   let cleanup = () => {};
 
@@ -30,6 +32,7 @@ export async function GET(request: Request) {
 
       send("retry: 3000\nevent: ready\ndata: {}\n\n");
       sdkMetrics.openStreams.inc();
+      const untrack = trackStream(environment.environmentId, application);
 
       const unsubscribe = onFlagChange((environmentId) => {
         if (environmentId === environment.environmentId) {
@@ -46,6 +49,7 @@ export async function GET(request: Request) {
         clearInterval(heartbeat);
         unsubscribe();
         sdkMetrics.openStreams.dec();
+        untrack();
         try {
           controller.close();
         } catch {}

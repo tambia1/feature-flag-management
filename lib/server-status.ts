@@ -4,6 +4,7 @@ import { monitorEventLoopDelay, type ELDHistogram } from "node:perf_hooks";
 import type { ServerStatus } from "@/app/types";
 import { logger } from "./logger";
 import { sdkMetrics } from "./metrics";
+import { openStreamsByEnvironment } from "./flags/streams";
 import { getRedis } from "./redis";
 
 export const SAMPLE_INTERVAL_MS = 9_000;
@@ -76,6 +77,7 @@ async function buildStatus(sampler: Sampler): Promise<ServerStatus> {
     rateLimited: newest.rateLimited - oldest.rateLimited,
     memoryMb: process.memoryUsage().rss / 1024 / 1024,
     eventLoopDelayMs: Number.isFinite(eventLoopDelayMs) ? eventLoopDelayMs : 0,
+    streams: openStreamsByEnvironment(),
   };
 }
 
@@ -125,6 +127,7 @@ export function startServerStatus(): Sampler {
       rateLimited: 0,
       memoryMb: process.memoryUsage().rss / 1024 / 1024,
       eventLoopDelayMs: 0,
+      streams: {},
     },
   };
   globalForStatus.serverStatusSampler = sampler;

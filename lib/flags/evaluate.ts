@@ -1,24 +1,31 @@
-import type { Clause, EvaluationContext, FlagConfig, JsonValue, Serve } from "@/app/types";
+import type { Clause, EvaluationContext, EvaluationResult, FlagConfig, JsonValue, Serve } from "@/app/types";
 
-export function evaluateFlag(flag: FlagConfig, context: EvaluationContext): JsonValue {
+export function evaluateFlagDetail(flag: FlagConfig, context: EvaluationContext): EvaluationResult {
   const variationValue = (id: string) => flag.variations.find((variation) => variation.id === id)?.value ?? null;
   const offValue = variationValue(flag.offVariationId);
 
   if (flag.archived || !flag.isOn) {
-    return offValue;
+    return { value: offValue, reason: { kind: "OFF" } };
   }
 
-  for (const rule of flag.rules) {
+  for (const [index, rule] of flag.rules.entries()) {
     if (rule.clauses.every((clause) => matchesClause(clause, context))) {
-      return variationValue(pickVariation(rule.serve, flag.key, context.key));
+      return {
+        value: variationValue(pickVariation(rule.serve, flag.key, context.key)),
+        reason: rule.clauses.length === 0 ? { kind: "DEFAULT_RULE" } : { kind: "RULE_MATCH", ruleId: rule.id, ruleNumber: index + 1 },
+      };
     }
   }
 
-  return offValue;
+  return { value: offValue, reason: { kind: "NO_MATCH" } };
 }
 
-export function evaluateAll(flags: FlagConfig[], context: EvaluationContext): Record<string, JsonValue> {
-  return Object.fromEntries(flags.map((flag) => [flag.key, evaluateFlag(flag, context)]));
+export function evaluateFlag(flag: FlagConfig, context: EvaluationContext): JsonValue {
+  return evaluateFlagDetail(flag, context).value;
+}
+
+export function evaluateAllDetails(flags: FlagConfig[], context: EvaluationContext): Record<string, EvaluationResult> {
+  return Object.fromEntries(flags.map((flag) => [flag.key, evaluateFlagDetail(flag, context)]));
 }
 
 function matchesClause(clause: Clause, context: EvaluationContext): boolean {

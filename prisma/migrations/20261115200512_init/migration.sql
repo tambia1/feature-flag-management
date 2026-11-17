@@ -121,6 +121,20 @@ CREATE TABLE "environments" (
 );
 
 -- CreateTable
+CREATE TABLE "contexts" (
+    "id" TEXT NOT NULL,
+    "environmentId" TEXT NOT NULL,
+    "application" TEXT NOT NULL DEFAULT '',
+    "key" TEXT NOT NULL,
+    "attributes" JSONB NOT NULL,
+    "results" JSONB NOT NULL,
+    "lastSeenAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "contexts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "team_environment_roles" (
     "teamId" TEXT NOT NULL,
     "environmentId" TEXT NOT NULL,
@@ -230,6 +244,12 @@ CREATE UNIQUE INDEX "environments_sdkKey_key" ON "environments"("sdkKey");
 CREATE UNIQUE INDEX "environments_projectId_key_key" ON "environments"("projectId", "key");
 
 -- CreateIndex
+CREATE INDEX "contexts_environmentId_lastSeenAt_idx" ON "contexts"("environmentId", "lastSeenAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "contexts_environmentId_application_key_key" ON "contexts"("environmentId", "application", "key");
+
+-- CreateIndex
 CREATE INDEX "team_environment_roles_environmentId_idx" ON "team_environment_roles"("environmentId");
 
 -- CreateIndex
@@ -272,6 +292,9 @@ ALTER TABLE "projects" ADD CONSTRAINT "projects_companyId_fkey" FOREIGN KEY ("co
 ALTER TABLE "environments" ADD CONSTRAINT "environments_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "contexts" ADD CONSTRAINT "contexts_environmentId_fkey" FOREIGN KEY ("environmentId") REFERENCES "environments"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "team_environment_roles" ADD CONSTRAINT "team_environment_roles_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "teams"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -297,3 +320,4 @@ ALTER TABLE "flag_history" ADD CONSTRAINT "flag_history_flagId_fkey" FOREIGN KEY
 
 -- AddForeignKey
 ALTER TABLE "flag_history" ADD CONSTRAINT "flag_history_environmentId_fkey" FOREIGN KEY ("environmentId") REFERENCES "environments"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

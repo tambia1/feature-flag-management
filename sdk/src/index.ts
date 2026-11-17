@@ -6,6 +6,7 @@ export type FlagClientOptions = {
   baseUrl: string;
   sdkKey: string;
   context: FlagContext;
+  application?: string;
   stream?: boolean;
   onError?: (error: unknown) => void;
 };
@@ -38,7 +39,7 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
       const response = await fetch(`${baseUrl}/api/sdk/evaluate`, {
         method: "POST",
         headers: { Authorization: options.sdkKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ context }),
+        body: JSON.stringify({ context, application: options.application }),
       });
 
       if (!response.ok) {
@@ -63,7 +64,8 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
     streamAbort = new AbortController();
 
     try {
-      const response = await fetch(`${baseUrl}/api/sdk/stream`, {
+      const query = options.application ? `?application=${encodeURIComponent(options.application)}` : "";
+      const response = await fetch(`${baseUrl}/api/sdk/stream${query}`, {
         headers: { Authorization: options.sdkKey },
         signal: streamAbort.signal,
       });

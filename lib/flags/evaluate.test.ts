@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { FlagConfig } from "@/app/types";
-import { evaluateFlag, hashToPercent } from "./evaluate";
+import { evaluateFlag, evaluateFlagDetail, hashToPercent } from "./evaluate";
 
 const base: FlagConfig = {
   key: "new-checkout",
@@ -85,6 +85,24 @@ describe("evaluateFlag", () => {
     expect(onShare).toBeGreaterThan(0.17);
     expect(onShare).toBeLessThan(0.23);
     expect(evaluateFlag(flag, { key: "user-7" })).toBe(evaluateFlag(flag, { key: "user-7" }));
+  });
+
+  it("explains why each value was served", () => {
+    const flag: FlagConfig = {
+      ...base,
+      rules: [
+        { id: "r1", clauses: [{ attribute: "country", operator: "is", values: ["IL"] }], serve: { variationId: "on" } },
+        { id: "default", clauses: [], serve: { variationId: "off" } },
+      ],
+    };
+
+    expect(evaluateFlagDetail({ ...flag, isOn: false }, { key: "a" }).reason).toEqual({ kind: "OFF" });
+    expect(evaluateFlagDetail(flag, { key: "a", country: "IL" })).toEqual({
+      value: true,
+      reason: { kind: "RULE_MATCH", ruleId: "r1", ruleNumber: 1 },
+    });
+    expect(evaluateFlagDetail(flag, { key: "a", country: "US" })).toEqual({ value: false, reason: { kind: "DEFAULT_RULE" } });
+    expect(evaluateFlagDetail({ ...flag, rules: [flag.rules[0]] }, { key: "a" })).toEqual({ value: false, reason: { kind: "NO_MATCH" } });
   });
 
   it("hashToPercent stays in range", () => {

@@ -16,6 +16,21 @@ describe("createFlagClient", () => {
     expect(client.getFlag("missing", "fallback")).toBe("fallback");
   });
 
+  it("sends the application name with the context", async () => {
+    const fetchMock = vi.fn<typeof globalThis.fetch>(async () => Response.json({}));
+    vi.stubGlobal("fetch", fetchMock);
+    const client = createFlagClient({
+      baseUrl: "http://flags",
+      sdkKey: "sdk-1",
+      context: { key: "u1" },
+      application: "checkout-web",
+      stream: false,
+    });
+    await client.ready;
+
+    expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual({ context: { key: "u1" }, application: "checkout-web" });
+  });
+
   it("never throws: uses the fallback when the server is down", async () => {
     const onError = vi.fn<(error: unknown) => void>();
     vi.stubGlobal(

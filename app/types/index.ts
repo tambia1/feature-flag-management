@@ -40,6 +40,17 @@ export type EvaluationContext = {
   [attribute: string]: JsonValue | undefined;
 };
 
+export type EvaluationReason =
+  | { kind: "OFF" }
+  | { kind: "RULE_MATCH"; ruleId: string; ruleNumber: number }
+  | { kind: "DEFAULT_RULE" }
+  | { kind: "NO_MATCH" };
+
+export type EvaluationResult = {
+  value: JsonValue;
+  reason: EvaluationReason;
+};
+
 export type ClauseOperator = "is" | "isNot" | "contains" | "startsWith" | "endsWith" | "greaterThan" | "lessThan";
 
 export type Clause = {
@@ -95,6 +106,7 @@ export type ServerStatus = {
   rateLimited: number;
   memoryMb: number;
   eventLoopDelayMs: number;
+  streams: Record<string, Record<string, number>>;
 };
 
 export type ServiceState = "up" | "down" | "off";
@@ -103,4 +115,9 @@ export type ServiceCheck = {
   name: string;
   state: ServiceState;
   detail: string;
+};
+
+export type ConnectedApp = {
+  application: string;
+  connections: number;
 };
