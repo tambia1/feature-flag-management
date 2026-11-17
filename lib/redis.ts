@@ -10,7 +10,7 @@ function createRedis(): Redis | null {
     return null;
   }
 
-  const client = new Redis(url, { maxRetriesPerRequest: 2 });
+  const client = new Redis(url, { maxRetriesPerRequest: 2, enableOfflineQueue: false, commandTimeout: 1000 });
   client.on("error", (err) => logger.warn({ err }, "Redis connection error"));
   return client;
 }

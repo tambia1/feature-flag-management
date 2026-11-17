@@ -21,7 +21,7 @@ function createPubSub(): PubSub {
     return { local };
   }
 
-  const subscriber = publisher.duplicate();
+  const subscriber = publisher.duplicate({ enableOfflineQueue: true, commandTimeout: undefined });
   subscriber.on("error", (err) => logger.warn({ err }, "Redis connection error"));
 
   subscriber.subscribe(CHANNEL).catch((err) => logger.error({ err }, "Redis subscribe failed"));
