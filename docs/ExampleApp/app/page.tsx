@@ -10,7 +10,7 @@ export default function Home() {
     const client = createFlagClient({
       baseUrl: process.env.NEXT_PUBLIC_FLAGS_BASE_URL ?? "",
       sdkKey: process.env.NEXT_PUBLIC_FLAGS_SDK_KEY ?? "",
-      context: { key: "example-user", country: "IL", email: "example-user@company.com" },
+      context: { key: "exampleApp-userId", country: "IL", email: "example-user@company.com" },
       application: "example-app",
     });
 
