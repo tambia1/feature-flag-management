@@ -1,3 +1,4 @@
+import packageJson from "@/package.json";
 import { getAccessibleProjects } from "@/lib/permissions";
 import { requireUser } from "@/lib/session";
 import { FlagsProvider } from "./_components/FlagsProvider";
@@ -16,7 +17,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           Skip to content
         </a>
         <Header user={user} projects={projects} />
-        <SideMenu user={user} projects={projects} />
+        <SideMenu user={user} projects={projects} version={packageJson.version} />
         <main id="content" className={styles.content}>
           {children}
         </main>

@@ -4,6 +4,7 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  devIndicators: { position: "bottom-right" },
   serverExternalPackages: ["pino", "pino-pretty", "ioredis", "prom-client"],
   experimental: {
     serverActions: { bodySizeLimit: "21mb" },

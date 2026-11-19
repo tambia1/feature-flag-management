@@ -11,6 +11,7 @@ import styles from "./SideMenu.module.css";
 type Props = {
   user: SessionUser;
   projects: AccessibleProject[];
+  version: string;
 };
 
 type Section = {
@@ -19,7 +20,7 @@ type Section = {
   links: { href: string; label: string }[];
 };
 
-export const SideMenu = ({ user, projects }: Props) => {
+export const SideMenu = ({ user, projects, version }: Props) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const showTest = useFlag("test", false);
@@ -96,6 +97,7 @@ export const SideMenu = ({ user, projects }: Props) => {
           </ul>
         </div>
       ))}
+      <p className={styles.version}>v{version}</p>
     </nav>
   );
 };

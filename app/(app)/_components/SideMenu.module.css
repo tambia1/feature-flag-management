@@ -12,9 +12,18 @@
   --tone: var(--muted);
 }
 
-.section:not(:last-child) {
+.section:not(:last-of-type) {
   padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--border);
+}
+
+.version {
+  margin-top: auto;
+  padding: 0 var(--space-3);
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  font-variant-numeric: tabular-nums;
 }
 
 .flags {
@@ -80,7 +89,7 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .section:not(:last-child) {
+  .section:not(:last-of-type) {
     padding-bottom: 0;
     border-bottom: 0;
   }
