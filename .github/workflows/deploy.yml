@@ -13,12 +13,20 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env: { POSTGRES_USER: postgres, POSTGRES_PASSWORD: postgres, POSTGRES_DB: feature_flag_db }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: npm }
       - run: npm ci
       - run: npm test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/feature_flag_db
       - name: Deploy to AWS
         run: ./ops/deploy.sh production
         env:
