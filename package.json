@@ -1,6 +1,6 @@
 {
   "name": "feature-flag-management",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,6 +16,7 @@
     "typecheck": "next typegen && tsgo --noEmit",
     "knip": "knip",
     "test": "vitest run",
+    "test:unit": "vitest run --project unit",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "db:deploy": "prisma migrate deploy",

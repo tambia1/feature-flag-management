@@ -18,7 +18,7 @@ import {
   updateFlagSettings as updateSettings,
 } from "@/lib/flags/flags";
 import { assertEnvironmentRole, assertProjectEditor } from "@/lib/permissions";
-import { assertUser } from "@/lib/session";
+import { AuthError, assertUser } from "@/lib/session";
 
 const comment = (formData: FormData) => text(formData, "comment") || null;
 
@@ -33,6 +33,11 @@ async function flagInEditableEnvironment(formData: FormData) {
   const user = await assertUser();
   const flag = await findFlag(user.companyId, text(formData, "flagId"));
   const environmentId = text(formData, "environmentId");
+
+  if (!flag.project.environments.some((environment) => environment.id === environmentId)) {
+    throw new AuthError(403);
+  }
+
   await assertEnvironmentRole(user, environmentId, "EDITOR");
   return { user, flag, environmentId };
 }
