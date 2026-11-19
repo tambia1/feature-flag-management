@@ -27,7 +27,11 @@ jobs:
       - run: npm test
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/feature_flag_db
+      - name: Production deploy not enabled
+        if: vars.PRODUCTION_DEPLOY_ENABLED != 'true'
+        run: echo "::notice title=Deploy skipped::Tests passed. Set the PRODUCTION_DEPLOY_ENABLED repo variable to true once AWS is set up."
       - name: Deploy to AWS
+        if: vars.PRODUCTION_DEPLOY_ENABLED == 'true'
         run: ./ops/deploy.sh production
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
