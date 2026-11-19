@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import type { FormState } from "@/app/types";
 import { runAction, text } from "@/lib/actions";
-import { writeLog } from "@/lib/audit";
+import { writeLog } from "@/lib/logs";
 import { assertEnvironmentRole } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { assertUser, AuthError } from "@/lib/session";

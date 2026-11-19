@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { FormState } from "@/app/types";
 import { runAction, text, UserError } from "@/lib/actions";
 import { track } from "@/lib/analytics";
-import { writePlatformLog } from "@/lib/audit";
+import { writePlatformLog } from "@/lib/logs";
 import { prisma } from "@/lib/prisma";
 import { publishFlagChange } from "@/lib/pubsub";
 import { deleteIconFiles, prepareIcon, removeCompanyIcon, setCompanyIcon, storeIcon } from "@/lib/company-icon";

@@ -7,7 +7,7 @@ import type { FormState, JsonValue, Rule, SessionUser, Variation } from "@/app/t
 import type { Prisma } from "@/app/generated/prisma/client";
 import { runAction, text, UserError } from "@/lib/actions";
 import { track } from "@/lib/analytics";
-import { writeLog } from "@/lib/audit";
+import { writeLog } from "@/lib/logs";
 import { describeTargetingChange, type TargetingSnapshot } from "@/lib/flags/describe";
 import { formatValue, KEY_PATTERN, parseVariationValue } from "@/lib/flags/values";
 import { assertEnvironmentRole, assertProjectEditor } from "@/lib/permissions";

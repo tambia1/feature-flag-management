@@ -5,7 +5,7 @@ import { z } from "zod";
 import type { FormState } from "@/app/types";
 import { runAction, text } from "@/lib/actions";
 import { track } from "@/lib/analytics";
-import { writeLog } from "@/lib/audit";
+import { writeLog } from "@/lib/logs";
 import { generateSdkKey } from "@/lib/sdk-key";
 import { KEY_PATTERN } from "@/lib/flags/values";
 import { prisma } from "@/lib/prisma";

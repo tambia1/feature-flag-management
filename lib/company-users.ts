@@ -2,7 +2,7 @@ import "server-only";
 import { z } from "zod";
 import type { FormState, SessionUser } from "@/app/types";
 import { text, UserError } from "@/lib/actions";
-import { type LogEntry, writeLog, writePlatformLog } from "@/lib/audit";
+import { type LogEntry, writeLog, writePlatformLog } from "@/lib/logs";
 import { prisma, type Tx } from "@/lib/prisma";
 import { AuthError } from "@/lib/session";
 import { createUserWithPassword, setUserPassword } from "@/lib/users";
