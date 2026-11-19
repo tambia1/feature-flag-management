@@ -5,10 +5,34 @@ import { prisma } from "../prisma";
 
 const WRITE_EVERY_MS = 60_000;
 const MAX_REMEMBERED = 10_000;
+const KEEP_FOR_DAYS = 30;
+const CLEANUP_EVERY_MS = 60 * 60_000;
 
 type LastWrite = { signature: string; at: number };
-const globalForContexts = globalThis as unknown as { contextWrites?: Map<string, LastWrite> };
+const globalForContexts = globalThis as unknown as { contextWrites?: Map<string, LastWrite>; contextCleanupStarted?: boolean };
 const lastWrites = (globalForContexts.contextWrites ??= new Map());
+
+async function deleteStaleContexts(now = Date.now()): Promise<number> {
+  const cutoff = new Date(now - KEEP_FOR_DAYS * 24 * 60 * 60_000);
+  const { count } = await prisma.context.deleteMany({ where: { lastSeenAt: { lt: cutoff } } });
+  return count;
+}
+
+export function startContextCleanup(): void {
+  if (globalForContexts.contextCleanupStarted) {
+    return;
+  }
+
+  globalForContexts.contextCleanupStarted = true;
+
+  const run = () =>
+    deleteStaleContexts()
+      .then((count) => count > 0 && logger.info({ count }, `Deleted contexts not seen for ${KEEP_FOR_DAYS} days`))
+      .catch((err) => logger.warn({ err }, "Could not delete stale contexts"));
+
+  void run();
+  setInterval(run, CLEANUP_EVERY_MS).unref();
+}
 
 export function recordContext(
   environmentId: string,

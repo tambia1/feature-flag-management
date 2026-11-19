@@ -7,6 +7,9 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     const { startServerStatus } = await import("./lib/server-status");
     startServerStatus();
+
+    const { startContextCleanup } = await import("./lib/flags/contexts");
+    startContextCleanup();
   }
 
   if (process.env.SENTRY_DSN) {

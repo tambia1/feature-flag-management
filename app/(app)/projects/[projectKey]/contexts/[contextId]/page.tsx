@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ConfirmAction } from "@/app/_components/ConfirmAction";
 import { Table } from "@/app/_components/Table";
 import type { EvaluationResult, JsonValue } from "@/app/types";
 import { getProjectContext, searchString } from "@/lib/flags/context";
@@ -11,7 +12,9 @@ import { formatDuration } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { NoAccess } from "../../../../_components/NoAccess";
+import { Card } from "../../../../_components/Card";
 import { Page } from "../../../../_components/Page";
+import { deleteContext } from "../actions";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = { title: "Context" };
@@ -44,6 +47,7 @@ export default async function ContextPage({ params, searchParams }: PageProps<"/
   const attributes = Object.entries(item.attributes as Record<string, JsonValue>);
   const results = Object.entries(item.results as Record<string, EvaluationResult>).sort(([a], [b]) => a.localeCompare(b));
   const flagHref = (flagKey: string) => `/projects/${project.key}/flags/${flagKey}?env=${environment.key}`;
+  const canDelete = environment.role === "EDITOR";
 
   return (
     <Page
@@ -82,6 +86,22 @@ export default async function ContextPage({ params, searchParams }: PageProps<"/
           ))}
         </Table>
       </section>
+
+      {canDelete && (
+        <Card title="Danger zone" tone="danger">
+          <div className={styles.action}>
+            <ConfirmAction
+              action={deleteContext}
+              fields={{ contextId }}
+              triggerLabel="Delete context"
+              triggerVariant="danger"
+              title="Delete context?"
+              text={`This deletes ${item.key} from ${environment.name}.\nIt comes back the next time the app asks for flags with this key.`}
+              confirmLabel="Delete"
+            />
+          </div>
+        </Card>
+      )}
     </Page>
   );
 }

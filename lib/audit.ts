@@ -4,7 +4,7 @@ import type { Tx } from "./prisma";
 
 export type LogEntry = {
   action: string;
-  targetType: "Flag" | "User" | "Team" | "Project" | "Environment" | "Company" | "PlatformAdmin";
+  targetType: "Flag" | "User" | "Team" | "Project" | "Environment" | "Context" | "Company" | "PlatformAdmin";
   target: string;
   change?: string | null;
   comment?: string | null;
