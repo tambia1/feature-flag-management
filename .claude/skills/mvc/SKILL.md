@@ -13,7 +13,8 @@ Lives in the domain modules of `lib/` (such as `lib/flags/*`, `lib/permissions.t
 
 - Holds every rule of the business: what is allowed, how values are computed, what is stored and for how long. Examples: flag evaluation in `lib/flags/evaluate.ts`, context retention in `lib/flags/contexts.ts`.
 - Each rule lives in one function, so every caller gets the same answer.
-- Takes plain typed values and returns plain data. No React, `FormData`, `Request`, `Response`, `redirect` or UI text.
+- Takes plain typed values and returns plain data. No React, `FormData`, `Request`, `Response`, `redirect` or page text. When a rule is broken, throw `UserError` (from `lib/errors.ts`) with a message the user can read; the Controller turns it into the form error.
+- Writes the history and log entries that belong to an operation. When the same operation logs to different places, take a `LogWriter` (`companyLog` or `platformLog` from `lib/logs.ts`) and let the Controller choose.
 
 ## Controller: request in, response out
 
@@ -46,6 +47,11 @@ Keep it short. A branch that decides something about the business belongs in the
 - Does it turn a request into a Model call and a response? Controller.
 - Is it about how something looks or behaves on screen? View.
 
-## Existing code
+## Where things are
 
-Some older actions still write with Prisma directly, such as `archiveFlag`. Don't rewrite them unasked. Follow these rules for new code and for code you are already changing.
+- Flags: `lib/flags/flags.ts`, contexts: `lib/flags/contexts.ts`
+- Teams and team roles: `lib/teams.ts`
+- Projects and environments: `lib/projects.ts`
+- Companies: `lib/companies.ts`, users of a company: `lib/company-users.ts`
+- Shared name and key rules: `lib/fields.ts`
+- Reading the user form, shared by the settings and platform actions: `app/(app)/user-form.ts`

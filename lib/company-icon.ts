@@ -1,14 +1,14 @@
 import "server-only";
 import sharp from "sharp";
-import { UserError } from "./actions";
+import { UserError } from "./errors";
 import { logger } from "./logger";
-import type { Tx } from "./prisma";
+import type { LogWriter } from "./logs";
 import { prisma } from "./prisma";
 import { deleteFileByUrl, putFile } from "./storage";
 import { MAX_ICON_BYTES } from "./uploads";
 
 type IconUrls = { iconUrl: string | null; iconThumbUrl: string | null };
-type WriteLog = (tx: Tx) => Promise<void>;
+type Company = { id: string; name: string };
 
 type PreparedIcon = { large: Buffer; thumb: Buffer };
 
@@ -33,11 +33,11 @@ export async function deleteIconFiles(icon: IconUrls) {
   }
 }
 
-async function replaceIcon(companyId: string, icon: IconUrls, writeLog: WriteLog) {
+async function replaceIcon(company: Company, icon: IconUrls, action: string, log: LogWriter) {
   const old = await prisma.$transaction(async (tx) => {
-    const previous = await tx.company.findUniqueOrThrow({ where: { id: companyId }, select: { iconUrl: true, iconThumbUrl: true } });
-    await tx.company.update({ where: { id: companyId }, data: icon });
-    await writeLog(tx);
+    const previous = await tx.company.findUniqueOrThrow({ where: { id: company.id }, select: { iconUrl: true, iconThumbUrl: true } });
+    await tx.company.update({ where: { id: company.id }, data: icon });
+    await log(tx, { action, targetType: "Company", target: company.name });
     return previous;
   });
 
@@ -56,17 +56,12 @@ export async function storeIcon(companyId: string, icon: PreparedIcon) {
   return { iconUrl, iconThumbUrl };
 }
 
-export async function setCompanyIcon(companyId: string, file: File, writeLog: WriteLog) {
+export async function setCompanyIcon(company: Company, file: File | null, log: LogWriter) {
+  if (!file) throw new UserError("Choose an image to upload");
   const icon = await prepareIcon(file);
-  await replaceIcon(companyId, await storeIcon(companyId, icon), writeLog);
+  await replaceIcon(company, await storeIcon(company.id, icon), "changed company icon", log);
 }
 
-export async function removeCompanyIcon(companyId: string, writeLog: WriteLog) {
-  await replaceIcon(companyId, { iconUrl: null, iconThumbUrl: null }, writeLog);
-}
-
-export function iconFile(formData: FormData): File {
-  const file = formData.get("icon");
-  if (!(file instanceof File)) throw new UserError("Choose an image to upload");
-  return file;
+export async function removeCompanyIcon(company: Company, log: LogWriter) {
+  await replaceIcon(company, { iconUrl: null, iconThumbUrl: null }, "removed company icon", log);
 }

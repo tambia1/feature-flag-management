@@ -31,3 +31,15 @@ export async function writePlatformLog(tx: Tx, user: SessionUser, entry: LogEntr
   const platform = await tx.company.findFirstOrThrow({ where: { isPlatform: true }, select: { id: true, name: true } });
   await writeLog(tx, user, entry, platform.id, platform.name);
 }
+
+export type LogWriter = (tx: Tx, entry: LogEntry) => Promise<void>;
+
+export const companyLog =
+  (user: SessionUser): LogWriter =>
+  (tx, entry) =>
+    writeLog(tx, user, entry);
+
+export const platformLog =
+  (user: SessionUser): LogWriter =>
+  (tx, entry) =>
+    writePlatformLog(tx, user, entry);

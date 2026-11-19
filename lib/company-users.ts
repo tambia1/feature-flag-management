@@ -1,7 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import type { FormState, SessionUser } from "@/app/types";
-import { text, UserError } from "@/lib/actions";
+import { UserError } from "@/lib/errors";
 import { type LogEntry, writeLog, writePlatformLog } from "@/lib/logs";
 import { prisma, type Tx } from "@/lib/prisma";
 import { AuthError } from "@/lib/session";
@@ -16,8 +16,7 @@ const userSchema = z.object({
   role: z.enum(["ADMIN", "MEMBER"]),
 });
 
-const readUser = (formData: FormData) =>
-  userSchema.parse({ name: text(formData, "name"), email: text(formData, "email"), role: text(formData, "role") });
+export type UserInput = { name: string; email: string; role: string; password: string };
 
 export async function findUser(companyId: string, userId: string) {
   const user = await prisma.user.findFirst({ where: { id: userId, companyId }, select: { id: true, name: true, email: true, role: true } });
@@ -41,9 +40,9 @@ async function log(tx: Tx, actor: SessionUser, company: Company, entry: LogEntry
   }
 }
 
-export async function addCompanyUser(actor: SessionUser, company: Company, formData: FormData): Promise<FormState> {
-  const input = readUser(formData);
-  const newPassword = password.parse(formData.get("password"));
+export async function addCompanyUser(actor: SessionUser, company: Company, newUser: UserInput): Promise<FormState> {
+  const input = userSchema.parse(newUser);
+  const newPassword = password.parse(newUser.password);
 
   if (await prisma.user.findUnique({ where: { email: input.email.toLowerCase() }, select: { id: true } })) {
     throw new UserError("A user with this email already exists.");
@@ -58,11 +57,10 @@ export async function addCompanyUser(actor: SessionUser, company: Company, formD
   return { success: `Added ${created.name}` };
 }
 
-export async function editCompanyUser(actor: SessionUser, company: Company, formData: FormData): Promise<FormState> {
-  const user = await findUser(company.id, text(formData, "userId"));
-  const input = readUser(formData);
-  const rawPassword = String(formData.get("password") ?? "");
-  const newPassword = rawPassword ? password.parse(rawPassword) : null;
+export async function editCompanyUser(actor: SessionUser, company: Company, userId: string, edited: UserInput): Promise<FormState> {
+  const user = await findUser(company.id, userId);
+  const input = userSchema.parse(edited);
+  const newPassword = edited.password ? password.parse(edited.password) : null;
 
   const changes: string[] = [];
   if (input.name !== user.name) changes.push(`name: ${user.name} → ${input.name}`);
@@ -96,8 +94,8 @@ export async function editCompanyUser(actor: SessionUser, company: Company, form
   return { success: "Saved" };
 }
 
-export async function removeCompanyUser(actor: SessionUser, company: Company, formData: FormData): Promise<void> {
-  const user = await findUser(company.id, text(formData, "userId"));
+export async function removeCompanyUser(actor: SessionUser, company: Company, userId: string): Promise<void> {
+  const user = await findUser(company.id, userId);
 
   if (user.id === actor.id) {
     throw new UserError("You can't delete yourself. Ask another admin.");

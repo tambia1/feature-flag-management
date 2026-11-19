@@ -5,6 +5,7 @@ import { z } from "zod";
 import type { FormState } from "@/app/types";
 import { Prisma } from "@/app/generated/prisma/client";
 import { logger } from "./logger";
+import { UserError } from "./errors";
 import { AuthError } from "./session";
 
 function formValues(formData: FormData): Record<string, string> {
@@ -18,8 +19,6 @@ function formValues(formData: FormData): Record<string, string> {
 
   return values;
 }
-
-export class UserError extends Error {}
 
 export async function runAction(formData: FormData | null, body: () => Promise<FormState | void>): Promise<FormState> {
   const values = formData ? formValues(formData) : undefined;

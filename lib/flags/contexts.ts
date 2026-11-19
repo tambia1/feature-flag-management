@@ -1,7 +1,9 @@
 import "server-only";
-import type { EvaluationContext, EvaluationResult } from "@/app/types";
+import type { EvaluationContext, EvaluationResult, SessionUser } from "@/app/types";
 import { logger } from "../logger";
+import { writeLog } from "../logs";
 import { prisma } from "../prisma";
+import { AuthError } from "../session";
 
 const WRITE_EVERY_MS = 60_000;
 const MAX_REMEMBERED = 10_000;
@@ -74,4 +76,36 @@ export function recordContext(
   } catch (err) {
     fail(err);
   }
+}
+
+type StoredContext = Awaited<ReturnType<typeof findContext>>;
+
+export async function findContext(companyId: string, contextId: string) {
+  const context = await prisma.context.findFirst({
+    where: { id: contextId, environment: { project: { companyId } } },
+    select: {
+      id: true,
+      key: true,
+      application: true,
+      environmentId: true,
+      environment: { select: { key: true, project: { select: { key: true } } } },
+    },
+  });
+
+  if (!context) {
+    throw new AuthError(403);
+  }
+
+  return context;
+}
+
+export async function deleteContext(actor: SessionUser, context: StoredContext): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    await tx.context.delete({ where: { id: context.id } });
+    await writeLog(tx, actor, {
+      action: "deleted context",
+      targetType: "Context",
+      target: `${context.application || "Unnamed app"} · ${context.key}`,
+    });
+  });
 }

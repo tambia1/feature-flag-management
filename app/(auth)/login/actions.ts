@@ -4,7 +4,8 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { FormState } from "@/app/types";
-import { runAction, text, UserError } from "@/lib/actions";
+import { runAction, text } from "@/lib/actions";
+import { UserError } from "@/lib/errors";
 import { auth } from "@/lib/auth";
 import { track } from "@/lib/analytics";
 

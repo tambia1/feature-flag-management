@@ -3,7 +3,8 @@
 import { headers } from "next/headers";
 import { z } from "zod";
 import type { FormState } from "@/app/types";
-import { runAction, UserError } from "@/lib/actions";
+import { runAction } from "@/lib/actions";
+import { UserError } from "@/lib/errors";
 import { auth } from "@/lib/auth";
 import { assertUser } from "@/lib/session";
 
