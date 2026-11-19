@@ -43,6 +43,12 @@
     line-height: var(--leading-sm);
   }
 
+  .plain {
+    padding: 0;
+    color: inherit;
+    font: inherit;
+  }
+
   .icon {
     padding: calc(var(--space-1) * 1.5);
   }

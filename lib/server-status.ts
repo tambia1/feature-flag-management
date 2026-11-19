@@ -7,7 +7,8 @@ import { sdkMetrics } from "./metrics";
 import { openStreamsByEnvironment } from "./flags/streams";
 import { getRedis } from "./redis";
 
-export const SAMPLE_INTERVAL_MS = 9_000;
+const SAMPLE_INTERVAL_MS = 9_000;
+export const PAGE_REFRESH_MS = 30_000;
 export const STATUS_WINDOW_MINUTES = 5;
 const WINDOW_MS = STATUS_WINDOW_MINUTES * 60_000;
 const SERVERS_KEY = "status:servers";

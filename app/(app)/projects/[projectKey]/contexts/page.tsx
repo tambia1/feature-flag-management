@@ -8,8 +8,10 @@ import { getProjectContext, searchString } from "@/lib/flags/context";
 import { formatValue } from "@/lib/flags/values";
 import { formatDuration } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { PAGE_REFRESH_MS } from "@/lib/server-status";
 import { requireUser } from "@/lib/session";
 import type { JsonValue } from "@/app/types";
+import { AutoRefresh } from "../../../_components/AutoRefresh";
 import { ListFilters } from "../../../_components/ListFilters";
 import { NoAccess } from "../../../_components/NoAccess";
 import { Page } from "../../../_components/Page";
@@ -49,7 +51,7 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
   const now = Date.now();
 
   return (
-    <Page title="Contexts" subtitle={`${project.name} · ${environment.name}`}>
+    <Page title="Contexts" subtitle={`${project.name} · ${environment.name}`} actions={<AutoRefresh intervalMs={PAGE_REFRESH_MS} />}>
       <section className={styles.section}>
         <h2 className={styles.heading}>Connected apps</h2>
         <Table headers={["App", "Open connections"]} isEmpty={connectedApps.length === 0} emptyText="No apps are connected right now.">

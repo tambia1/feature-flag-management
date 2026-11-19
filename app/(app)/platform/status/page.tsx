@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { Table } from "@/app/_components/Table";
 import type { ServiceCheck } from "@/app/types";
 import { formatDuration } from "@/lib/format";
-import { getReportedServers, SAMPLE_INTERVAL_MS, STATUS_WINDOW_MINUTES } from "@/lib/server-status";
+import { getReportedServers, PAGE_REFRESH_MS, STATUS_WINDOW_MINUTES } from "@/lib/server-status";
 import { checkServices } from "@/lib/service-checks";
 import { requirePlatformAdmin } from "@/lib/session";
 import { Page } from "../../_components/Page";
 import { StatTile } from "../../_components/StatTile";
-import { AutoRefresh } from "./AutoRefresh";
+import { AutoRefresh } from "../../_components/AutoRefresh";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./page.module.css";
 
@@ -36,8 +36,8 @@ export default async function StatusPage() {
   return (
     <Page
       title="Status"
-      subtitle={`Updates every ${SAMPLE_INTERVAL_MS / 1000} seconds. Counts cover the last ${STATUS_WINDOW_MINUTES} minutes.`}
-      actions={<AutoRefresh intervalMs={SAMPLE_INTERVAL_MS} />}
+      subtitle={`Updates every ${PAGE_REFRESH_MS / 1000} seconds. Counts cover the last ${STATUS_WINDOW_MINUTES} minutes.`}
+      actions={<AutoRefresh intervalMs={PAGE_REFRESH_MS} />}
     >
       <dl className={styles.tiles}>
         <StatTile label="Servers" value={reporting.length} detail={silent > 0 ? `${silent} not reporting` : "All reporting"} />
