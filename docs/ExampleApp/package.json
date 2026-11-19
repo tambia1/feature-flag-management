@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "predev": "npm --prefix ../../sdk run build",
-    "dev": "next dev -p 3001"
+    "dev": "next dev -p 3010",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
     "@feature-flags/sdk": "file:../../sdk",

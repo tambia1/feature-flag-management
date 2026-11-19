@@ -2,10 +2,45 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "dev",
+      "name": "app:3000 - dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
+      "autoPort": false
+    },
+    {
+      "name": "app:3001 - start",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "--", "-p", "3001"],
+      "port": 3001,
+      "autoPort": false
+    },
+    {
+      "name": "app:3002 - start",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "--", "-p", "3002"],
+      "port": 3002,
+      "autoPort": false
+    },
+    {
+      "name": "example-app:3010 - dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "docs/ExampleApp", "run", "dev"],
+      "port": 3010,
+      "autoPort": false
+    },
+    {
+      "name": "example-app:3011 - start",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "docs/ExampleApp", "run", "start", "--", "-p", "3011"],
+      "port": 3011,
+      "autoPort": false
+    },
+    {
+      "name": "example-app:3012 - start",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "docs/ExampleApp", "run", "start", "--", "-p", "3012"],
+      "port": 3012,
       "autoPort": false
     }
   ]

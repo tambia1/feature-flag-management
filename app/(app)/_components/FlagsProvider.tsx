@@ -19,7 +19,12 @@ const clientFor = (userKey: string): FlagClient | null => {
     shared?.client.close();
     shared = {
       userKey,
-      client: createFlagClient({ baseUrl: process.env.NEXT_PUBLIC_FLAGS_BASE_URL ?? "", sdkKey, context: { key: userKey } }),
+      client: createFlagClient({
+        baseUrl: process.env.NEXT_PUBLIC_FLAGS_BASE_URL ?? "",
+        sdkKey,
+        context: { key: userKey },
+        application: "Feature Flag Management",
+      }),
     };
   }
 
