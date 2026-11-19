@@ -10,26 +10,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  checks:
+    uses: ./.github/workflows/ci.yml
+
   deploy:
+    needs: checks
     runs-on: ubuntu-latest
     environment: production
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env: { POSTGRES_USER: postgres, POSTGRES_PASSWORD: postgres, POSTGRES_DB: feature_flag_db }
-        ports: ["5432:5432"]
-        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 24, cache: npm }
-      - run: npm ci
-      - run: npm test
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/feature_flag_db
       - name: Production deploy not enabled
         if: vars.PRODUCTION_DEPLOY_ENABLED != 'true'
-        run: echo "::notice title=Deploy skipped::Tests passed. Set the PRODUCTION_DEPLOY_ENABLED repo variable to true once AWS is set up."
+        run: echo "::notice title=Deploy skipped::All checks passed. Set the PRODUCTION_DEPLOY_ENABLED repo variable to true once AWS is set up."
       - name: Deploy to AWS
         if: vars.PRODUCTION_DEPLOY_ENABLED == 'true'
         run: ./ops/deploy.sh production
@@ -42,7 +34,7 @@ jobs:
           SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
 
   notify:
-    needs: deploy
+    needs: [checks, deploy]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -51,7 +43,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          STATUS="${{ needs.deploy.result }}"
+          STATUS="${{ needs.checks.result == 'success' && needs.deploy.result || 'failure' }}"
           ICON=$([ "$STATUS" = "success" ] && echo ":white_check_mark:" || echo ":x:")
           curl -sS -X POST -H 'Content-Type: application/json' \
             -d "{\"text\": \"$ICON Deploy $STATUS: ${{ github.repository }}@${GITHUB_SHA::7} by ${{ github.actor }}\"}" \
