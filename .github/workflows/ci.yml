@@ -18,6 +18,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -26,6 +27,7 @@ jobs:
   format:
     name: Format
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -34,6 +36,7 @@ jobs:
   typecheck:
     name: Types
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -42,6 +45,7 @@ jobs:
   knip:
     name: Unused code (knip)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -50,6 +54,7 @@ jobs:
   schema:
     name: Prisma schema
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -58,6 +63,7 @@ jobs:
   migrations:
     name: Migrations match the schema
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     services: &postgres
       postgres:
         image: postgres:17-alpine
@@ -73,6 +79,7 @@ jobs:
   test:
     name: Unit and DB tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     services: *postgres
     steps:
       - uses: actions/checkout@v4
@@ -83,6 +90,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
@@ -91,14 +99,17 @@ jobs:
   e2e:
     name: E2E (Playwright)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container: mcr.microsoft.com/playwright:v1.65.1-noble
     services: *postgres
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/feature_flag_db
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - run: npm run db:deploy
       - run: npm run db:seed
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
       - name: Run Playwright against the app
         run: |
           npm start &
@@ -110,6 +121,7 @@ jobs:
     if: github.event_name == 'pull_request' && vars.PREVIEW_DEPLOY_ENABLED == 'true'
     needs: [lint, format, typecheck, knip, schema, migrations, test, build, e2e]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment: preview
     steps:
       - uses: actions/checkout@v4
