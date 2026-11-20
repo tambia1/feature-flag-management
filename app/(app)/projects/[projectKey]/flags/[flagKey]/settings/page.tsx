@@ -73,7 +73,7 @@ export default async function FlagSettingsPage({ params, searchParams }: PagePro
                 action={archiveFlag}
                 fields={{ flagId: flag.id }}
                 triggerLabel="Archive flag"
-                triggerVariant="secondary"
+                triggerVariant="danger"
                 title="Archive flag?"
                 text={`"${flag.key}" is hidden from the flag list and every environment serves the off value. You can restore it later.`}
                 confirmLabel="Archive"
