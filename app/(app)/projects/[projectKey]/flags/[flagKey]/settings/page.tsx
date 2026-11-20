@@ -45,7 +45,8 @@ export default async function FlagSettingsPage({ params, searchParams }: PagePro
                 action={restoreFlag}
                 fields={{ flagId: flag.id }}
                 triggerLabel="Restore flag"
-                triggerVariant="secondary"
+                triggerVariant="outline"
+                triggerColor="neutral"
                 title="Restore flag?"
                 text={`"${flag.key}" goes back in the flag list, OFF in every environment.`}
                 confirmLabel="Restore"
@@ -58,7 +59,8 @@ export default async function FlagSettingsPage({ params, searchParams }: PagePro
                 action={deleteFlag}
                 fields={{ flagId: flag.id, from: "settings" }}
                 triggerLabel="Delete flag"
-                triggerVariant="danger"
+                triggerVariant="solid"
+                triggerColor="danger"
                 title="Delete flag?"
                 text={`This permanently deletes "${flag.key}" and its history.\nApps get the fallback value from their code.\nThis can't be undone.`}
                 confirmLabel="Delete flag"
@@ -73,7 +75,8 @@ export default async function FlagSettingsPage({ params, searchParams }: PagePro
                 action={archiveFlag}
                 fields={{ flagId: flag.id }}
                 triggerLabel="Archive flag"
-                triggerVariant="danger"
+                triggerVariant="solid"
+                triggerColor="danger"
                 title="Archive flag?"
                 text={`"${flag.key}" is hidden from the flag list and every environment serves the off value. You can restore it later.`}
                 confirmLabel="Archive"

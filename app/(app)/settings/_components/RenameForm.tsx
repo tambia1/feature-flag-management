@@ -38,7 +38,7 @@ export const RenameForm = ({ action, idName, id, value, label }: Props) => {
     <form action={formAction} className={styles.form}>
       <input type="hidden" name={idName} value={id} />
       <Input name="name" aria-label={label} required maxLength={100} defaultValue={state.values?.name ?? value} compact />
-      <Button type="submit" variant="secondary" disabled={isPending}>
+      <Button type="submit" variant="outline" color="neutral" disabled={isPending}>
         Save
       </Button>
       <Button variant="link" onClick={() => setEditing(false)}>

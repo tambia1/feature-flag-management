@@ -79,6 +79,7 @@ export default async function ArchivedFlagsPage({ params, searchParams }: PagePr
                 action={deleteFlag}
                 fields={{ flagId: flag.id }}
                 triggerLabel="Delete"
+                triggerColor="danger"
                 title="Delete flag?"
                 text={`This permanently deletes "${flag.key}" and its history.\nApps get the fallback value from their code.\nThis can't be undone.`}
                 confirmLabel="Delete flag"

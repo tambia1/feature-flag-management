@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { ComponentProps } from "react";
+import type { ButtonColor } from "./Button";
 import styles from "./LinkButton.module.css";
 
 type Props = ComponentProps<typeof Link> & {
-  variant: "primary" | "secondary" | "link";
+  variant: "solid" | "outline" | "link";
+  color?: ButtonColor;
 };
 
-export const LinkButton = ({ variant, className = "", ...props }: Props) => {
-  return <Link className={`${styles[variant]} ${className}`} {...props} />;
+export const LinkButton = ({ variant, color = "accent", className = "", ...props }: Props) => {
+  return <Link className={`${styles[variant]} ${styles[color]} ${className}`} {...props} />;
 };

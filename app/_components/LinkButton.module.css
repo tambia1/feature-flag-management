@@ -1,11 +1,27 @@
-.primary {
-  composes: button primary from "./Button.module.css";
+.solid {
+  composes: button solid from "./Button.module.css";
 }
 
-.secondary {
-  composes: button secondary from "./Button.module.css";
+.outline {
+  composes: button outline from "./Button.module.css";
 }
 
 .link {
   composes: button link from "./Button.module.css";
+}
+
+.accent {
+  composes: accent from "./Button.module.css";
+}
+
+.neutral {
+  composes: neutral from "./Button.module.css";
+}
+
+.danger {
+  composes: danger from "./Button.module.css";
+}
+
+.success {
+  composes: success from "./Button.module.css";
 }

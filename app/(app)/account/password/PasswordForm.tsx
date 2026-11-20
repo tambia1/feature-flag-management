@@ -25,7 +25,7 @@ export const PasswordForm = () => {
       <Message text={state.error} state="error" />
       <Message text={state.success} state="success" />
       <div>
-        <Button type="submit" variant="primary" disabled={isPending}>
+        <Button type="submit" variant="solid" disabled={isPending}>
           {isPending ? "Saving…" : "Save password"}
         </Button>
       </div>

@@ -50,7 +50,7 @@ export const PermissionsGrid = ({ teamId, projects, roles }: Props) => {
         </tbody>
       </table>
       <div className={styles.actions}>
-        <Button type="submit" variant="primary" disabled={isPending}>
+        <Button type="submit" variant="solid" disabled={isPending}>
           {isPending ? "Saving…" : "Save"}
         </Button>
         <Message text={state.error} state="error" />

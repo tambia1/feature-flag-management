@@ -62,6 +62,7 @@ export default async function TeamsPage({ searchParams }: PageProps<"/settings/t
                 action={deleteTeam}
                 fields={{ teamId: team.id }}
                 triggerLabel="Delete"
+                triggerColor="danger"
                 title="Delete team?"
                 text={`Delete "${team.name}"?\nIts members keep their accounts but lose this team's access.`}
                 confirmLabel="Delete"
