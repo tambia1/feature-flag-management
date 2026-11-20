@@ -15,27 +15,16 @@ export default async function SdkDocsPage() {
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const baseUrl = `${protocol}://${host}`;
-  const tarball = `feature-flags-sdk-${sdkPackage.version}.tgz`;
 
   return (
     <Page title="SDK" subtitle="Read your feature flags from any JavaScript or TypeScript app.">
       <div className={styles.docs}>
         <Card title="1. Install the package">
-          <p>
-            The SDK is in the <code>sdk/</code> folder of this repository. Until it is published to a registry, build it into a package file
-            and install that file in your app.
-          </p>
-          <CodeBlock label="In this repository" code={`cd sdk\nnpm pack`} />
-          <p>
-            <code>npm pack</code> builds the SDK and writes <code>{tarball}</code> in the <code>sdk/</code> folder. Copy it into your app,
-            then install it:
-          </p>
-          <CodeBlock label="In your app" code={`npm install ./${tarball}`} />
+          <p>Install the SDK in your app:</p>
+          <CodeBlock label="In your app" code={`npm install ${sdkPackage.name}`} />
           <p>
             Your <code>package.json</code> then lists <code>&quot;{sdkPackage.name}&quot;</code>, and you import it like any other package.
-            Once the SDK is published to npm or your private registry, install it by name instead:
           </p>
-          <CodeBlock label="After publishing" code={`npm install ${sdkPackage.name}`} />
         </Card>
 
         <Card title="2. Read a flag">
