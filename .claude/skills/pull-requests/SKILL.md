@@ -14,7 +14,7 @@ Every task, whether a feature, a bug fix, a refactor or a config change, goes th
    git switch main && git pull --ff-only && git switch -c <short-task-name>
    ```
    Name the branch after the task in a few words, e.g. `fix-toggle-in-production`, `add-flag-search`.
-2. Do the work and commit on the branch. Commits on the branch can be as small as you like.
+2. Do the work and commit on the branch. Every commit stays in `main`'s history after the merge, so give each one a message that says what it changed and why.
 3. Before pushing, run `npm run check`. For changes to pages, routes, the database schema or anything e2e covers, run `npm run ci`.
 4. Bump the version on the branch as described in the versioning skill.
 5. Push the branch and open the PR:
@@ -25,7 +25,7 @@ Every task, whether a feature, a bug fix, a refactor or a config change, goes th
 6. Wait for CI on the PR. Read the result with `gh pr checks <number>`. If a check fails, read its log (`gh run view <run-id> --log-failed`), fix it on the same branch and push again. CI runs again on every push.
 7. When every check has passed, tell the user and merge only after they agree, because the merge starts the Deploy workflow:
    ```bash
-   gh pr merge <number> --squash --delete-branch
+   gh pr merge <number> --merge --delete-branch
    ```
 8. After the merge, switch back with `git switch main && git pull --ff-only`, then check that the Deploy run for the merge commit passed.
 
@@ -34,5 +34,5 @@ Every task, whether a feature, a bug fix, a refactor or a config change, goes th
 - Never push to `main` directly, and never commit on `main`.
 - Never merge a PR with a failing, cancelled or still-running check. Never use `--admin` or any other way around a failing check.
 - One task per PR. Unrelated changes found along the way go in their own PR.
-- Squash merge, so each PR lands on `main` as one commit with one version bump.
+- Merge with a merge commit (`--merge`), never squash or rebase, so `main` keeps every commit of the PR and the git graph shows where each branch split off and joined back. Delete the branch after merging: the merge commit keeps its history.
 - If `main` moved on while the PR was open, update the branch with `git merge origin/main` and let CI run again before merging.
