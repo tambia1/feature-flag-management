@@ -28,7 +28,15 @@ Every task, whether a feature, a bug fix, a refactor or a config change, goes th
    gh pr merge <number> --merge --auto --delete-branch
    ```
    A ruleset on `main` requires all nine CI checks, so GitHub merges the PR the moment the last one passes and never before. If a check fails, the PR stays open: fix it and push, and auto-merge stays on.
-8. After the merge, switch back with `git switch main && git pull --ff-only`, then check that the Deploy run for the merge commit passed.
+8. Right after turning on auto-merge, wait for the merge in a background command, so you are woken when it finishes instead of ending the task on the PR branch:
+   ```bash
+   gh pr checks <number> --watch --fail-fast && until [ "$(gh pr view <number> --json state -q .state)" != OPEN ]; do sleep 10; done; gh pr view <number> --json state,mergeCommit
+   ```
+   It ends either when the PR is merged or as soon as a check fails. If the state it prints is still `OPEN`, a check failed: fix it, push, and start the wait again.
+9. Once the state is `MERGED`, switch back with `git switch main && git pull --ff-only`, delete the local branch with `git branch -d <branch>`, then check that the Deploy run for the merge commit passed:
+   ```bash
+   gh run list --workflow Deploy --commit <merge-commit> --json status,conclusion,url
+   ```
 
 ## Rules
 
