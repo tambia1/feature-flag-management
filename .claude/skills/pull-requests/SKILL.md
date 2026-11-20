@@ -33,10 +33,15 @@ Every task, whether a feature, a bug fix, a refactor or a config change, goes th
    gh pr checks <number> --watch --fail-fast && until [ "$(gh pr view <number> --json state -q .state)" != OPEN ]; do sleep 10; done; gh pr view <number> --json state,mergeCommit
    ```
    It ends either when the PR is merged or as soon as a check fails. If the state it prints is still `OPEN`, a check failed: fix it, push, and start the wait again.
-9. Once the state is `MERGED`, switch back with `git switch main && git pull --ff-only`, delete the local branch with `git branch -d <branch>`, then check that the Deploy run for the merge commit passed:
+9. Once the state is `MERGED`, switch back with `git switch main && git pull --ff-only`, delete the local branch with `git branch -d <branch>`, then look up the Deploy run for the merge commit:
    ```bash
-   gh run list --workflow Deploy --commit <merge-commit> --json status,conclusion,url
+   gh run list --workflow Deploy --commit <merge-commit> --json databaseId,status,conclusion,url
    ```
+   If it is still queued or running, wait for it in a background command, never in the foreground, so the user can keep talking while it runs:
+   ```bash
+   gh run watch <run-id> --exit-status >/dev/null 2>&1; gh run view <run-id> --json status,conclusion
+   ```
+   Report the merge to the user right away, then report the Deploy result when the background command finishes.
 
 ## Rules
 
