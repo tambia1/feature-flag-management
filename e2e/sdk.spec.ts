@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 test("the SDK rejects unknown keys", async ({ request }) => {
-  const response = await request.post("/api/sdk/evaluate", {
+  const response = await request.post("/api/sdk/flags", {
     headers: { Authorization: "sdk-not-a-real-key" },
     data: { context: { key: "user-1" } },
   });
