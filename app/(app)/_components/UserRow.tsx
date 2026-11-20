@@ -49,6 +49,7 @@ export const UserRow = ({ user, teams, isSelf, updateAction, deleteAction, field
             action={deleteAction}
             fields={{ ...fields, userId: user.id }}
             triggerLabel="Delete"
+            triggerColor="danger"
             title="Delete user?"
             text={`Delete ${user.name} (${user.email})?\nThey are logged out right away and lose all access.`}
             confirmLabel="Delete"

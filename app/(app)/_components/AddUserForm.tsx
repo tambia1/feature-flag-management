@@ -37,7 +37,7 @@ export const AddUserForm = ({ action, fields = {} }: Props) => {
         <Field label="Password">
           <PasswordField key={state.success} name="password" label="Password" required />
         </Field>
-        <Button type="submit" variant="primary" disabled={isPending} className={styles.submit}>
+        <Button type="submit" variant="solid" disabled={isPending} className={styles.submit}>
           {isPending ? "Adding…" : "Add user"}
         </Button>
       </div>

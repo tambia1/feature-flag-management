@@ -94,6 +94,7 @@ export const EnvironmentRow = ({ environment }: Props) => {
               action={deleteEnvironment}
               fields={{ environmentId: environment.id }}
               triggerLabel="Delete"
+              triggerColor="danger"
               title="Delete environment?"
               text={`Delete "${environment.name}"? Its flag settings and environment SDK key are removed. Apps using its key stop getting flags.`}
               confirmLabel="Delete"

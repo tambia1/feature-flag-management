@@ -14,31 +14,57 @@
     cursor: not-allowed;
   }
 
-  .primary {
-    background: var(--accent);
-    padding: var(--space-2) var(--space-4);
-    font-weight: 500;
-    color: #fff;
+  .accent {
+    --tone: var(--link);
+    --tone-fill: var(--accent);
+    --tone-fill-hover: var(--accent-hover);
+    --tone-on-fill: #fff;
+    --tone-border: var(--accent);
   }
 
-  .secondary {
-    border: 1px solid var(--border-strong);
+  .neutral {
+    --tone: var(--foreground);
+    --tone-fill: var(--foreground);
+    --tone-fill-hover: color-mix(in oklch, var(--foreground) 85%, var(--background));
+    --tone-on-fill: var(--background);
+    --tone-border: var(--border-strong);
+  }
+
+  .danger {
+    --tone: var(--danger);
+    --tone-fill: var(--danger);
+    --tone-fill-hover: color-mix(in oklch, var(--danger) 90%, var(--background));
+    --tone-on-fill: #fff;
+    --tone-border: var(--danger);
+  }
+
+  .success {
+    --tone: var(--success);
+    --tone-fill: var(--success);
+    --tone-fill-hover: color-mix(in oklch, var(--success) 90%, var(--background));
+    --tone-on-fill: #fff;
+    --tone-border: var(--success);
+  }
+
+  .solid {
+    background: var(--tone-fill);
+    padding: var(--space-2) var(--space-4);
+    font-weight: 500;
+    color: var(--tone-on-fill);
+  }
+
+  .outline {
+    border: 1px solid var(--tone-border);
     background: var(--surface);
     padding: var(--space-1) var(--space-3);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
-  }
-
-  .danger {
-    background: var(--danger);
-    padding: var(--space-2) var(--space-4);
-    font-weight: 500;
-    color: #fff;
+    color: var(--tone);
   }
 
   .link {
     padding: 0;
-    color: var(--link);
+    color: var(--tone);
     font-size: var(--text-sm);
     line-height: var(--leading-sm);
   }
@@ -54,16 +80,12 @@
   }
 
   @media (hover: hover) {
-    .primary:not(:disabled):hover {
-      background: var(--accent-hover);
+    .solid:not(:disabled):hover {
+      background: var(--tone-fill-hover);
     }
 
-    .secondary:not(:disabled):hover {
+    .outline:not(:disabled):hover {
       background: var(--hover);
-    }
-
-    .danger:not(:disabled):hover {
-      opacity: 0.9;
     }
 
     .link:not(:disabled):hover {

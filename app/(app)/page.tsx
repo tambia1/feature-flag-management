@@ -38,7 +38,7 @@ export default async function HomePage() {
         }
       >
         {user.role === "ADMIN" && (
-          <LinkButton href="/settings/projects" variant="primary">
+          <LinkButton href="/settings/projects" variant="solid">
             Go to Projects
           </LinkButton>
         )}

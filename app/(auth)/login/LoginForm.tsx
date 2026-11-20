@@ -20,7 +20,7 @@ export const LoginForm = () => {
         <Input name="password" type="password" autoComplete="current-password" required />
       </Field>
       <Message text={state.error} state="error" />
-      <Button type="submit" variant="primary" disabled={isPending}>
+      <Button type="submit" variant="solid" disabled={isPending}>
         {isPending ? "Logging in…" : "Log in"}
       </Button>
     </form>

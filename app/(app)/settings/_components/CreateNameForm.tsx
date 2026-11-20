@@ -58,7 +58,7 @@ export const CreateNameForm = ({ action, label, placeholder, submitLabel, fields
             />
           </Field>
         )}
-        <Button type="submit" variant="primary" disabled={isPending}>
+        <Button type="submit" variant="solid" disabled={isPending}>
           {isPending ? "Adding…" : submitLabel}
         </Button>
       </div>

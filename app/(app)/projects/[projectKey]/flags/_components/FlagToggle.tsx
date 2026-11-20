@@ -85,10 +85,10 @@ export const FlagToggle = ({ flagId, flagKey, environmentId, environmentName, is
             <Input value={comment} onChange={(event) => setComment(event.target.value)} maxLength={500} />
           </Field>
           <div className={styles.actions}>
-            <Button variant="secondary" onClick={() => setConfirming(false)}>
+            <Button variant="outline" color="neutral" onClick={() => setConfirming(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="danger">
+            <Button type="submit" variant="solid" color="danger">
               Turn {next ? "on" : "off"}
             </Button>
           </div>

@@ -38,10 +38,18 @@ For example, a `Message` component takes any `text` plus a `state` (`success`, `
 
 ## Buttons
 
-Use the shared `Button` component (in `app/_components/`), never a raw `<button>`. Give it variants such as:
+Use the shared `Button` component (in `app/_components/`), never a raw `<button>`. It takes two separate props, so any shape can have any color:
 
-- `primary`: the main action of a form, such as Save or Submit.
-- `secondary`: every other button, such as Cancel or Remove.
+- `variant` is the shape: `solid` (filled), `outline` (bordered), `link` (text only) or `plain` (inherits the surrounding text).
+- `color` is the meaning: `accent` (the default), `neutral`, `danger` or `success`. `plain` ignores it.
+
+Typical uses:
+
+- `variant="solid"`: the main action of a form, such as Save or Submit.
+- `variant="outline" color="neutral"`: every other button, such as Cancel.
+- `color="danger"`: actions that delete or archive, in any variant, such as a red Delete link in a table row.
+
+Don't add a variant for a color; add a color instead. `LinkButton` takes the same `variant` and `color`, and `ConfirmAction` passes them on as `triggerVariant` and `triggerColor`.
 
 Add an `icon` prop for buttons that hold only an icon.
 

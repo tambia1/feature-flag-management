@@ -41,7 +41,8 @@ export const PasswordField = ({ name, label, placeholder, required = false, comp
         onChange={(event) => setValue(event.target.value)}
       />
       <Button
-        variant="secondary"
+        variant="outline"
+        color="neutral"
         icon
         className={styles.generate}
         onClick={() => setValue(generatePassword())}

@@ -109,10 +109,10 @@ export const NewFlagForm = ({ projectId, cancelHref }: Props) => {
         </fieldset>
         <Message text={state.error} state="error" />
         <div className={styles.actions}>
-          <Button type="submit" variant="primary" disabled={isPending}>
+          <Button type="submit" variant="solid" disabled={isPending}>
             {isPending ? "Creating…" : "Create flag"}
           </Button>
-          <LinkButton href={cancelHref} variant="secondary">
+          <LinkButton href={cancelHref} variant="outline" color="neutral">
             Cancel
           </LinkButton>
         </div>

@@ -73,6 +73,7 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/setting
                 action={deleteProject}
                 fields={{ projectId: project.id }}
                 triggerLabel="Delete"
+                triggerColor="danger"
                 title="Delete project"
                 text={`This deletes "${project.name}",\nits ${project.environments.length} environments and ${project._count.flags} flags.\nThis can't be undone.`}
                 confirmLabel="Delete"

@@ -108,7 +108,7 @@ export const FlagSettingsForm = ({ flagId, flagKey, typeLabel, isBoolean, name, 
       <Message text={state.success} state="success" />
       {canEdit && (
         <div>
-          <Button type="submit" variant="primary" disabled={isPending}>
+          <Button type="submit" variant="solid" disabled={isPending}>
             {isPending ? "Saving…" : "Save changes"}
           </Button>
         </div>

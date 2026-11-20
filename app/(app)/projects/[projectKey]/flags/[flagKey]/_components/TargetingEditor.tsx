@@ -155,7 +155,8 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
           ))}
         </ol>
         <Button
-          variant="secondary"
+          variant="outline"
+          color="neutral"
           onClick={() =>
             setRules([
               ...rules,
@@ -189,10 +190,10 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
 
       {canEdit && (
         <div className={styles.actions}>
-          <Button variant="primary" disabled={!isDirty || isPending} onClick={() => setConfirming(true)}>
+          <Button variant="solid" disabled={!isDirty || isPending} onClick={() => setConfirming(true)}>
             {isPending ? "Saving…" : "Save changes"}
           </Button>
-          <Button variant="secondary" disabled={!isDirty || isPending} onClick={reset}>
+          <Button variant="outline" color="neutral" disabled={!isDirty || isPending} onClick={reset}>
             Cancel
           </Button>
         </div>
@@ -204,10 +205,10 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
             <Input name="comment" maxLength={500} placeholder="e.g. Start rollout" />
           </Field>
           <div className={styles.actions}>
-            <Button variant="secondary" onClick={() => setConfirming(false)}>
+            <Button variant="outline" color="neutral" onClick={() => setConfirming(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" onClick={() => setConfirming(false)}>
+            <Button type="submit" variant="solid" onClick={() => setConfirming(false)}>
               Save changes
             </Button>
           </div>

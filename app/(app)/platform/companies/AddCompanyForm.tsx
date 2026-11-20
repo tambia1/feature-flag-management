@@ -37,7 +37,7 @@ export const AddCompanyForm = () => {
         <Field label="Admin password">
           <PasswordField key={state.success} name="password" label="Admin password" required />
         </Field>
-        <Button type="submit" variant="primary" disabled={isPending} className={styles.submit}>
+        <Button type="submit" variant="solid" disabled={isPending} className={styles.submit}>
           {isPending ? "Adding…" : "Add company"}
         </Button>
       </div>

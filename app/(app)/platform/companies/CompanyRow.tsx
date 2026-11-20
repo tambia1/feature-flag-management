@@ -145,6 +145,7 @@ export const CompanyRow = ({ company, admins, users, projects, flags, created }:
                   action={deleteCompany}
                   fields={{ companyId: company.id }}
                   triggerLabel="Delete"
+                  triggerColor="danger"
                   title="Delete company"
                   text={`This deletes "${company.name}" with its ${users} users and ${projects} projects, and all their flags.\nThis can't be undone.`}
                   confirmLabel="Delete"

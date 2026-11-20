@@ -2,7 +2,7 @@
 
 import { ReactNode, useActionState, useState } from "react";
 import type { FormState } from "@/app/types";
-import { Button } from "./Button";
+import { Button, type ButtonColor, type ButtonVariant } from "./Button";
 import { Dialog } from "./Dialog";
 import { Field } from "./Field";
 import { Input } from "./Input";
@@ -13,7 +13,8 @@ type Props = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
   fields: Record<string, string>;
   triggerLabel: string;
-  triggerVariant?: "primary" | "secondary" | "danger" | "link";
+  triggerVariant?: Exclude<ButtonVariant, "plain">;
+  triggerColor?: ButtonColor;
   title: string;
   text: ReactNode;
   confirmLabel: string;
@@ -27,6 +28,7 @@ export const ConfirmAction = ({
   fields,
   triggerLabel,
   triggerVariant = "link",
+  triggerColor = "accent",
   title,
   text,
   confirmLabel,
@@ -47,7 +49,7 @@ export const ConfirmAction = ({
 
   return (
     <>
-      <Button variant={triggerVariant} onClick={() => setOpen(true)} disabled={disabled}>
+      <Button variant={triggerVariant} color={triggerColor} onClick={() => setOpen(true)} disabled={disabled}>
         {triggerLabel}
       </Button>
       <Dialog open={open} title={title} onClose={() => setOpen(false)}>
@@ -63,10 +65,10 @@ export const ConfirmAction = ({
           )}
           <Message text={state.error} state="error" />
           <div className={styles.actions}>
-            <Button variant="secondary" onClick={() => setOpen(false)}>
+            <Button variant="outline" color="neutral" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" variant={danger ? "danger" : "primary"} disabled={isPending}>
+            <Button type="submit" variant="solid" color={danger ? "danger" : "accent"} disabled={isPending}>
               {isPending ? "Working…" : confirmLabel}
             </Button>
           </div>

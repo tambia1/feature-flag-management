@@ -16,7 +16,7 @@ export const DeleteContextButton = ({ contextId, disabled }: Props) => {
   return (
     <form action={formAction}>
       <input type="hidden" name="contextId" value={contextId} />
-      <Button type="submit" variant="link" disabled={disabled || isPending}>
+      <Button type="submit" variant="link" color="danger" disabled={disabled || isPending}>
         {isPending ? "Deleting…" : "Delete"}
       </Button>
       <Message text={state.error} state="error" />

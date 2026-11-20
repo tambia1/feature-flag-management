@@ -58,11 +58,11 @@ export default async function FlagsPage({ params, searchParams }: PageProps<"/pr
   ]);
 
   const newFlagButton = canEditFlags ? (
-    <LinkButton href={`/projects/${project.key}/flags/new?env=${environment.key}`} variant="primary">
+    <LinkButton href={`/projects/${project.key}/flags/new?env=${environment.key}`} variant="solid">
       <Plus size={16} /> New flag
     </LinkButton>
   ) : (
-    <Button variant="primary" disabled title="Only editors can create flags">
+    <Button variant="solid" disabled title="Only editors can create flags">
       + New flag
     </Button>
   );
