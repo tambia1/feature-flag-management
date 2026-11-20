@@ -23,16 +23,17 @@ Every task, whether a feature, a bug fix, a refactor or a config change, goes th
    gh pr create --base main --title "<what changed>" --body "<why, and how it was checked>"
    ```
 6. Wait for CI on the PR. Read the result with `gh pr checks <number>`. If a check fails, read its log (`gh run view <run-id> --log-failed`), fix it on the same branch and push again. CI runs again on every push.
-7. When every check has passed, tell the user and merge only after they agree, because the merge starts the Deploy workflow:
+7. Ask the user before merging, because the merge starts the Deploy workflow. Once they agree, turn on auto-merge, even while checks are still running:
    ```bash
-   gh pr merge <number> --merge --delete-branch
+   gh pr merge <number> --merge --auto --delete-branch
    ```
+   A ruleset on `main` requires all nine CI checks, so GitHub merges the PR the moment the last one passes and never before. If a check fails, the PR stays open: fix it and push, and auto-merge stays on.
 8. After the merge, switch back with `git switch main && git pull --ff-only`, then check that the Deploy run for the merge commit passed.
 
 ## Rules
 
 - Never push to `main` directly, and never commit on `main`.
-- Never merge a PR with a failing, cancelled or still-running check. Never use `--admin` or any other way around a failing check.
+- Never merge a PR with a failing, cancelled or still-running check. Never use `--admin`, never change or turn off the `main` ruleset, and never find any other way around a failing check.
 - One task per PR. Unrelated changes found along the way go in their own PR.
 - Merge with a merge commit (`--merge`), never squash or rebase, so `main` keeps every commit of the PR and the git graph shows where each branch split off and joined back. Delete the branch after merging: the merge commit keeps its history.
 - If `main` moved on while the PR was open, update the branch with `git merge origin/main` and let CI run again before merging.
