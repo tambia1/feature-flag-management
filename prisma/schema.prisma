@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Company {
-  id           String   @id @default(cuid())
-  name         String
-  isPlatform   Boolean  @default(false)
-  iconUrl      String?
-  iconThumbUrl String?
-  createdAt    DateTime @default(now())
+  id              String   @id @default(cuid())
+  name            String
+  isPlatform      Boolean  @default(false)
+  iconUrl         String?
+  iconThumbUrl    String?
+  slackWebhookUrl String?
+  createdAt       DateTime @default(now())
 
   users    User[]
   teams    Team[]

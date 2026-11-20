@@ -8,6 +8,7 @@ import { type LogWriter, writePlatformLog } from "@/lib/logs";
 import { prisma } from "@/lib/prisma";
 import { publishFlagChange } from "@/lib/pubsub";
 import { AuthError } from "@/lib/session";
+import { slackWebhookField } from "@/lib/slack";
 import { createUserWithPassword } from "@/lib/users";
 
 const MONTHS = 12;
@@ -51,7 +52,7 @@ type Company = { id: string; name: string };
 
 type NewCompany = { name: string; adminName: string; adminEmail: string; password: string };
 
-type CompanyChanges = { name: string; icon: File | null; removeIcon: boolean };
+type CompanyChanges = { name: string; icon: File | null; removeIcon: boolean; slackWebhookUrl?: string };
 
 const companyName = nameField("a company name");
 
@@ -106,8 +107,15 @@ export async function updateCompany(company: Company, changes: CompanyChanges, l
   const newName = companyName.parse(changes.name);
   const hasNewIcon = changes.icon !== null && changes.icon.size > 0;
   const removeIcon = !hasNewIcon && changes.removeIcon;
+  const newSlackWebhookUrl =
+    changes.slackWebhookUrl === undefined || changes.slackWebhookUrl.trim() === ""
+      ? null
+      : slackWebhookField.parse(changes.slackWebhookUrl);
+  const { slackWebhookUrl } = await prisma.company.findUniqueOrThrow({ where: { id: company.id }, select: { slackWebhookUrl: true } });
+  const renamed = newName !== company.name;
+  const slackChanged = changes.slackWebhookUrl !== undefined && newSlackWebhookUrl !== slackWebhookUrl;
 
-  if (newName === company.name && !hasNewIcon && !removeIcon) return false;
+  if (!renamed && !slackChanged && !hasNewIcon && !removeIcon) return false;
 
   if (hasNewIcon) {
     await setCompanyIcon(company, changes.icon, log);
@@ -115,10 +123,21 @@ export async function updateCompany(company: Company, changes: CompanyChanges, l
     await removeCompanyIcon(company, log);
   }
 
-  if (newName !== company.name) {
+  if (renamed || slackChanged) {
     await prisma.$transaction(async (tx) => {
-      await tx.company.update({ where: { id: company.id }, data: { name: newName } });
-      await log(tx, { action: "renamed company", targetType: "Company", target: newName, change: `${company.name} → ${newName}` });
+      if (renamed) {
+        await tx.company.update({ where: { id: company.id }, data: { name: newName } });
+        await log(tx, { action: "renamed company", targetType: "Company", target: newName, change: `${company.name} → ${newName}` });
+      }
+
+      if (slackChanged) {
+        await tx.company.update({ where: { id: company.id }, data: { slackWebhookUrl: newSlackWebhookUrl } });
+        await log(tx, {
+          action: newSlackWebhookUrl ? "changed Slack webhook" : "removed Slack webhook",
+          targetType: "Company",
+          target: newName,
+        });
+      }
     });
   }
 

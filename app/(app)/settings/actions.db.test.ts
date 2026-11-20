@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { createCompany, form, type TestCompany } from "@/test/factory";
 import { signInAs } from "@/test/session";
-import { createProject, deleteProject, deleteUser, renameTeam, rotateSdkKey, saveTeamPermissions } from "./actions";
+import { createProject, deleteProject, deleteUser, renameTeam, rotateSdkKey, saveTeamPermissions, updateCompany } from "./actions";
 
 const NO_PERMISSION = { error: "You don't have permission to do this." };
 
@@ -79,5 +79,40 @@ describe("company admin actions", () => {
     signInAs(acme.admin);
 
     expect(await deleteUser({}, form({ userId: acme.admin.id }))).toMatchObject({ error: "You can't delete yourself. Ask another admin." });
+  });
+});
+
+describe("company Slack webhook", () => {
+  const companyOf = (companyId: string) =>
+    prisma.company.findUniqueOrThrow({ where: { id: companyId }, select: { name: true, slackWebhookUrl: true } });
+  const url = "https://hooks.slack.com/services/T000/B000/abcd1234";
+
+  it("refuses a member", async () => {
+    signInAs(acme.editor);
+
+    expect(await updateCompany({}, form({ name: acme.company.name, slackWebhookUrl: url }))).toMatchObject(NO_PERMISSION);
+    expect((await companyOf(acme.company.id)).slackWebhookUrl).toBeNull();
+  });
+
+  it("refuses a URL that isn't a Slack webhook and saves nothing", async () => {
+    signInAs(acme.admin);
+
+    expect(await updateCompany({}, form({ name: "Renamed", slackWebhookUrl: "https://evil.example.com/hook" }))).toMatchObject({
+      error: "Paste a Slack webhook URL that starts with https://hooks.slack.com/services/",
+    });
+    expect(await companyOf(acme.company.id)).toEqual({ name: acme.company.name, slackWebhookUrl: null });
+  });
+
+  it("lets an admin save it, and clear it to disconnect, for their own company only", async () => {
+    signInAs(acme.admin);
+
+    expect(await updateCompany({}, form({ name: acme.company.name, slackWebhookUrl: url }))).toEqual({ success: "Saved" });
+    expect((await companyOf(acme.company.id)).slackWebhookUrl).toBe(url);
+    expect((await companyOf(other.company.id)).slackWebhookUrl).toBeNull();
+
+    expect(await updateCompany({}, form({ name: acme.company.name, slackWebhookUrl: url }))).toEqual({ success: "No changes" });
+
+    expect(await updateCompany({}, form({ name: acme.company.name, slackWebhookUrl: "" }))).toEqual({ success: "Saved" });
+    expect((await companyOf(acme.company.id)).slackWebhookUrl).toBeNull();
   });
 });

@@ -52,7 +52,7 @@ export async function updateCompany(_state: FormState, formData: FormData): Prom
     const admin = await assertCompanyAdmin();
     const changed = await updateCompanyDetails(
       ownCompany(admin),
-      { name: text(formData, "name"), icon: null, removeIcon: false },
+      { name: text(formData, "name"), icon: null, removeIcon: false, slackWebhookUrl: text(formData, "slackWebhookUrl") },
       companyLog(admin),
     );
     refresh();

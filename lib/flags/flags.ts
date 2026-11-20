@@ -171,6 +171,7 @@ export async function setFlagOn(
 
   if (changed) {
     await notifySlack(
+      actor.companyId,
       `Company: *${actor.companyName}*, User: *${actor.name}*, Env: *${environment.name}*, Flag: *${flag.key}* - ${isOn ? "🟢" : "🔴"} ${comment ? `\n> ${comment}` : ""}`,
     );
   }
