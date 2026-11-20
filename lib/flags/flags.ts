@@ -8,6 +8,7 @@ import { writeLog } from "../logs";
 import { prisma } from "../prisma";
 import { publishFlagChange } from "../pubsub";
 import { AuthError } from "../session";
+import { notifySlack } from "../slack";
 import { describeTargetingChange, type TargetingSnapshot } from "./describe";
 import { formatValue, parseVariationValue } from "./values";
 
@@ -132,14 +133,14 @@ export async function setFlagOn(
   const environment = await prisma.environment.findUniqueOrThrow({ where: { id: environmentId }, select: { name: true } });
   const change = isOn ? "turned on" : "turned off";
 
-  await prisma.$transaction(async (tx) => {
+  const changed = await prisma.$transaction(async (tx) => {
     const current = await tx.flagEnvironment.findUniqueOrThrow({
       where: { flagId_environmentId: { flagId: flag.id, environmentId } },
       select: { isOn: true },
     });
 
     if (current.isOn === isOn) {
-      return;
+      return false;
     }
 
     await tx.flagEnvironment.update({ where: { flagId_environmentId: { flagId: flag.id, environmentId } }, data: { isOn } });
@@ -162,9 +163,17 @@ export async function setFlagOn(
       change: isOn ? "off → on" : "on → off",
       comment,
     });
+
+    return true;
   });
 
   await publishFlagChange([environmentId]);
+
+  if (changed) {
+    await notifySlack(
+      `Company: *${actor.companyName}*, User: *${actor.name}*, Env: *${environment.name}*, Flag: *${flag.key}* - ${isOn ? "🟢" : "🔴"} ${comment ? `\n> ${comment}` : ""}`,
+    );
+  }
 }
 
 const clauseSchema = z.object({
