@@ -46,7 +46,6 @@ jobs:
           CHECKS: ${{ needs.checks.result }}
           DEPLOY: ${{ needs.deploy.result }}
           ENABLED: ${{ vars.PRODUCTION_DEPLOY_ENABLED }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           if [ "$CHECKS" != "success" ]; then
@@ -58,6 +57,5 @@ jobs:
           else
             TEXT=":rocket: Deployed to production"
           fi
-          TITLE="${COMMIT_MESSAGE#*$'\n\n'}"
-          TEXT="$TEXT: ${TITLE%%$'\n'*} (${GITHUB_SHA::7} by $GITHUB_ACTOR) <$RUN_URL|View run>"
+          TEXT="$TEXT - (${GITHUB_SHA::7} by $GITHUB_ACTOR) <$RUN_URL|View run>"
           jq -n --arg text "$TEXT" '{text: $text}' | curl -sS --fail -X POST -H 'Content-Type: application/json' --data @- "$SLACK_WEBHOOK_URL"
