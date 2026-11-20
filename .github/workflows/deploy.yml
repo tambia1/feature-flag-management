@@ -37,14 +37,27 @@ jobs:
     needs: [checks, deploy]
     if: always()
     runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - name: Slack message (success / fail)
         if: env.SLACK_WEBHOOK_URL != ''
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          CHECKS: ${{ needs.checks.result }}
+          DEPLOY: ${{ needs.deploy.result }}
+          ENABLED: ${{ vars.PRODUCTION_DEPLOY_ENABLED }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          STATUS="${{ needs.checks.result == 'success' && needs.deploy.result || 'failure' }}"
-          ICON=$([ "$STATUS" = "success" ] && echo ":white_check_mark:" || echo ":x:")
-          curl -sS -X POST -H 'Content-Type: application/json' \
-            -d "{\"text\": \"$ICON Deploy $STATUS: ${{ github.repository }}@${GITHUB_SHA::7} by ${{ github.actor }}\"}" \
-            "$SLACK_WEBHOOK_URL"
+          if [ "$CHECKS" != "success" ]; then
+            TEXT=":x: Checks failed on main, nothing was deployed"
+          elif [ "$DEPLOY" != "success" ]; then
+            TEXT=":x: Deploy to production failed"
+          elif [ "$ENABLED" != "true" ]; then
+            TEXT=":white_check_mark: Checks passed on main (production deploy is off)"
+          else
+            TEXT=":rocket: Deployed to production"
+          fi
+          TITLE="${COMMIT_MESSAGE#*$'\n\n'}"
+          TEXT="$TEXT: ${TITLE%%$'\n'*} (${GITHUB_SHA::7} by $GITHUB_ACTOR) <$RUN_URL|View run>"
+          jq -n --arg text "$TEXT" '{text: $text}' | curl -sS --fail -X POST -H 'Content-Type: application/json' --data @- "$SLACK_WEBHOOK_URL"
