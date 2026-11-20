@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { refresh } from "next/cache";
 import type { FormState } from "@/app/types";
 import { runAction, text } from "@/lib/actions";
 import { deleteContext as remove, findContext } from "@/lib/flags/contexts";
@@ -15,6 +15,6 @@ export async function deleteContext(_state: FormState, formData: FormData): Prom
 
     await remove(user, context);
 
-    redirect(`/projects/${context.environment.project.key}/contexts?env=${context.environment.key}`);
+    refresh();
   });
 }

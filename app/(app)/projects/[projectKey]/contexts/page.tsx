@@ -15,6 +15,7 @@ import { AutoRefresh } from "../../../_components/AutoRefresh";
 import { ListFilters } from "../../../_components/ListFilters";
 import { NoAccess } from "../../../_components/NoAccess";
 import { Page } from "../../../_components/Page";
+import { DeleteContextButton } from "./DeleteContextButton";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = { title: "Contexts" };
@@ -35,7 +36,7 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
     );
   }
 
-  const { project, environment } = context;
+  const { project, environment, role } = context;
   const search = searchString(query.search).trim();
 
   const [connectedApps, contexts] = await Promise.all([
@@ -72,7 +73,7 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
           <>
             <ListFilters withStatus={false} placeholder="Search by context key" />
             <Table
-              headers={["Context key", "App", "Attributes", "Last seen"]}
+              headers={["Context key", "App", "Attributes", "Last seen", ""]}
               isEmpty={contexts.length === 0}
               emptyText="No contexts match your search."
             >
@@ -90,6 +91,9 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
                       .join(", ") || "—"}
                   </td>
                   <td className={styles.number}>{formatDuration(now - item.lastSeenAt.getTime())} ago</td>
+                  <td className={styles.actions}>
+                    <DeleteContextButton contextId={item.id} disabled={role !== "EDITOR"} />
+                  </td>
                 </tr>
               ))}
             </Table>
