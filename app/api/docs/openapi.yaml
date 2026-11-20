@@ -78,28 +78,6 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
 
-  /api/sdk/evaluate:
-    post:
-      tags: [SDK]
-      deprecated: true
-      summary: Old name for /api/sdk/flags
-      description: Works the same as `/api/sdk/flags`. Kept so apps on older SDK versions keep working.
-      security:
-        - sdkKey: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/FlagsRequest" }
-      responses:
-        "200":
-          description: Flag key → value
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties: {}
-
   /api/sdk/stream:
     get:
       tags: [SDK]
