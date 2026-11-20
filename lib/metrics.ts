@@ -17,12 +17,12 @@ function metric<T extends client.Metric>(name: string, create: () => T): T {
 }
 
 export const sdkMetrics = {
-  evaluateDuration: metric(
-    "sdk_evaluate_duration_seconds",
+  flagsDuration: metric(
+    "sdk_flags_duration_seconds",
     () =>
       new client.Histogram({
-        name: "sdk_evaluate_duration_seconds",
-        help: "SDK evaluate latency",
+        name: "sdk_flags_duration_seconds",
+        help: "SDK flags request latency",
         labelNames: ["status"],
         buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1],
         registers: [registry],

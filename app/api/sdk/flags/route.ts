@@ -13,7 +13,7 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const stopTimer = sdkMetrics.evaluateDuration.startTimer();
+  const stopTimer = sdkMetrics.flagsDuration.startTimer();
   const respond = (body: unknown, status: number) => {
     stopTimer({ status: String(status) });
     return Response.json(body, { status, headers: SDK_CORS_HEADERS });

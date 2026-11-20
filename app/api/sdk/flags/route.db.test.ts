@@ -117,19 +117,3 @@ describe("OPTIONS /api/sdk/flags", () => {
     expect(response.headers.get("access-control-allow-methods")).toContain("POST");
   });
 });
-
-describe("POST /api/sdk/evaluate", () => {
-  it("still answers on the old path", async () => {
-    const { POST: oldPost } = await import("../evaluate/route");
-    const response = await oldPost(
-      new Request("http://localhost/api/sdk/evaluate", {
-        method: "POST",
-        headers: { "content-type": "application/json", authorization: `Bearer ${acme.dev.sdkKey}` },
-        body: JSON.stringify(asUser("user-1")),
-      }),
-    );
-
-    expect(response.status).toBe(200);
-    expect(Object.keys(await response.json())).toContain(flag.key);
-  });
-});

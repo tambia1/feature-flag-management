@@ -37,17 +37,17 @@ export type ReportedServer = ServerStatus & { isSilent: boolean; isThisServer: b
 const globalForStatus = globalThis as unknown as { serverStatusSampler?: Sampler };
 
 async function readSample(): Promise<Sample> {
-  const [evaluate, rateLimited] = await Promise.all([sdkMetrics.evaluateDuration.get(), sdkMetrics.rateLimited.get()]);
+  const [flagsRequests, rateLimited] = await Promise.all([sdkMetrics.flagsDuration.get(), sdkMetrics.rateLimited.get()]);
   const sample: Sample = { at: Date.now(), requests: 0, latencySeconds: 0, errors: 0, rateLimited: 0 };
 
-  for (const value of evaluate.values) {
-    if (value.metricName === "sdk_evaluate_duration_seconds_count") {
+  for (const value of flagsRequests.values) {
+    if (value.metricName === "sdk_flags_duration_seconds_count") {
       sample.requests += value.value;
 
       if (String(value.labels.status).startsWith("5")) {
         sample.errors += value.value;
       }
-    } else if (value.metricName === "sdk_evaluate_duration_seconds_sum") {
+    } else if (value.metricName === "sdk_flags_duration_seconds_sum") {
       sample.latencySeconds += value.value;
     }
   }
