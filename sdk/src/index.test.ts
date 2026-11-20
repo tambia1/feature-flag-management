@@ -9,7 +9,7 @@ describe("createFlagClient", () => {
       "fetch",
       vi.fn<typeof globalThis.fetch>(async () => Response.json({ "new-checkout": true })),
     );
-    const client = createFlagClient({ baseUrl: "http://flags", sdkKey: "sdk-1", context: { key: "u1" }, stream: false });
+    const client = createFlagClient({ baseUrl: "http://flags", envSdkKey: "sdk-1", context: { key: "u1" }, stream: false });
     await client.ready;
 
     expect(client.getFlag("new-checkout", false)).toBe(true);
@@ -21,7 +21,7 @@ describe("createFlagClient", () => {
     vi.stubGlobal("fetch", fetchMock);
     const client = createFlagClient({
       baseUrl: "http://flags",
-      sdkKey: "sdk-1",
+      envSdkKey: "sdk-1",
       context: { key: "u1" },
       application: "checkout-web",
       stream: false,
@@ -39,7 +39,7 @@ describe("createFlagClient", () => {
         throw new Error("offline");
       }),
     );
-    const client = createFlagClient({ baseUrl: "http://flags", sdkKey: "sdk-1", context: { key: "u1" }, stream: false, onError });
+    const client = createFlagClient({ baseUrl: "http://flags", envSdkKey: "sdk-1", context: { key: "u1" }, stream: false, onError });
     await client.ready;
 
     expect(client.getFlag("new-checkout", false)).toBe(false);
@@ -49,7 +49,7 @@ describe("createFlagClient", () => {
   it("keeps the last values when a later fetch fails", async () => {
     const fetchMock = vi.fn<typeof globalThis.fetch>(async () => Response.json({ banner: "Welcome!" }));
     vi.stubGlobal("fetch", fetchMock);
-    const client = createFlagClient({ baseUrl: "http://flags", sdkKey: "sdk-1", context: { key: "u1" }, stream: false });
+    const client = createFlagClient({ baseUrl: "http://flags", envSdkKey: "sdk-1", context: { key: "u1" }, stream: false });
     await client.ready;
 
     fetchMock.mockImplementationOnce(async () => new Response("down", { status: 503 }));

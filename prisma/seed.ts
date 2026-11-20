@@ -25,7 +25,7 @@ type SeedUser = { id: string; name: string; teams: string[] };
 const platformProject: SeedProject = {
   project: { name: "Platform Project", key: "platform-project" },
   environments: [
-    { name: "Development", key: "development", sdkKey: process.env.NEXT_PUBLIC_FLAGS_SDK_KEY },
+    { name: "Development", key: "development", sdkKey: process.env.NEXT_PUBLIC_FLAGS_ENV_SDK_KEY },
     { name: "Staging", key: "staging" },
     { name: "Production", key: "production" },
   ],

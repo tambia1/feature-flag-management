@@ -66,7 +66,7 @@ export const EnvironmentRow = ({ environment }: Props) => {
               action={rotateSdkKey}
               fields={{ environmentId: environment.id }}
               triggerLabel="Rotate"
-              title="Rotate SDK key?"
+              title="Rotate environment SDK key?"
               text={`A new key is created for ${environment.name}.\nApps using the old key stop getting flags.`}
               confirmLabel="Rotate key"
             />
@@ -95,7 +95,7 @@ export const EnvironmentRow = ({ environment }: Props) => {
               fields={{ environmentId: environment.id }}
               triggerLabel="Delete"
               title="Delete environment?"
-              text={`Delete "${environment.name}"? Its flag settings and SDK key are removed. Apps using its key stop getting flags.`}
+              text={`Delete "${environment.name}"? Its flag settings and environment SDK key are removed. Apps using its key stop getting flags.`}
               confirmLabel="Delete"
             />
           </>

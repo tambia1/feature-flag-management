@@ -9,9 +9,9 @@ const FlagsContext = createContext<FlagClient | null>(null);
 let shared: { userKey: string; client: FlagClient } | null = null;
 
 const clientFor = (userKey: string): FlagClient | null => {
-  const sdkKey = process.env.NEXT_PUBLIC_FLAGS_SDK_KEY;
+  const envSdkKey = process.env.NEXT_PUBLIC_FLAGS_ENV_SDK_KEY;
 
-  if (typeof window === "undefined" || !sdkKey) {
+  if (typeof window === "undefined" || !envSdkKey) {
     return null;
   }
 
@@ -21,7 +21,7 @@ const clientFor = (userKey: string): FlagClient | null => {
       userKey,
       client: createFlagClient({
         baseUrl: process.env.NEXT_PUBLIC_FLAGS_BASE_URL ?? "",
-        sdkKey,
+        envSdkKey,
         context: { key: userKey },
         application: "Feature Flag Management",
       }),

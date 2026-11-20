@@ -134,7 +134,7 @@ export async function rotateSdkKey(actor: SessionUser, environment: Environment)
   await prisma.$transaction(async (tx) => {
     await tx.environment.update({ where: { id: environment.id }, data: { sdkKey: generateSdkKey() } });
     await writeLog(tx, actor, {
-      action: "rotated SDK key",
+      action: "rotated environment SDK key",
       targetType: "Environment",
       target: `${environment.project.name} · ${environment.name}`,
     });

@@ -6,7 +6,7 @@ info:
     The admin screens use Server Actions, so they are not listed here.
     These are the HTTP endpoints: health, metrics and the SDK endpoints that customer apps call.
 
-    SDK endpoints need an environment's SDK key (Settings → Projects).
+    SDK endpoints need an environment SDK key (Settings → Projects). Each environment of each project has its own.
     Click **Authorize** and paste it to try them.
 
 tags:
@@ -133,7 +133,7 @@ components:
       type: apiKey
       in: header
       name: Authorization
-      description: The environment's SDK key (`sdk-…`)
+      description: The environment SDK key (`sdk-…`)
     metricsToken:
       type: http
       scheme: bearer

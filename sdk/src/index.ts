@@ -4,7 +4,7 @@ export type FlagContext = { key: string; [attribute: string]: string | number | 
 
 export type FlagClientOptions = {
   baseUrl: string;
-  sdkKey: string;
+  envSdkKey: string;
   context: FlagContext;
   application?: string;
   stream?: boolean;
@@ -38,7 +38,7 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
     try {
       const response = await fetch(`${baseUrl}/api/sdk/flags`, {
         method: "POST",
-        headers: { Authorization: options.sdkKey, "Content-Type": "application/json" },
+        headers: { Authorization: options.envSdkKey, "Content-Type": "application/json" },
         body: JSON.stringify({ context, application: options.application }),
       });
 
@@ -66,7 +66,7 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
     try {
       const query = options.application ? `?application=${encodeURIComponent(options.application)}` : "";
       const response = await fetch(`${baseUrl}/api/sdk/stream${query}`, {
-        headers: { Authorization: options.sdkKey },
+        headers: { Authorization: options.envSdkKey },
         signal: streamAbort.signal,
       });
 
