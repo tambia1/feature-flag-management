@@ -5,7 +5,7 @@ description: Bump the app version once in every pull request, so each merge to m
 
 # Versioning
 
-Every pull request raises the app's minor version by one. Work reaches `main` only through squash-merged pull requests (see the pull-requests skill), so each merge to `main` is one commit with one bump.
+Every pull request raises the app's minor version by one. Work reaches `main` only through pull requests merged with a merge commit (see the pull-requests skill), so each merge brings exactly one version bump to `main`.
 
 ## How
 
