@@ -156,18 +156,18 @@ model Environment {
 }
 
 model Context {
-  id            String   @id @default(cuid())
-  environmentId String
-  application   String   @default("")
-  key           String
-  attributes    Json
-  results       Json
-  lastSeenAt    DateTime
-  createdAt     DateTime @default(now())
+  id              String   @id @default(cuid())
+  environmentId   String
+  applicationName String   @default("")
+  key             String
+  attributes      Json
+  results         Json
+  lastSeenAt      DateTime
+  createdAt       DateTime @default(now())
 
   environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
 
-  @@unique([environmentId, application, key])
+  @@unique([environmentId, applicationName, key])
   @@index([environmentId, lastSeenAt])
   @@map("contexts")
 }

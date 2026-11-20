@@ -36,7 +36,7 @@ export default async function ContextPage({ params, searchParams }: PageProps<"/
   const { project } = projectContext;
   const item = await prisma.context.findFirst({
     where: { id: contextId, environmentId: { in: project.environments.map((environment) => environment.id) } },
-    select: { key: true, application: true, attributes: true, results: true, lastSeenAt: true, environmentId: true },
+    select: { key: true, applicationName: true, attributes: true, results: true, lastSeenAt: true, environmentId: true },
   });
 
   if (!item) {
@@ -52,7 +52,7 @@ export default async function ContextPage({ params, searchParams }: PageProps<"/
   return (
     <Page
       title={item.key}
-      subtitle={`${item.application || "Unnamed app"} · ${project.name} · ${environment.name} · last seen ${formatDuration(Date.now() - item.lastSeenAt.getTime())} ago`}
+      subtitle={`${item.applicationName || "Unnamed app"} · ${project.name} · ${environment.name} · last seen ${formatDuration(Date.now() - item.lastSeenAt.getTime())} ago`}
     >
       <Link href={`/projects/${project.key}/contexts?env=${environment.key}`} className={styles.back}>
         <ArrowLeft size={14} /> Contexts

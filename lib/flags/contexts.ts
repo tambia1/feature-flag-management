@@ -38,11 +38,11 @@ export function startContextCleanup(): void {
 
 export function recordContext(
   environmentId: string,
-  application: string,
+  applicationName: string,
   context: EvaluationContext,
   results: Record<string, EvaluationResult>,
 ): void {
-  const id = `${environmentId}|${application}|${context.key}`;
+  const id = `${environmentId}|${applicationName}|${context.key}`;
   const signature = JSON.stringify([context, results]);
   const now = Date.now();
   const last = lastWrites.get(id);
@@ -67,8 +67,8 @@ export function recordContext(
   try {
     prisma.context
       .upsert({
-        where: { environmentId_application_key: { environmentId, application, key } },
-        create: { environmentId, application, key, ...data },
+        where: { environmentId_applicationName_key: { environmentId, applicationName, key } },
+        create: { environmentId, applicationName, key, ...data },
         update: data,
         select: { id: true },
       })
@@ -86,7 +86,7 @@ export async function findContext(companyId: string, contextId: string) {
     select: {
       id: true,
       key: true,
-      application: true,
+      applicationName: true,
       environmentId: true,
       environment: { select: { key: true, project: { select: { key: true } } } },
     },
@@ -105,7 +105,7 @@ export async function deleteContext(actor: SessionUser, context: StoredContext):
     await writeLog(tx, actor, {
       action: "deleted context",
       targetType: "Context",
-      target: `${context.application || "Unnamed app"} · ${context.key}`,
+      target: `${context.applicationName || "Unnamed app"} · ${context.key}`,
     });
   });
 }

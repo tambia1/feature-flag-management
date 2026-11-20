@@ -96,15 +96,15 @@ describe("POST /api/sdk/flags", () => {
   });
 
   it("records the context it saw", async () => {
-    await getFlags(acme.dev.sdkKey, { context: { key: "recorded-user", country: "DE" }, application: "web" });
+    await getFlags(acme.dev.sdkKey, { context: { key: "recorded-user", country: "DE" }, applicationName: "web" });
 
     await vi.waitFor(async () => {
       expect(
         await prisma.context.findFirst({
           where: { environmentId: acme.dev.id, key: "recorded-user" },
-          select: { application: true, attributes: true },
+          select: { applicationName: true, attributes: true },
         }),
-      ).toEqual({ application: "web", attributes: { country: "DE" } });
+      ).toEqual({ applicationName: "web", attributes: { country: "DE" } });
     });
   });
 });

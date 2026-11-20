@@ -44,7 +44,7 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
       where: { environmentId: environment.id, ...(search && { key: { contains: search, mode: "insensitive" } }) },
       orderBy: { lastSeenAt: "desc" },
       take: LIMIT,
-      select: { id: true, key: true, application: true, attributes: true, lastSeenAt: true },
+      select: { id: true, key: true, applicationName: true, attributes: true, lastSeenAt: true },
     }),
   ]);
 
@@ -56,8 +56,8 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
         <h2 className={styles.heading}>Connected apps</h2>
         <Table headers={["App", "Open connections"]} isEmpty={connectedApps.length === 0} emptyText="No apps are connected right now.">
           {connectedApps.map((app) => (
-            <tr key={app.application}>
-              <td>{app.application || <span className={styles.muted}>Unnamed app</span>}</td>
+            <tr key={app.applicationName}>
+              <td>{app.applicationName || <span className={styles.muted}>Unnamed app</span>}</td>
               <td className={styles.number}>{app.connections}</td>
             </tr>
           ))}
@@ -83,7 +83,7 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
                       {item.key}
                     </Link>
                   </td>
-                  <td>{item.application || <span className={styles.muted}>Unnamed app</span>}</td>
+                  <td>{item.applicationName || <span className={styles.muted}>Unnamed app</span>}</td>
                   <td className={styles.attributes}>
                     {Object.entries(item.attributes as Record<string, JsonValue>)
                       .map(([name, value]) => `${name}: ${formatValue(value)}`)

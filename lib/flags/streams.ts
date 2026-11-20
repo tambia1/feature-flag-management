@@ -3,9 +3,9 @@ type OpenStreams = Map<string, Map<string, number>>;
 const globalForStreams = globalThis as unknown as { openStreams?: OpenStreams };
 const openStreams = (globalForStreams.openStreams ??= new Map());
 
-export function trackStream(environmentId: string, application: string): () => void {
+export function trackStream(environmentId: string, applicationName: string): () => void {
   const byApplication = openStreams.get(environmentId) ?? new Map<string, number>();
-  byApplication.set(application, (byApplication.get(application) ?? 0) + 1);
+  byApplication.set(applicationName, (byApplication.get(applicationName) ?? 0) + 1);
   openStreams.set(environmentId, byApplication);
 
   let open = true;
@@ -16,12 +16,12 @@ export function trackStream(environmentId: string, application: string): () => v
     }
 
     open = false;
-    const count = (byApplication.get(application) ?? 1) - 1;
+    const count = (byApplication.get(applicationName) ?? 1) - 1;
 
     if (count > 0) {
-      byApplication.set(application, count);
+      byApplication.set(applicationName, count);
     } else {
-      byApplication.delete(application);
+      byApplication.delete(applicationName);
     }
 
     if (byApplication.size === 0) {

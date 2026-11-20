@@ -11,12 +11,12 @@ export async function getConnectedApps(environmentId: string): Promise<Connected
       continue;
     }
 
-    for (const [application, connections] of Object.entries(server.streams?.[environmentId] ?? {})) {
-      totals.set(application, (totals.get(application) ?? 0) + connections);
+    for (const [applicationName, connections] of Object.entries(server.streams?.[environmentId] ?? {})) {
+      totals.set(applicationName, (totals.get(applicationName) ?? 0) + connections);
     }
   }
 
   return [...totals]
-    .map(([application, connections]) => ({ application, connections }))
-    .sort((a, b) => b.connections - a.connections || a.application.localeCompare(b.application));
+    .map(([applicationName, connections]) => ({ applicationName, connections }))
+    .sort((a, b) => b.connections - a.connections || a.applicationName.localeCompare(b.applicationName));
 }

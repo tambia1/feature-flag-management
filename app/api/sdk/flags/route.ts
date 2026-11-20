@@ -9,7 +9,7 @@ import { readSdkKey, SDK_CORS_HEADERS, takeRateLimitToken } from "@/lib/sdk";
 
 const bodySchema = z.object({
   context: z.object({ key: z.string().min(1).max(256) }).catchall(z.union([z.string(), z.number(), z.boolean(), z.null()])),
-  application: z.string().trim().max(100).optional(),
+  applicationName: z.string().trim().max(100).optional(),
 });
 
 export async function POST(request: Request) {
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
     const context = parsed.data.context as EvaluationContext;
     const results = getFlagResults(environment.flags, context);
-    recordContext(environment.environmentId, parsed.data.application ?? "", context, results);
+    recordContext(environment.environmentId, parsed.data.applicationName ?? "", context, results);
 
     return respond(Object.fromEntries(Object.entries(results).map(([key, result]) => [key, result.value])), 200);
   } catch (err) {
