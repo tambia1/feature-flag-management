@@ -118,6 +118,6 @@ export type ServiceCheck = {
 };
 
 export type ConnectedApp = {
-  application: string;
+  applicationName: string;
   connections: number;
 };

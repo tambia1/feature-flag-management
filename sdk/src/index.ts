@@ -6,8 +6,8 @@ export type FlagClientOptions = {
   baseUrl: string;
   envSdkKey: string;
   context: FlagContext;
-  application?: string;
-  stream?: boolean;
+  applicationName?: string;
+  isLiveUpdate?: boolean;
   onError?: (error: unknown) => void;
 };
 
@@ -39,7 +39,7 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
       const response = await fetch(`${baseUrl}/api/sdk/flags`, {
         method: "POST",
         headers: { Authorization: options.envSdkKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ context, application: options.application }),
+        body: JSON.stringify({ context, applicationName: options.applicationName }),
       });
 
       if (!response.ok) {
@@ -64,7 +64,7 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
     streamAbort = new AbortController();
 
     try {
-      const query = options.application ? `?application=${encodeURIComponent(options.application)}` : "";
+      const query = options.applicationName ? `?applicationName=${encodeURIComponent(options.applicationName)}` : "";
       const response = await fetch(`${baseUrl}/api/sdk/stream${query}`, {
         headers: { Authorization: options.envSdkKey },
         signal: streamAbort.signal,
@@ -109,7 +109,7 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
 
   const ready = refresh();
 
-  if (options.stream !== false) {
+  if (options.isLiveUpdate !== false) {
     void ready.then(() => listen());
   }
 

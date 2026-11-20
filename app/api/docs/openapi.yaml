@@ -47,7 +47,7 @@ paths:
             schema: { $ref: "#/components/schemas/FlagsRequest" }
             example:
               context: { key: user-42, country: IL }
-              application: checkout-web
+              applicationName: checkout-web
       responses:
         "200":
           description: Flag key → value
@@ -89,7 +89,7 @@ paths:
       security:
         - sdkKey: []
       parameters:
-        - name: application
+        - name: applicationName
           in: query
           required: false
           description: The app's name, shown under Connected apps on the Contexts page
@@ -162,7 +162,7 @@ components:
               - { type: string }
               - { type: number }
               - { type: boolean }
-        application:
+        applicationName:
           type: string
           maxLength: 100
           description: The app's name, shown on the Contexts page

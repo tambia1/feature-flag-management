@@ -23,7 +23,7 @@ const clientFor = (userKey: string): FlagClient | null => {
         baseUrl: process.env.NEXT_PUBLIC_FLAGS_BASE_URL ?? "",
         envSdkKey,
         context: { key: userKey },
-        application: "Feature Flag Management",
+        applicationName: "Feature Flag Management",
       }),
     };
   }

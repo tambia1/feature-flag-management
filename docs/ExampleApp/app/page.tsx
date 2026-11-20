@@ -42,7 +42,7 @@ export default function Home() {
       baseUrl: process.env.NEXT_PUBLIC_FLAGS_BASE_URL ?? "",
       envSdkKey: process.env.NEXT_PUBLIC_FLAGS_ENV_SDK_KEY ?? "",
       context: { key: userKey, country: "IL", email: "example-user@company.com" },
-      application: "example-app",
+      applicationName: "example-app",
     });
 
     const update = () => setValue(client.getFlag("test", false));

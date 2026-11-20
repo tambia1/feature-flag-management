@@ -40,7 +40,7 @@ export const flags = createFlagClient({
   baseUrl: "${baseUrl}",
   envSdkKey: "sdk-…",
   context: { key: "user-42", email: "dana@example.com", country: "IL" },
-  application: "checkout-web",
+  applicationName: "checkout-web",
 });
 
 await flags.ready;
@@ -119,7 +119,7 @@ export async function flagsFor(userId: string) {
     baseUrl: process.env.FLAGS_URL!,
     envSdkKey: process.env.FLAGS_ENV_SDK_KEY!,
     context: { key: userId },
-    stream: false,
+    isLiveUpdate: false,
   });
   await flags.ready;
   return flags;
@@ -173,7 +173,7 @@ flags.close();`}
             </tr>
             <tr>
               <td>
-                <code>application</code>
+                <code>applicationName</code>
               </td>
               <td>No</td>
               <td>
@@ -182,7 +182,7 @@ flags.close();`}
             </tr>
             <tr>
               <td>
-                <code>stream</code>
+                <code>isLiveUpdate</code>
               </td>
               <td>No</td>
               <td>

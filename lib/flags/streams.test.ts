@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { openStreamsByEnvironment, trackStream } from "./streams";
 
 describe("trackStream", () => {
-  it("counts open streams per environment and application", () => {
+  it("counts open streams per environment and application name", () => {
     const closeA = trackStream("env-1", "web");
     const closeB = trackStream("env-1", "web");
     const closeC = trackStream("env-1", "ios");

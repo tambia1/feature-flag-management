@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     return Response.json({ error: "Unknown SDK key" }, { status: 401, headers: SDK_CORS_HEADERS });
   }
 
-  const application = (new URL(request.url).searchParams.get("application") ?? "").trim().slice(0, 100);
+  const applicationName = (new URL(request.url).searchParams.get("applicationName") ?? "").trim().slice(0, 100);
   const encoder = new TextEncoder();
   let cleanup = () => {};
 
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
       send("retry: 3000\nevent: ready\ndata: {}\n\n");
       sdkMetrics.openStreams.inc();
-      const untrack = trackStream(environment.environmentId, application);
+      const untrack = trackStream(environment.environmentId, applicationName);
 
       const unsubscribe = onFlagChange((environmentId) => {
         if (environmentId === environment.environmentId) {
