@@ -33,18 +33,18 @@ paths:
               schema: { $ref: "#/components/schemas/Health" }
               example: { status: error, database: unreachable }
 
-  /api/sdk/evaluate:
+  /api/sdk/flags:
     post:
       tags: [SDK]
       summary: Get the value of every flag for a user
-      description: Evaluates every flag in the SDK key's environment for the given context. Limited to 200 requests per second per SDK key.
+      description: Returns the value of every flag in the SDK key's environment for the given context, and saves the context so it shows on the Contexts page. Limited to 200 requests per second per SDK key.
       security:
         - sdkKey: []
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/EvaluateRequest" }
+            schema: { $ref: "#/components/schemas/FlagsRequest" }
             example:
               context: { key: user-42, country: IL }
               application: checkout-web
@@ -78,13 +78,35 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
 
+  /api/sdk/evaluate:
+    post:
+      tags: [SDK]
+      deprecated: true
+      summary: Old name for /api/sdk/flags
+      description: Works the same as `/api/sdk/flags`. Kept so apps on older SDK versions keep working.
+      security:
+        - sdkKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FlagsRequest" }
+      responses:
+        "200":
+          description: Flag key → value
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+
   /api/sdk/stream:
     get:
       tags: [SDK]
       summary: Listen for flag changes (Server-Sent Events)
       description: |
         Keeps the connection open. Sends `ready` when connected, then `changed` whenever a flag in the environment changes,
-        and a `: ping` comment every 25 seconds. When you get `changed`, call `/api/sdk/evaluate` again.
+        and a `: ping` comment every 25 seconds. When you get `changed`, call `/api/sdk/flags` again.
         Swagger UI cannot show a stream that never ends; try it with `curl -N`.
       security:
         - sdkKey: []
@@ -147,7 +169,7 @@ components:
         status: { type: string, enum: [ok, error] }
         database: { type: string, enum: [unreachable] }
 
-    EvaluateRequest:
+    FlagsRequest:
       type: object
       required: [context]
       properties:
