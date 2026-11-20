@@ -37,13 +37,11 @@ describe("deleteContext", () => {
     expect(await exists(context.id)).toBe(true);
   });
 
-  it("lets an editor delete it, then goes back to the list", async () => {
+  it("lets an editor delete it", async () => {
     const context = await createContext(acme.prod.id);
     signInAs(acme.editor);
 
-    await expect(deleteContext({}, form({ contextId: context.id }))).rejects.toMatchObject({
-      digest: expect.stringContaining(`/projects/${acme.project.key}/contexts?env=prod`),
-    });
+    expect(await deleteContext({}, form({ contextId: context.id }))).toEqual({});
     expect(await exists(context.id)).toBe(false);
   });
 });

@@ -27,6 +27,11 @@
   color: var(--muted);
 }
 
+.actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
 .number {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
