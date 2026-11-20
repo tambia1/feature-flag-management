@@ -252,7 +252,7 @@ flags.close();`}
           <p>Any language can call the API directly. Send the SDK key in the Authorization header.</p>
           <CodeBlock
             label="Get every flag for a user"
-            code={`curl -X POST ${baseUrl}/api/sdk/evaluate \\
+            code={`curl -X POST ${baseUrl}/api/sdk/flags \\
   -H "Authorization: sdk-…" \\
   -H "Content-Type: application/json" \\
   -d '{ "context": { "key": "user-42", "country": "IL" } }'
@@ -270,7 +270,7 @@ event: changed
 data: {}`}
           />
           <p>
-            On <code>changed</code>, call <code>/api/sdk/evaluate</code> again. A ping comes every 25 seconds to keep the connection open.
+            On <code>changed</code>, call <code>/api/sdk/flags</code> again. A ping comes every 25 seconds to keep the connection open.
             Errors: <code>401</code> for a missing or unknown key, <code>429</code> when a key sends more than 200 requests a second.
           </p>
         </Card>

@@ -24,7 +24,7 @@ export function evaluateFlag(flag: FlagConfig, context: EvaluationContext): Json
   return evaluateFlagDetail(flag, context).value;
 }
 
-export function evaluateAllDetails(flags: FlagConfig[], context: EvaluationContext): Record<string, EvaluationResult> {
+export function getFlagResults(flags: FlagConfig[], context: EvaluationContext): Record<string, EvaluationResult> {
   return Object.fromEntries(flags.map((flag) => [flag.key, evaluateFlagDetail(flag, context)]));
 }
 

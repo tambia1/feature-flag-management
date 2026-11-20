@@ -36,14 +36,14 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
 
   const refresh = async () => {
     try {
-      const response = await fetch(`${baseUrl}/api/sdk/evaluate`, {
+      const response = await fetch(`${baseUrl}/api/sdk/flags`, {
         method: "POST",
         headers: { Authorization: options.sdkKey, "Content-Type": "application/json" },
         body: JSON.stringify({ context, application: options.application }),
       });
 
       if (!response.ok) {
-        throw new Error(`Flag evaluate failed: ${response.status}`);
+        throw new Error(`Fetching flags failed: ${response.status}`);
       }
 
       values = (await response.json()) as Record<string, JsonValue>;
