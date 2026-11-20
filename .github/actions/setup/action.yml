@@ -1,0 +1,9 @@
+name: Set up
+description: Install Node and the project's npm packages
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with: { node-version: 24, cache: npm }
+    - run: npm ci
+      shell: bash

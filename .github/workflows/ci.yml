@@ -9,39 +9,98 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/feature_flag_db
+  BETTER_AUTH_SECRET: ci-secret-not-for-production-use-0123456789
+  BETTER_AUTH_URL: http://localhost:3000
+
 jobs:
-  checks:
-    name: Lint, format, types, unit tests, build
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-    services:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run lint
+
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run format:check
+
+  typecheck:
+    name: Types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run typecheck
+
+  knip:
+    name: Unused code (knip)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run knip
+
+  schema:
+    name: Prisma schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run db:validate
+
+  migrations:
+    name: Migrations match the schema
+    runs-on: ubuntu-latest
+    services: &postgres
       postgres:
         image: postgres:17-alpine
         env: { POSTGRES_USER: postgres, POSTGRES_PASSWORD: postgres, POSTGRES_DB: feature_flag_db }
         ports: ["5432:5432"]
         options: --health-cmd pg_isready --health-interval 5s --health-retries 10
-    env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/feature_flag_db
-      BETTER_AUTH_SECRET: ci-secret-not-for-production-use-0123456789
-      BETTER_AUTH_URL: http://localhost:3000
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 24, cache: npm }
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run format:check
-      - run: npm run typecheck
-      - run: npm run db:validate
+      - uses: ./.github/actions/setup
       - run: npm run db:deploy
-      - name: Schema changes have a migration
-        run: npm run db:check-migrations
+      - run: npm run db:check-migrations
+
+  test:
+    name: Unit and DB tests
+    runs-on: ubuntu-latest
+    services: *postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run db:deploy
       - run: npm test
-      - run: npm run knip
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
       - run: npm run build
-      - name: Integration tests (app + database)
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    services: *postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: npm run db:deploy
+      - run: npm run db:seed
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Run Playwright against the app
         run: |
-          npm run db:seed
-          npx playwright install --with-deps chromium
           npm start &
           npx wait-on http://localhost:3000/api/health
           E2E_BASE_URL=http://localhost:3000 npm run test:e2e
@@ -49,14 +108,12 @@ jobs:
   preview:
     name: Preview deploy + e2e
     if: github.event_name == 'pull_request' && vars.PREVIEW_DEPLOY_ENABLED == 'true'
-    needs: checks
+    needs: [lint, format, typecheck, knip, schema, migrations, test, build, e2e]
     runs-on: ubuntu-latest
     environment: preview
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 24, cache: npm }
-      - run: npm ci
+      - uses: ./.github/actions/setup
       - name: Deploy preview
         id: deploy
         run: ./ops/deploy.sh preview "pr-${{ github.event.number }}"
