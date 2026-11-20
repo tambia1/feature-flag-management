@@ -49,7 +49,7 @@ export default async function SdkDocsPage() {
 
 export const flags = createFlagClient({
   baseUrl: "${baseUrl}",
-  sdkKey: "sdk-…",
+  envSdkKey: "sdk-…",
   context: { key: "user-42", email: "dana@example.com", country: "IL" },
   application: "checkout-web",
 });
@@ -94,7 +94,7 @@ let client: FlagClient | null = null;
 
 export function FlagsProvider({ userKey, children }: { userKey: string; children: ReactNode }) {
   if (typeof window !== "undefined" && !client) {
-    client = createFlagClient({ baseUrl: "${baseUrl}", sdkKey: "sdk-…", context: { key: userKey } });
+    client = createFlagClient({ baseUrl: "${baseUrl}", envSdkKey: "sdk-…", context: { key: userKey } });
   }
   return <FlagsContext value={client}>{children}</FlagsContext>;
 }
@@ -128,7 +128,7 @@ return <nav>{showTest && <Link href="/test">Test</Link>}</nav>;`}
 export async function flagsFor(userId: string) {
   const flags = createFlagClient({
     baseUrl: process.env.FLAGS_URL!,
-    sdkKey: process.env.FLAGS_SDK_KEY!,
+    envSdkKey: process.env.FLAGS_ENV_SDK_KEY!,
     context: { key: userId },
     stream: false,
   });
@@ -168,10 +168,10 @@ flags.close();`}
             </tr>
             <tr>
               <td>
-                <code>sdkKey</code>
+                <code>envSdkKey</code>
               </td>
               <td>Yes</td>
-              <td>The environment&apos;s SDK key</td>
+              <td>The environment SDK key from Settings → Projects. Each environment of each project has its own.</td>
             </tr>
             <tr>
               <td>
@@ -249,7 +249,7 @@ flags.close();`}
         </Card>
 
         <Card title="Without the SDK">
-          <p>Any language can call the API directly. Send the SDK key in the Authorization header.</p>
+          <p>Any language can call the API directly. Send the environment SDK key in the Authorization header.</p>
           <CodeBlock
             label="Get every flag for a user"
             code={`curl -X POST ${baseUrl}/api/sdk/evaluate \\

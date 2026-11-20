@@ -89,7 +89,7 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/setting
               withKey={{ label: "Key", placeholder: "test" }}
             />
             <Table
-              headers={["Name", "Key", "SDK key", ""]}
+              headers={["Name", "Key", "Environment SDK key", ""]}
               isEmpty={project.environments.length === 0}
               emptyText="No environments yet. Add one above — most apps start with development, staging and production."
             >
