@@ -1,5 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/app/_components/Button";
 import { logout } from "../actions";
 import { CompanyIcon } from "./CompanyIcon";
 import { ThemeToggle } from "./ThemeToggle";
@@ -27,9 +28,9 @@ export const UserMenu = ({ name, companyName, companyIconUrl }: Props) => {
         </Link>
         <ThemeToggle className={styles.item} />
         <form action={logout}>
-          <button type="submit" className={styles.item}>
+          <Button type="submit" variant="plain" className={styles.item}>
             Log out
-          </button>
+          </Button>
         </form>
       </div>
     </details>
