@@ -7,6 +7,7 @@ import { Input } from "@/app/_components/Input";
 import { Select } from "@/app/_components/Select";
 import { formatValue } from "@/lib/flags/values";
 import styles from "./ServeEditor.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Props = {
   serve: Serve;
@@ -139,9 +140,9 @@ export const ServeEditor = ({ serve, variations, onChange }: Props) => {
             })}
           </div>
           <div className={styles.footer}>
-            <span className={total === 100 ? styles.total : styles.error} aria-live="polite">
+            <Text variant="small" as="span" color={total === 100 ? "muted" : "danger"} aria-live="polite">
               Total {total}%{total !== 100 && " — must be 100%"}
-            </span>
+            </Text>
             <Button variant="link" onClick={splitEvenly}>
               Split evenly
             </Button>

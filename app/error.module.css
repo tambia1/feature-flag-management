@@ -8,16 +8,6 @@
   padding: var(--space-12) var(--space-4);
 }
 
-.title {
-  font-size: var(--text-2xl);
-  line-height: var(--leading-2xl);
-  font-weight: 600;
-}
-
-.text {
-  color: var(--muted);
-}
-
 .code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: var(--text-sm);

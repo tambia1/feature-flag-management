@@ -11,6 +11,7 @@ import { MAX_ICON_BYTES } from "@/lib/uploads";
 import { CompanyIcon } from "../../_components/CompanyIcon";
 import { deleteCompany, updateCompany } from "../actions";
 import styles from "./CompanyRow.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Props = {
   company: { id: string; name: string; isPlatform: boolean; iconThumbUrl: string | null };
@@ -113,7 +114,11 @@ export const CompanyRow = ({ company, admins, users, projects, flags, created }:
             <Link href={`/platform/companies/${company.id}`} className={styles.name}>
               {company.name}
             </Link>
-            {company.isPlatform && <span className={styles.muted}>(platform)</span>}
+            {company.isPlatform && (
+              <Text variant="plain" color="muted">
+                (platform)
+              </Text>
+            )}
           </span>
         )}
       </td>

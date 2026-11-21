@@ -23,12 +23,6 @@
   gap: 2px;
 }
 
-.environment {
-  color: var(--muted);
-  font-size: var(--text-xs);
-  line-height: var(--leading-xs);
-}
-
 .empty {
   color: var(--muted);
   font-size: var(--text-sm);

@@ -5,6 +5,7 @@ import { getFlagByKey, getProjectContext } from "@/lib/flags/context";
 import { requireUser } from "@/lib/session";
 import { NoAccess } from "../../../../_components/NoAccess";
 import styles from "./layout.module.css";
+import { Text } from "@/app/_components/Text";
 
 export default async function FlagLayout({ params, children }: LayoutProps<"/projects/[projectKey]/flags/[flagKey]">) {
   const { projectKey, flagKey } = await params;
@@ -25,7 +26,9 @@ export default async function FlagLayout({ params, children }: LayoutProps<"/pro
       </Link>
       <div className={styles.title}>
         <h1 className={styles.key}>{flag.key}</h1>
-        <span className={styles.name}>{flag.name}</span>
+        <Text variant="plain" color="muted">
+          {flag.name}
+        </Text>
         {flag.archivedAt && <span className={styles.badge}>Archived</span>}
       </div>
       <Tabs

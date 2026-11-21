@@ -41,16 +41,6 @@
 
 .subtitle {
   margin-top: var(--space-2);
-  color: var(--muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-  font-weight: 600;
-}
-
-.hint {
-  color: var(--muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
 }
 
 @media (hover: hover) {

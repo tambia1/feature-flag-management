@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { HistoryFilter } from "./HistoryFilter";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "History" };
 
@@ -76,10 +77,10 @@ export default async function HistoryPage({ params, searchParams }: PageProps<"/
       </Table>
       {selected && (
         <section className={styles.details} aria-label="Change details">
-          <h2 className={styles.detailsTitle}>
+          <Text variant="label" as="h2">
             Change details · {formatWhen(selected.createdAt)} · {selected.userName}
             {selected.environment && ` · ${selected.environment.name}`}
-          </h2>
+          </Text>
           {selected.before || selected.after ? (
             <dl className={styles.diff}>
               <dt>Before:</dt>

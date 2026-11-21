@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import styles from "./Page.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Props = {
   title: string;
@@ -16,8 +17,12 @@ export const Page = ({ title, icon, subtitle, actions, children }: Props) => {
         <div className={styles.heading}>
           {icon}
           <div>
-            <h1 className={styles.title}>{title}</h1>
-            {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+            <Text variant="title">{title}</Text>
+            {subtitle && (
+              <Text variant="body" color="muted">
+                {subtitle}
+              </Text>
+            )}
           </div>
         </div>
         {actions && <div className={styles.actions}>{actions}</div>}

@@ -14,6 +14,7 @@ import { Page } from "../../../_components/Page";
 import { ListFilters } from "../../../_components/ListFilters";
 import { FlagToggle } from "./_components/FlagToggle";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "Flags" };
 
@@ -104,7 +105,11 @@ export default async function FlagsPage({ params, searchParams }: PageProps<"/pr
           </tr>
         ))}
       </Table>
-      {role !== "EDITOR" && <p className={styles.hint}>You are a viewer in {environment.name}, so toggles are read-only.</p>}
+      {role !== "EDITOR" && (
+        <Text variant="small" color="muted">
+          You are a viewer in {environment.name}, so toggles are read-only.
+        </Text>
+      )}
     </Page>
   );
 }

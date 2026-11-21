@@ -63,15 +63,3 @@
   align-items: center;
   gap: var(--space-3);
 }
-
-.total {
-  color: var(--muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-}
-
-.error {
-  color: var(--danger);
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-}

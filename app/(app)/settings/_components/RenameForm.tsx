@@ -6,6 +6,7 @@ import { Button } from "@/app/_components/Button";
 import { Input } from "@/app/_components/Input";
 import { Message } from "@/app/_components/Message";
 import styles from "./RenameForm.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Props = {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
@@ -26,7 +27,7 @@ export const RenameForm = ({ action, idName, id, value, label }: Props) => {
   if (!editing) {
     return (
       <div className={styles.title}>
-        <h2 className={styles.name}>{value}</h2>
+        <Text variant="heading">{value}</Text>
         <Button variant="link" onClick={() => setEditing(true)}>
           Edit
         </Button>

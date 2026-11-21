@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { LoginForm } from "./LoginForm";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "Log in" };
 
@@ -18,7 +19,7 @@ export default async function LoginPage() {
         <p className={styles.logo}>
           <Flag size={14} /> Feature Flag Management
         </p>
-        <h1 className={styles.title}>Log in</h1>
+        <Text variant="title">Log in</Text>
         <LoginForm />
       </div>
     </main>

@@ -3,6 +3,7 @@ import { formatWhen } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { LogsFilters } from "./LogsFilters";
 import styles from "./LogsView.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Props = {
   companyId: string;
@@ -62,7 +63,9 @@ export const LogsView = async ({ companyId, query, defaultDays }: Props) => {
         ))}
       </Table>
       {entries.length === PAGE_SIZE && (
-        <p className={styles.hint}>Showing the latest {PAGE_SIZE} entries. Narrow the filters to see older ones.</p>
+        <Text variant="small" color="muted">
+          Showing the latest {PAGE_SIZE} entries. Narrow the filters to see older ones.
+        </Text>
       )}
     </>
   );

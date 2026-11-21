@@ -1,9 +1,3 @@
 .when {
   white-space: nowrap;
 }
-
-.hint {
-  color: var(--muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-}

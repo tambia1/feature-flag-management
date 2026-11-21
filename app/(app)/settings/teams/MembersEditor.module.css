@@ -30,12 +30,6 @@
   cursor: pointer;
 }
 
-.empty {
-  color: var(--muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-}
-
 .picker {
   display: flex;
   flex-direction: column;
@@ -61,10 +55,6 @@
   font-size: var(--text-sm);
   line-height: var(--leading-sm);
   cursor: pointer;
-}
-
-.role {
-  color: var(--muted);
 }
 
 @media (hover: hover) {

@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useRef } from "react";
 import styles from "./Dialog.module.css";
+import { Text } from "./Text";
 
 type Props = {
   open: boolean;
@@ -27,7 +28,9 @@ export const Dialog = ({ open, title, onClose, children }: Props) => {
 
   return (
     <dialog ref={ref} className={styles.dialog} aria-label={title} onClose={onClose}>
-      <h2 className={styles.title}>{title}</h2>
+      <Text variant="heading" className={styles.title}>
+        {title}
+      </Text>
       {children}
     </dialog>
   );

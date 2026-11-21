@@ -53,12 +53,37 @@ Don't add a variant for a color; add a color instead. `LinkButton` takes the sam
 
 Add an `icon` prop for buttons that hold only an icon.
 
+## Text
+
+Use the shared `Text` component (in `app/_components/`) for headings and for text whose look repeats across the app, instead of a local class that sets `font-size`, `font-weight` or `color`. Like `Button`, it takes two separate props:
+
+- `variant` is the size and weight, and picks a default tag:
+  - `title`: page title, 2xl bold, `h1`.
+  - `heading`: section heading, lg bold, `h2`.
+  - `subheading`: smaller heading, base bold, `h3`.
+  - `label`: small bold heading, sm bold, `span`.
+  - `body`: normal text, base, `p`.
+  - `small`: hints, help and empty-state lines, sm, `p`.
+  - `caption`: tiny notes, xs, `span`.
+  - `plain`: keeps the surrounding size and weight and only sets the color, `span`.
+- `color` is the meaning: `inherit` (the default), `muted`, `accent`, `danger` or `success`.
+
+Use `as` when the tag must differ from the variant's default, so the heading outline stays right: `<Text variant="heading" as="h3">` inside a dialog, `<Text as="li" variant="small" color="muted">` for an empty list row.
+
+Typical uses:
+
+- `<Text variant="small" color="muted">`: a hint under a form or table, or "No teams yet."
+- `<Text variant="plain" color="muted">`: a muted word inside other text, such as "(platform)".
+
+`className` is for placement only (margin, width, `white-space`), as with any shared component. Don't add a size or weight prop; add a variant. Keep a local class only for text with a look of its own, such as monospace keys and code, badges, chips, table cells and chart labels, and don't use `Text` inside `Button`, `Field`, `Table` or `Message`, which style their own text.
+
 ## Shared look
 
 When two components need the same look, make a shared component that owns the markup and styles. Don't share a CSS module between components (see the css-modules skill).
 
 Before writing raw elements, check for an existing shared component and use it, for example:
 
+- Headings, hints and muted text: `Text` with a `variant` and `color`.
 - Form fields: a `Field` (label and its control) with an `Input`.
 - Pages: a `Page` with a `title`, and a `Loading` component as the `Suspense` fallback.
 - Tables: a `Table` that takes `headers`, with an empty state.

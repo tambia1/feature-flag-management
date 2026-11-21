@@ -13,14 +13,7 @@
   color: var(--muted);
 }
 
-.title {
-  font-size: var(--text-lg);
-  line-height: var(--leading-lg);
-  font-weight: 600;
-}
-
 .text {
   max-width: 28rem;
-  color: var(--muted);
   white-space: pre-line;
 }

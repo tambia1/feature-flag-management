@@ -10,6 +10,7 @@ import { StatTile } from "../../_components/StatTile";
 import { AutoRefresh } from "../../_components/AutoRefresh";
 import { StatusBadge } from "./StatusBadge";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "Status" };
 
@@ -49,7 +50,7 @@ export default async function StatusPage() {
       </dl>
 
       <section className={styles.section}>
-        <h2 className={styles.heading}>Services</h2>
+        <Text variant="heading">Services</Text>
         <Table headers={["Service", "Status", "Detail"]}>
           {[appServers, ...services].map((service) => (
             <tr key={service.name}>
@@ -64,7 +65,7 @@ export default async function StatusPage() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.heading}>Servers</h2>
+        <Text variant="heading">Servers</Text>
         <Table
           headers={[
             "Server",
@@ -85,7 +86,12 @@ export default async function StatusPage() {
                 <span className={styles.host}>
                   {server.host}:{server.pid}
                 </span>
-                {server.isThisServer && <span className={styles.detail}> (this page)</span>}
+                {server.isThisServer && (
+                  <Text variant="plain" color="muted">
+                    {" "}
+                    (this page)
+                  </Text>
+                )}
               </td>
               <td>
                 {server.isSilent ? (

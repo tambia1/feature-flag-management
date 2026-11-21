@@ -12,6 +12,7 @@ import { RenameForm } from "../_components/RenameForm";
 import { addEnvironment, createProject, deleteProject, renameProject } from "../actions";
 import { EnvironmentRow } from "./EnvironmentRow";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "Projects & environments" };
 
@@ -46,7 +47,11 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/setting
       </Card>
       <div className={styles.layout}>
         <nav aria-label="Projects" className={styles.list}>
-          {projects.length === 0 && <p className={styles.hint}>No projects yet.</p>}
+          {projects.length === 0 && (
+            <Text variant="small" color="muted">
+              No projects yet.
+            </Text>
+          )}
           {projects.map((item) => (
             <Link
               key={item.id}
@@ -79,8 +84,12 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/setting
                 confirmLabel="Delete"
               />
             </div>
-            <p className={styles.hint}>Key: {project.key} (can&apos;t change — used in code)</p>
-            <h3 className={styles.subtitle}>Environments</h3>
+            <Text variant="small" color="muted">
+              Key: {project.key} (can&apos;t change — used in code)
+            </Text>
+            <Text variant="label" as="h3" color="muted" className={styles.subtitle}>
+              Environments
+            </Text>
             <CreateNameForm
               action={addEnvironment}
               fields={{ projectId: project.id }}

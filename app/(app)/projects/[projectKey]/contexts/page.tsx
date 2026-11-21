@@ -17,6 +17,7 @@ import { NoAccess } from "../../../_components/NoAccess";
 import { Page } from "../../../_components/Page";
 import { DeleteContextButton } from "./DeleteContextButton";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "Contexts" };
 
@@ -54,11 +55,17 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
   return (
     <Page title="Contexts" subtitle={`${project.name} · ${environment.name}`} actions={<AutoRefresh intervalMs={PAGE_REFRESH_MS} />}>
       <section className={styles.section}>
-        <h2 className={styles.heading}>Connected apps</h2>
+        <Text variant="heading">Connected apps</Text>
         <Table headers={["App", "Open connections"]} isEmpty={connectedApps.length === 0} emptyText="No apps are connected right now.">
           {connectedApps.map((app) => (
             <tr key={app.applicationName}>
-              <td>{app.applicationName || <span className={styles.muted}>Unnamed app</span>}</td>
+              <td>
+                {app.applicationName || (
+                  <Text variant="plain" color="muted">
+                    Unnamed app
+                  </Text>
+                )}
+              </td>
               <td className={styles.number}>{app.connections}</td>
             </tr>
           ))}
@@ -66,7 +73,7 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.heading}>Contexts</h2>
+        <Text variant="heading">Contexts</Text>
         {contexts.length === 0 && !search ? (
           <EmptyState icon={Users} title="No contexts yet" text={"Contexts appear here when an app\nreads flags from this environment."} />
         ) : (
@@ -84,7 +91,13 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
                       {item.key}
                     </Link>
                   </td>
-                  <td>{item.applicationName || <span className={styles.muted}>Unnamed app</span>}</td>
+                  <td>
+                    {item.applicationName || (
+                      <Text variant="plain" color="muted">
+                        Unnamed app
+                      </Text>
+                    )}
+                  </td>
                   <td className={styles.attributes}>
                     {Object.entries(item.attributes as Record<string, JsonValue>)
                       .map(([name, value]) => `${name}: ${formatValue(value)}`)
@@ -97,7 +110,11 @@ export default async function ContextsPage({ params, searchParams }: PageProps<"
                 </tr>
               ))}
             </Table>
-            {contexts.length === LIMIT && <p className={styles.muted}>Showing the {LIMIT} most recently seen contexts.</p>}
+            {contexts.length === LIMIT && (
+              <Text variant="body" color="muted">
+                Showing the {LIMIT} most recently seen contexts.
+              </Text>
+            )}
           </>
         )}
       </section>
