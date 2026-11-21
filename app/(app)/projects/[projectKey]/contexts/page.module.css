@@ -4,12 +4,6 @@
   gap: var(--space-3);
 }
 
-.heading {
-  font-size: var(--text-lg);
-  line-height: var(--leading-lg);
-  font-weight: 600;
-}
-
 .key {
   color: var(--link);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -21,10 +15,6 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: var(--text-sm);
   line-height: var(--leading-sm);
-}
-
-.muted {
-  color: var(--muted);
 }
 
 .actions {

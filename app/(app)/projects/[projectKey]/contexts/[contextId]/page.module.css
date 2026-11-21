@@ -13,12 +13,6 @@
   gap: var(--space-3);
 }
 
-.heading {
-  font-size: var(--text-lg);
-  line-height: var(--leading-lg);
-  font-weight: 600;
-}
-
 .code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }

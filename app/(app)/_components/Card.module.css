@@ -11,11 +11,3 @@
 .danger {
   border-color: var(--danger);
 }
-
-.title {
-  font-weight: 600;
-}
-
-.danger .title {
-  color: var(--danger);
-}

@@ -1,0 +1,64 @@
+@layer components {
+  .title {
+    font-size: var(--text-2xl);
+    line-height: var(--leading-2xl);
+    font-weight: 600;
+  }
+
+  .heading {
+    font-size: var(--text-lg);
+    line-height: var(--leading-lg);
+    font-weight: 600;
+  }
+
+  .subheading {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    font-weight: 600;
+  }
+
+  .label {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    font-weight: 600;
+  }
+
+  .body {
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+  }
+
+  .small {
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+  }
+
+  .caption {
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+  }
+
+  .plain {
+    color: inherit;
+  }
+
+  .inherit {
+    color: inherit;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  .accent {
+    color: var(--link);
+  }
+
+  .danger {
+    color: var(--danger);
+  }
+
+  .success {
+    color: var(--success);
+  }
+}

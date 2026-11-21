@@ -13,6 +13,7 @@ import { requireUser } from "@/lib/session";
 import { NoAccess } from "../../../../_components/NoAccess";
 import { Page } from "../../../../_components/Page";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "Context" };
 
@@ -55,7 +56,7 @@ export default async function ContextPage({ params, searchParams }: PageProps<"/
       </Link>
 
       <section className={styles.section}>
-        <h2 className={styles.heading}>Attributes it sent</h2>
+        <Text variant="heading">Attributes it sent</Text>
         <Table headers={["Attribute", "Value"]} isEmpty={attributes.length === 0} emptyText="Only the key was sent.">
           {attributes.map(([name, value]) => (
             <tr key={name}>
@@ -67,7 +68,7 @@ export default async function ContextPage({ params, searchParams }: PageProps<"/
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.heading}>Flags it got</h2>
+        <Text variant="heading">Flags it got</Text>
         <Table headers={["Flag", "Value", "Reason"]} isEmpty={results.length === 0} emptyText="No flags in this environment.">
           {results.map(([flagKey, result]) => (
             <tr key={flagKey}>

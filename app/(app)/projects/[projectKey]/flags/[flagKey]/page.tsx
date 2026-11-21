@@ -8,6 +8,7 @@ import { requireUser } from "@/lib/session";
 import { FlagToggle } from "../_components/FlagToggle";
 import { TargetingEditor } from "./_components/TargetingEditor";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "Targeting" };
 
@@ -60,7 +61,9 @@ export default async function TargetingPage({ params, searchParams }: PageProps<
           />
         </div>
         {flag.archivedAt && (
-          <p className={styles.hint}>This flag is archived: every environment serves the off value. Restore it from Settings.</p>
+          <Text variant="small" color="muted">
+            This flag is archived: every environment serves the off value. Restore it from Settings.
+          </Text>
         )}
         <TargetingEditor
           key={`${environment.id}-${JSON.stringify([settings.offVariationId, settings.rules])}`}
@@ -70,10 +73,16 @@ export default async function TargetingPage({ params, searchParams }: PageProps<
           initial={{ offVariationId: settings.offVariationId, rules: settings.rules as Rule[] }}
           canEdit={canEdit}
         />
-        {role !== "EDITOR" && <p className={styles.hint}>Read-only: you are a viewer in {environment.name}.</p>}
+        {role !== "EDITOR" && (
+          <Text variant="small" color="muted">
+            Read-only: you are a viewer in {environment.name}.
+          </Text>
+        )}
       </section>
       <aside className={styles.side}>
-        <h2 className={styles.sideTitle}>All environments</h2>
+        <Text variant="label" as="h2">
+          All environments
+        </Text>
         <ul className={styles.environments}>
           {project.environments.map((item) => {
             const isOn = allEnvironments.find((row) => row.environmentId === item.id)?.isOn;
@@ -86,12 +95,14 @@ export default async function TargetingPage({ params, searchParams }: PageProps<
           })}
         </ul>
         {created && (
-          <p className={styles.meta}>
+          <Text variant="small" color="muted">
             Created by {created.userName} ·{" "}
             {created.createdAt.toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" })}
-          </p>
+          </Text>
         )}
-        <p className={styles.meta}>In code:</p>
+        <Text variant="small" color="muted">
+          In code:
+        </Text>
         <code className={styles.code}>
           getFlag(&quot;{flag.key}&quot;, {formatValue(offValue)})
         </code>

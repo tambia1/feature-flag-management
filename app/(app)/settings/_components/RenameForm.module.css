@@ -5,12 +5,6 @@
   min-height: calc(var(--leading-base) + var(--space-2) + 2px);
 }
 
-.name {
-  font-size: var(--text-lg);
-  line-height: var(--leading-lg);
-  font-weight: 600;
-}
-
 .form {
   display: flex;
   flex-wrap: wrap;

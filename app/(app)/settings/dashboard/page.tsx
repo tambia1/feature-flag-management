@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCompanyAdmin } from "@/lib/session";
 import { StatTile } from "../../_components/StatTile";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -53,7 +54,7 @@ export default async function DashboardPage() {
       </dl>
 
       <section className={styles.section}>
-        <h2 className={styles.heading}>Projects</h2>
+        <Text variant="heading">Projects</Text>
         <Table
           headers={["Project", "Key", "Environments", "Active flags", "Archived flags"]}
           isEmpty={projectRows.length === 0}
@@ -72,7 +73,7 @@ export default async function DashboardPage() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.heading}>Teams</h2>
+        <Text variant="heading">Teams</Text>
         <Table headers={["Team", "Members"]} isEmpty={teams.length === 0} emptyText="No teams yet.">
           {teams.map((team) => (
             <tr key={team.id}>

@@ -10,6 +10,7 @@ import { Message } from "@/app/_components/Message";
 import { formatValue } from "@/lib/flags/values";
 import { removeVariation, updateFlagSettings } from "../../actions";
 import styles from "./FlagSettingsForm.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Props = {
   flagId: string;
@@ -62,7 +63,9 @@ export const FlagSettingsForm = ({ flagId, flagKey, typeLabel, isBoolean, name, 
           </Field>
         </div>
         <div className={styles.variations}>
-          <span className={styles.label}>Variations</span>
+          <Text variant="small" as="span" color="muted">
+            Variations
+          </Text>
           {variations.map((variation) => (
             <div key={variation.id} className={styles.variation}>
               <Input

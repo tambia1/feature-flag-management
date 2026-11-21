@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { Page } from "../../_components/Page";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "My teams & roles" };
 
@@ -24,9 +25,13 @@ export default async function MyRolesPage() {
   return (
     <Page title="My teams & roles" subtitle={`${user.name} · ${user.email} · ${user.role.toLowerCase()}`}>
       <section className={styles.section}>
-        <h2 className={styles.subtitle}>Teams</h2>
+        <Text variant="subheading" as="h2">
+          Teams
+        </Text>
         {teams.length === 0 ? (
-          <p className={styles.hint}>You are not in any team yet.</p>
+          <Text variant="small" color="muted">
+            You are not in any team yet.
+          </Text>
         ) : (
           <ul className={styles.chips}>
             {teams.map((team) => (
@@ -38,7 +43,9 @@ export default async function MyRolesPage() {
         )}
       </section>
       <section className={styles.section}>
-        <h2 className={styles.subtitle}>My role per environment</h2>
+        <Text variant="subheading" as="h2">
+          My role per environment
+        </Text>
         <Table headers={["Project", "Environments"]} isEmpty={projects.length === 0} emptyText="No projects yet.">
           {projects.map((project) => (
             <tr key={project.id}>
@@ -49,7 +56,9 @@ export default async function MyRolesPage() {
                     const role = roles.get(environment.id)?.toLowerCase() ?? "none";
                     return (
                       <li key={environment.id}>
-                        <span className={styles.environment}>{environment.name}:</span>{" "}
+                        <Text variant="plain" color="muted">
+                          {environment.name}:
+                        </Text>{" "}
                         <span className={role === "none" ? styles.none : styles.role}>{role}</span>
                       </li>
                     );

@@ -1,9 +1,9 @@
-import styles from "./Loading.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const Loading = () => {
   return (
-    <p className={styles.loading} role="status">
+    <Text variant="body" color="muted" role="status">
       Loading…
-    </p>
+    </Text>
   );
 };

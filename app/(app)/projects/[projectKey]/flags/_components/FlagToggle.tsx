@@ -9,6 +9,7 @@ import { Message } from "@/app/_components/Message";
 import { Toggle } from "@/app/_components/Toggle";
 import { setFlagOn } from "../actions";
 import styles from "./FlagToggle.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Props = {
   flagId: string;
@@ -76,11 +77,11 @@ export const FlagToggle = ({ flagId, flagKey, environmentId, environmentName, is
             save(next, comment);
           }}
         >
-          <p className={styles.text}>
+          <Text variant="body" color="muted">
             {flagKey} · {environmentName}
             <br />
             {next ? "Users will start getting the on value / rules right away." : "Users will get the off value right away."}
-          </p>
+          </Text>
           <Field label="Comment (saved to the log)">
             <Input value={comment} onChange={(event) => setComment(event.target.value)} maxLength={500} />
           </Field>

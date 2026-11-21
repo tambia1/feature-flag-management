@@ -12,6 +12,7 @@ import { createTeam, deleteTeam, renameTeam } from "../actions";
 import { MembersEditor } from "./MembersEditor";
 import { PermissionsGrid } from "./PermissionsGrid";
 import styles from "./page.module.css";
+import { Text } from "@/app/_components/Text";
 
 export const metadata: Metadata = { title: "Teams" };
 
@@ -47,7 +48,11 @@ export default async function TeamsPage({ searchParams }: PageProps<"/settings/t
       </Card>
       <div className={styles.layout}>
         <nav aria-label="Teams" className={styles.list}>
-          {teams.length === 0 && <p className={styles.hint}>No teams yet.</p>}
+          {teams.length === 0 && (
+            <Text variant="small" color="muted">
+              No teams yet.
+            </Text>
+          )}
           {teams.map((item) => (
             <Link key={item.id} href={`?team=${item.id}`} className={styles.item} aria-current={item.id === team?.id ? "page" : undefined}>
               {item.name}
@@ -68,13 +73,17 @@ export default async function TeamsPage({ searchParams }: PageProps<"/settings/t
                 confirmLabel="Delete"
               />
             </div>
-            <h3 className={styles.subtitle}>Members</h3>
+            <Text variant="label" as="h3" color="muted" className={styles.subtitle}>
+              Members
+            </Text>
             <MembersEditor
               teamId={team.id}
               members={team.members.map((member) => member.user)}
               candidates={users.filter((user) => !team.members.some((member) => member.user.id === user.id))}
             />
-            <h3 className={styles.subtitle}>Permissions</h3>
+            <Text variant="label" as="h3" color="muted" className={styles.subtitle}>
+              Permissions
+            </Text>
             <PermissionsGrid
               key={`${team.id}-${JSON.stringify(team.roles)}`}
               teamId={team.id}

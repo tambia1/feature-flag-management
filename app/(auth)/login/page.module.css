@@ -26,9 +26,3 @@
   line-height: var(--leading-sm);
   font-weight: 600;
 }
-
-.title {
-  font-size: var(--text-2xl);
-  line-height: var(--leading-2xl);
-  font-weight: 600;
-}

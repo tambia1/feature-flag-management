@@ -6,6 +6,7 @@ import { Message } from "@/app/_components/Message";
 import { Select } from "@/app/_components/Select";
 import { saveTeamPermissions } from "../actions";
 import styles from "./PermissionsGrid.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Props = {
   teamId: string;
@@ -23,7 +24,11 @@ export const PermissionsGrid = ({ teamId, projects, roles }: Props) => {
   const [state, formAction, isPending] = useActionState(saveTeamPermissions, {});
 
   if (projects.length === 0) {
-    return <p className={styles.empty}>No projects yet. Add one on the Projects page.</p>;
+    return (
+      <Text variant="small" color="muted">
+        No projects yet. Add one on the Projects page.
+      </Text>
+    );
   }
 
   return (
@@ -40,7 +45,9 @@ export const PermissionsGrid = ({ teamId, projects, roles }: Props) => {
               {project.environments.map((environment) => (
                 <td key={environment.id}>
                   <label className={styles.cell}>
-                    <span className={styles.environment}>{environment.name}</span>
+                    <Text variant="caption" color="muted">
+                      {environment.name}
+                    </Text>
                     <Select compact name={`role-${environment.id}`} defaultValue={roles[environment.id] ?? "NONE"} options={ROLE_OPTIONS} />
                   </label>
                 </td>

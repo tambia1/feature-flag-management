@@ -7,6 +7,7 @@ import { Input } from "@/app/_components/Input";
 import { Message } from "@/app/_components/Message";
 import { addTeamMember, removeTeamMember } from "../actions";
 import styles from "./MembersEditor.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Person = { id: string; name: string };
 
@@ -38,7 +39,11 @@ export const MembersEditor = ({ teamId, members, candidates }: Props) => {
   return (
     <div className={styles.members}>
       <ul className={styles.chips}>
-        {members.length === 0 && <li className={styles.empty}>No members yet.</li>}
+        {members.length === 0 && (
+          <Text as="li" variant="small" color="muted">
+            No members yet.
+          </Text>
+        )}
         {members.map((member) => (
           <li key={member.id} className={styles.chip}>
             {member.name}
@@ -70,12 +75,18 @@ export const MembersEditor = ({ teamId, members, candidates }: Props) => {
             onChange={(event) => setSearch(event.target.value)}
           />
           <ul className={styles.options}>
-            {matches.length === 0 && <li className={styles.empty}>Only users not in this team are listed. No matches.</li>}
+            {matches.length === 0 && (
+              <Text as="li" variant="small" color="muted">
+                Only users not in this team are listed. No matches.
+              </Text>
+            )}
             {matches.map((user) => (
               <li key={user.id}>
                 <Button variant="plain" className={styles.option} onClick={() => run(addTeamMember, user.id)} disabled={isPending}>
                   <span>{user.name}</span>
-                  <span className={styles.role}>{user.role.toLowerCase()}</span>
+                  <Text variant="plain" color="muted">
+                    {user.role.toLowerCase()}
+                  </Text>
                 </Button>
               </li>
             ))}

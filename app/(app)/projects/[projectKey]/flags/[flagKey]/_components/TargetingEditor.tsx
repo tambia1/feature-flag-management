@@ -14,6 +14,7 @@ import { formatValue } from "@/lib/flags/values";
 import { saveTargeting } from "../../actions";
 import { ServeEditor } from "./ServeEditor";
 import styles from "./TargetingEditor.module.css";
+import { Text } from "@/app/_components/Text";
 
 type Settings = {
   offVariationId: string;
@@ -75,7 +76,11 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
 
       <fieldset className={styles.section} disabled={!canEdit}>
         <legend className={styles.legend}>Rules (checked top to bottom)</legend>
-        {rules.length === 0 && <p className={styles.help}>No rules yet. Everyone gets the default rule.</p>}
+        {rules.length === 0 && (
+          <Text variant="small" color="muted">
+            No rules yet. Everyone gets the default rule.
+          </Text>
+        )}
         <ol className={styles.rules}>
           {rules.map((rule, ruleIndex) => (
             <li key={rule.id} className={styles.rule}>
@@ -170,13 +175,17 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
 
       <fieldset className={styles.section} disabled={!canEdit}>
         <legend className={styles.legend}>Default rule</legend>
-        <p className={styles.help}>Everyone who doesn&apos;t match a rule, while the flag is on. A rollout splits users by their key.</p>
+        <Text variant="small" color="muted">
+          Everyone who doesn&apos;t match a rule, while the flag is on. A rollout splits users by their key.
+        </Text>
         <ServeEditor serve={defaultServe} variations={variations} onChange={setDefaultServe} />
       </fieldset>
 
       <fieldset className={styles.section} disabled={!canEdit}>
         <legend className={styles.legend}>Off value</legend>
-        <p className={styles.help}>Everyone gets this value while the flag is off or archived.</p>
+        <Text variant="small" color="muted">
+          Everyone gets this value while the flag is off or archived.
+        </Text>
         <Select
           aria-label="Off value"
           value={offVariationId}

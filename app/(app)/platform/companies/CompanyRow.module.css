@@ -21,10 +21,6 @@
   }
 }
 
-.muted {
-  color: var(--muted);
-}
-
 .actions {
   white-space: nowrap;
   text-align: right;

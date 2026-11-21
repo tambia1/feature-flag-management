@@ -38,7 +38,7 @@ Style with plain CSS Modules and CSS variables. Don't add Tailwind, utility clas
 Use the variables from `globals.css` for every color, font size, line height, spacing step, radius and shadow. Write a literal only for one-off layout sizes such as a sidebar width.
 
 - Colors: semantic names (`--surface`, `--muted`, `--danger`), not palette names (`--slate-500`).
-- Type: `--text-*` with its matching `--leading-*`, always set together.
+- Type: `--text-*` with its matching `--leading-*`, always set together. For headings, hints and muted text, use the shared `Text` component (see the components skill) instead of writing these in a module.
 - Spacing: `--space-N` is N × 0.25rem. For a value between steps, use `calc()` on a token, such as `calc(var(--space-1) * 1.5)`.
 - Radius: `--radius-sm` for inputs and buttons, `--radius-md` for cards and tables, `--radius-lg` for large panels, `--radius-full` for pills.
 
@@ -68,4 +68,4 @@ CSS order can differ between `next dev` and `next build`. After changing shared 
 ## Finding what exists
 
 - Tokens live in `app/globals.css`; read its `:root` before choosing a color or size.
-- Shared styled components (such as `Button`, `Input`, `Field`, `Page`, `Table`) live in `_components/` folders, placed by the components skill. Look there before styling a raw element.
+- Shared styled components (such as `Button`, `Text`, `Input`, `Field`, `Page`, `Table`) live in `_components/` folders, placed by the components skill. Look there before styling a raw element.

@@ -20,12 +20,6 @@
   font-weight: 600;
 }
 
-.help {
-  color: var(--muted);
-  font-size: var(--text-sm);
-  line-height: var(--leading-sm);
-}
-
 .rules {
   display: flex;
   flex-direction: column;
