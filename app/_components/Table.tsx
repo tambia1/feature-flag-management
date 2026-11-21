@@ -5,11 +5,12 @@ type Props = {
   headers: string[];
   isEmpty?: boolean;
   emptyText?: string;
+  editable?: boolean;
   className?: string;
   children: ReactNode;
 };
 
-export const Table = ({ headers, isEmpty = false, emptyText = "Nothing here yet.", className = "", children }: Props) => {
+export const Table = ({ headers, isEmpty = false, emptyText = "Nothing here yet.", editable = false, className = "", children }: Props) => {
   return (
     <div className={`${styles.wrapper} ${className}`}>
       <table className={styles.table}>
@@ -22,7 +23,7 @@ export const Table = ({ headers, isEmpty = false, emptyText = "Nothing here yet.
             ))}
           </tr>
         </thead>
-        <tbody className={styles.body}>
+        <tbody className={`${styles.body} ${editable ? styles.editable : ""}`}>
           {isEmpty ? (
             <tr>
               <td colSpan={headers.length} className={styles.empty}>

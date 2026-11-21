@@ -54,6 +54,7 @@ export default async function CompanyUsersPage({ params, searchParams }: PagePro
           headers={["Name", "Email", "Role", "Password", "Teams", ""]}
           isEmpty={users.length === 0}
           emptyText="No users match your search."
+          editable
         >
           {users.map((user) => (
             <UserRow

@@ -93,6 +93,7 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/setting
               headers={["Name", "Key", "Environment SDK key", ""]}
               isEmpty={project.environments.length === 0}
               emptyText="No environments yet. Add one above — most apps start with development, staging and production."
+              editable
             >
               {project.environments.map((environment) => (
                 <EnvironmentRow key={environment.id} environment={environment} />
