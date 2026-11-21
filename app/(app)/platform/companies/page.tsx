@@ -32,7 +32,7 @@ export default async function CompaniesPage() {
       <Card title="Add company">
         <AddCompanyForm />
       </Card>
-      <Table headers={["Name", "Admins", "Users", "Projects", "Flags", "Created", ""]} isEmpty={companies.length === 0}>
+      <Table headers={["Name", "Admins", "Users", "Projects", "Flags", "Created", ""]} isEmpty={companies.length === 0} editable>
         {companies.map((company) => (
           <CompanyRow
             key={company.id}

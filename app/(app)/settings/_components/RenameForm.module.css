@@ -1,7 +1,8 @@
 .title {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-3);
+  min-height: calc(var(--leading-base) + var(--space-2) + 2px);
 }
 
 .name {
@@ -15,4 +16,12 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
+}
+
+.input {
+  width: auto;
+}
+
+.actions {
+  white-space: nowrap;
 }

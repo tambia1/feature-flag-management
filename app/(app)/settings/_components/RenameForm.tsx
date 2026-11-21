@@ -37,13 +37,24 @@ export const RenameForm = ({ action, idName, id, value, label }: Props) => {
   return (
     <form action={formAction} className={styles.form}>
       <input type="hidden" name={idName} value={id} />
-      <Input name="name" aria-label={label} required maxLength={100} defaultValue={state.values?.name ?? value} compact />
-      <Button type="submit" variant="outline" color="neutral" disabled={isPending}>
-        Save
-      </Button>
-      <Button variant="link" onClick={() => setEditing(false)}>
-        Cancel
-      </Button>
+      <Input
+        name="name"
+        aria-label={label}
+        required
+        maxLength={100}
+        defaultValue={state.values?.name ?? value}
+        compact
+        className={styles.input}
+      />
+      <span className={styles.actions}>
+        <Button type="submit" variant="link" disabled={isPending}>
+          Save
+        </Button>
+        <span aria-hidden="true"> · </span>
+        <Button variant="link" onClick={() => setEditing(false)}>
+          Cancel
+        </Button>
+      </span>
       <Message text={state.error} state="error" />
     </form>
   );
