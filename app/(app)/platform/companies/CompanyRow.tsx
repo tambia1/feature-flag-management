@@ -70,40 +70,40 @@ export const CompanyRow = ({ company, admins, users, projects, flags, created }:
                 required
                 defaultValue={state.values?.name ?? company.name}
               />
-            </div>
-            <Input
-              ref={iconInputRef}
-              form={formId}
-              type="file"
-              name="icon"
-              accept="image/*"
-              hidden
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (!file) return;
-                if (iconPreview) URL.revokeObjectURL(iconPreview);
-                setIconPreview(URL.createObjectURL(file));
-                setRemoveIcon(false);
-              }}
-            />
-            <div className={styles.iconActions}>
-              <Button variant="link" onClick={() => iconInputRef.current?.click()}>
-                {shownIcon ? "Change icon" : "Add icon"}
-              </Button>
-              {shownIcon && (
-                <>
-                  <span aria-hidden="true"> · </span>
-                  <Button
-                    variant="link"
-                    onClick={() => {
-                      resetIcon();
-                      setRemoveIcon(Boolean(company.iconThumbUrl));
-                    }}
-                  >
-                    Remove icon
-                  </Button>
-                </>
-              )}
+              <Input
+                ref={iconInputRef}
+                form={formId}
+                type="file"
+                name="icon"
+                accept="image/*"
+                hidden
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (!file) return;
+                  if (iconPreview) URL.revokeObjectURL(iconPreview);
+                  setIconPreview(URL.createObjectURL(file));
+                  setRemoveIcon(false);
+                }}
+              />
+              <div className={styles.iconActions}>
+                <Button variant="link" onClick={() => iconInputRef.current?.click()}>
+                  {shownIcon ? "Change icon" : "Add icon"}
+                </Button>
+                {shownIcon && (
+                  <>
+                    <span aria-hidden="true"> · </span>
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        resetIcon();
+                        setRemoveIcon(Boolean(company.iconThumbUrl));
+                      }}
+                    >
+                      Remove icon
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
             <Message text={state.error} state="error" />
           </>
