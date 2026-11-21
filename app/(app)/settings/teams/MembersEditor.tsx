@@ -42,15 +42,15 @@ export const MembersEditor = ({ teamId, members, candidates }: Props) => {
         {members.map((member) => (
           <li key={member.id} className={styles.chip}>
             {member.name}
-            <button
-              type="button"
+            <Button
+              variant="plain"
               className={styles.remove}
               onClick={() => run(removeTeamMember, member.id)}
               disabled={isPending}
               aria-label={`Remove ${member.name}`}
             >
               <X size={14} />
-            </button>
+            </Button>
           </li>
         ))}
         <li>
@@ -73,10 +73,10 @@ export const MembersEditor = ({ teamId, members, candidates }: Props) => {
             {matches.length === 0 && <li className={styles.empty}>Only users not in this team are listed. No matches.</li>}
             {matches.map((user) => (
               <li key={user.id}>
-                <button type="button" className={styles.option} onClick={() => run(addTeamMember, user.id)} disabled={isPending}>
+                <Button variant="plain" className={styles.option} onClick={() => run(addTeamMember, user.id)} disabled={isPending}>
                   <span>{user.name}</span>
                   <span className={styles.role}>{user.role.toLowerCase()}</span>
-                </button>
+                </Button>
               </li>
             ))}
           </ul>

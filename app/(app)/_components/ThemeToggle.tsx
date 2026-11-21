@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/app/_components/Button";
+
 type Props = {
   className?: string;
 };
@@ -15,8 +17,8 @@ export const ThemeToggle = ({ className = "" }: Props) => {
   };
 
   return (
-    <button type="button" className={className} onClick={toggle}>
+    <Button variant="plain" className={className} onClick={toggle}>
       Light / dark theme
-    </button>
+    </Button>
   );
 };
