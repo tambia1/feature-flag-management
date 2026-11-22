@@ -102,15 +102,26 @@ export type ServerStatus = {
   streams: Record<string, Record<string, number>>;
 };
 
-export type ServiceState = "up" | "down" | "off";
-
-export type ServiceCheck = {
-  name: string;
-  state: ServiceState;
-  detail: string;
-};
-
 export type ConnectedApp = {
   applicationName: string;
   connections: number;
+};
+
+export type SdkConnection = ConnectedApp & {
+  companyId: string;
+  companyName: string;
+  projectName: string;
+  environmentName: string;
+};
+
+export type CompanySdkConnections = {
+  companyId: string;
+  companyName: string;
+  connections: number;
+  apps: number;
+};
+
+export type SdkConnections = {
+  companies: CompanySdkConnections[];
+  connections: SdkConnection[];
 };
