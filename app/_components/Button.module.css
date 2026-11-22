@@ -25,7 +25,7 @@
   .neutral {
     --tone: var(--foreground);
     --tone-fill: var(--foreground);
-    --tone-fill-hover: color-mix(in oklch, var(--foreground) 85%, var(--background));
+    --tone-fill-hover: light-dark(#2a3447, #c8c9cb);
     --tone-on-fill: var(--background);
     --tone-border: var(--border-strong);
   }
@@ -33,7 +33,7 @@
   .danger {
     --tone: var(--danger);
     --tone-fill: var(--danger);
-    --tone-fill-hover: color-mix(in oklch, var(--danger) 90%, var(--background));
+    --tone-fill-hover: light-dark(#eb2e5d, #df5659);
     --tone-on-fill: #fff;
     --tone-border: var(--danger);
   }
@@ -41,7 +41,7 @@
   .success {
     --tone: var(--success);
     --tone-fill: var(--success);
-    --tone-fill-hover: color-mix(in oklch, var(--success) 90%, var(--background));
+    --tone-fill-hover: light-dark(#00905a, #04c263);
     --tone-on-fill: #fff;
     --tone-border: var(--success);
   }

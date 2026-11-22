@@ -35,11 +35,11 @@
 }
 
 .docs {
-  --tone: light-dark(oklch(54.6% 0.245 262.881), oklch(70.7% 0.165 254.624));
+  --tone: light-dark(#155dfc, #51a2ff);
 }
 
 .platform {
-  --tone: light-dark(oklch(55.5% 0.163 48.998), oklch(75% 0.183 55.934));
+  --tone: light-dark(#bb4d00, #ff8904);
 }
 
 .title {
