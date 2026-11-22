@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { LinkButton } from "@/app/_components/LinkButton";
 import { Table } from "@/app/_components/Table";
 import { getSdkConnections } from "@/lib/flags/connected-apps";
 import { PAGE_REFRESH_MS } from "@/lib/server-status";
@@ -16,7 +15,6 @@ export default async function StatusPage() {
   await requirePlatformAdmin();
 
   const { companies, connections } = await getSdkConnections();
-  const grafanaUrl = process.env.GRAFANA_URL;
   const total = connections.reduce((sum, row) => sum + row.connections, 0);
   const connectedCompanies = companies.filter((company) => company.connections > 0).length;
 
@@ -24,16 +22,7 @@ export default async function StatusPage() {
     <Page
       title="Status"
       subtitle={`Open SDK connections across all companies. Updates every ${PAGE_REFRESH_MS / 1000} seconds.`}
-      actions={
-        <>
-          {grafanaUrl && (
-            <LinkButton href={grafanaUrl} target="_blank" rel="noreferrer" variant="outline">
-              Open Grafana
-            </LinkButton>
-          )}
-          <AutoRefresh intervalMs={PAGE_REFRESH_MS} />
-        </>
-      }
+      actions={<AutoRefresh intervalMs={PAGE_REFRESH_MS} />}
     >
       <dl className={styles.tiles}>
         <StatTile label="SDK connections" value={total} detail="Open streams right now" />
