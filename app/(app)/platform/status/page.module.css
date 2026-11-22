@@ -10,14 +10,6 @@
   gap: var(--space-3);
 }
 
-.host {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-
-.detail {
-  color: var(--muted);
-}
-
 .number {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;

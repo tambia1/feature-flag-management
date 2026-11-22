@@ -99,25 +99,29 @@ export type ServerStatus = {
   pid: number;
   startedAt: number;
   reportedAt: number;
-  openStreams: number;
-  requestsPerSecond: number;
-  averageResponseMs: number | null;
-  errors: number;
-  rateLimited: number;
-  memoryMb: number;
-  eventLoopDelayMs: number;
   streams: Record<string, Record<string, number>>;
-};
-
-export type ServiceState = "up" | "down" | "off";
-
-export type ServiceCheck = {
-  name: string;
-  state: ServiceState;
-  detail: string;
 };
 
 export type ConnectedApp = {
   applicationName: string;
   connections: number;
+};
+
+export type SdkConnection = ConnectedApp & {
+  companyId: string;
+  companyName: string;
+  projectName: string;
+  environmentName: string;
+};
+
+export type CompanySdkConnections = {
+  companyId: string;
+  companyName: string;
+  connections: number;
+  apps: number;
+};
+
+export type SdkConnections = {
+  companies: CompanySdkConnections[];
+  connections: SdkConnection[];
 };
