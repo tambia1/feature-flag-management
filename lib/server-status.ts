@@ -1,149 +1,69 @@
 import { randomUUID } from "node:crypto";
 import os from "node:os";
-import { monitorEventLoopDelay, type ELDHistogram } from "node:perf_hooks";
 import type { ServerStatus } from "@/app/types";
 import { logger } from "./logger";
-import { sdkMetrics } from "./metrics";
 import { openStreamsByEnvironment } from "./flags/streams";
 import { getRedis } from "./redis";
 
-const SAMPLE_INTERVAL_MS = 9_000;
+const REPORT_INTERVAL_MS = 9_000;
 export const PAGE_REFRESH_MS = 30_000;
-export const STATUS_WINDOW_MINUTES = 5;
-const WINDOW_MS = STATUS_WINDOW_MINUTES * 60_000;
 const SERVERS_KEY = "status:servers";
-const SILENT_AFTER_MS = 3 * SAMPLE_INTERVAL_MS;
-const FORGET_AFTER_MS = WINDOW_MS;
+const SILENT_AFTER_MS = 3 * REPORT_INTERVAL_MS;
+const FORGET_AFTER_MS = 5 * 60_000;
 
-type Sample = {
-  at: number;
-  requests: number;
-  latencySeconds: number;
-  errors: number;
-  rateLimited: number;
-};
-
-type Sampler = {
-  id: string;
-  host: string;
-  startedAt: number;
-  samples: Sample[];
-  eventLoop: ELDHistogram;
+type Reporter = {
   latest: ServerStatus;
 };
 
 export type ReportedServer = ServerStatus & { isSilent: boolean; isThisServer: boolean };
 
-const globalForStatus = globalThis as unknown as { serverStatusSampler?: Sampler };
+const globalForStatus = globalThis as unknown as { serverStatusReporter?: Reporter };
 
-async function readSample(): Promise<Sample> {
-  const [flagsRequests, rateLimited] = await Promise.all([sdkMetrics.flagsDuration.get(), sdkMetrics.rateLimited.get()]);
-  const sample: Sample = { at: Date.now(), requests: 0, latencySeconds: 0, errors: 0, rateLimited: 0 };
-
-  for (const value of flagsRequests.values) {
-    if (value.metricName === "sdk_flags_duration_seconds_count") {
-      sample.requests += value.value;
-
-      if (String(value.labels.status).startsWith("5")) {
-        sample.errors += value.value;
-      }
-    } else if (value.metricName === "sdk_flags_duration_seconds_sum") {
-      sample.latencySeconds += value.value;
-    }
-  }
-
-  sample.rateLimited = rateLimited.values.reduce((total, value) => total + value.value, 0);
-  return sample;
-}
-
-async function buildStatus(sampler: Sampler): Promise<ServerStatus> {
-  const oldest = sampler.samples[0];
-  const newest = sampler.samples[sampler.samples.length - 1];
-  const seconds = (newest.at - oldest.at) / 1000;
-  const requests = newest.requests - oldest.requests;
-  const openStreams = (await sdkMetrics.openStreams.get()).values[0]?.value ?? 0;
-  const eventLoopDelayMs = sampler.eventLoop.percentile(99) / 1e6;
-  sampler.eventLoop.reset();
-
-  return {
-    id: sampler.id,
-    host: sampler.host,
-    pid: process.pid,
-    startedAt: sampler.startedAt,
-    reportedAt: newest.at,
-    openStreams,
-    requestsPerSecond: seconds > 0 ? requests / seconds : 0,
-    averageResponseMs: requests > 0 ? ((newest.latencySeconds - oldest.latencySeconds) / requests) * 1000 : null,
-    errors: newest.errors - oldest.errors,
-    rateLimited: newest.rateLimited - oldest.rateLimited,
-    memoryMb: process.memoryUsage().rss / 1024 / 1024,
-    eventLoopDelayMs: Number.isFinite(eventLoopDelayMs) ? eventLoopDelayMs : 0,
-    streams: openStreamsByEnvironment(),
-  };
-}
-
-async function tick(sampler: Sampler): Promise<void> {
-  const sample = await readSample();
-  sampler.samples.push(sample);
-
-  while (sampler.samples.length > 1 && sampler.samples[1].at <= sample.at - WINDOW_MS) {
-    sampler.samples.shift();
-  }
-
-  sampler.latest = await buildStatus(sampler);
+async function report(reporter: Reporter): Promise<void> {
+  reporter.latest = { ...reporter.latest, reportedAt: Date.now(), streams: openStreamsByEnvironment() };
 
   const redis = getRedis();
 
   if (redis?.status === "ready") {
-    await redis.hset(SERVERS_KEY, sampler.id, JSON.stringify(sampler.latest));
+    await redis.hset(SERVERS_KEY, reporter.latest.id, JSON.stringify(reporter.latest));
   }
 }
 
-export function startServerStatus(): Sampler {
-  if (globalForStatus.serverStatusSampler) {
-    return globalForStatus.serverStatusSampler;
+export function startServerStatus(): Reporter {
+  if (globalForStatus.serverStatusReporter) {
+    return globalForStatus.serverStatusReporter;
   }
 
-  const startedAt = Date.now() - Math.round(process.uptime() * 1000);
-  const eventLoop = monitorEventLoopDelay({ resolution: 20 });
-  eventLoop.enable();
-
   const id = `${os.hostname()}:${process.pid}:${randomUUID().slice(0, 8)}`;
-  const sampler: Sampler = {
-    id,
-    host: os.hostname(),
-    startedAt,
-    samples: [],
-    eventLoop,
+  const reporter: Reporter = {
     latest: {
       id,
       host: os.hostname(),
       pid: process.pid,
-      startedAt,
+      startedAt: Date.now() - Math.round(process.uptime() * 1000),
       reportedAt: Date.now(),
-      openStreams: 0,
-      requestsPerSecond: 0,
-      averageResponseMs: null,
-      errors: 0,
-      rateLimited: 0,
-      memoryMb: process.memoryUsage().rss / 1024 / 1024,
-      eventLoopDelayMs: 0,
       streams: {},
     },
   };
-  globalForStatus.serverStatusSampler = sampler;
+  globalForStatus.serverStatusReporter = reporter;
 
-  const run = () => tick(sampler).catch((err) => logger.warn({ err }, "Server status sample failed"));
+  const run = () => report(reporter).catch((err) => logger.warn({ err }, "Server status report failed"));
   void run();
-  setInterval(run, SAMPLE_INTERVAL_MS).unref();
+  setInterval(run, REPORT_INTERVAL_MS).unref();
 
-  return sampler;
+  return reporter;
 }
 
 export async function getReportedServers(): Promise<ReportedServer[]> {
-  const sampler = startServerStatus();
+  const reporter = startServerStatus();
   const now = Date.now();
-  const thisServer: ReportedServer = { ...sampler.latest, isSilent: false, isThisServer: true };
+  const thisServer: ReportedServer = {
+    ...reporter.latest,
+    reportedAt: now,
+    streams: openStreamsByEnvironment(),
+    isSilent: false,
+    isThisServer: true,
+  };
   const redis = getRedis();
 
   if (!redis) {
@@ -158,7 +78,7 @@ export async function getReportedServers(): Promise<ReportedServer[]> {
   const forgotten: string[] = [];
 
   for (const [id, json] of Object.entries(stored)) {
-    if (id === sampler.id) {
+    if (id === thisServer.id) {
       continue;
     }
 

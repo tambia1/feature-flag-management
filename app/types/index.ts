@@ -99,13 +99,6 @@ export type ServerStatus = {
   pid: number;
   startedAt: number;
   reportedAt: number;
-  openStreams: number;
-  requestsPerSecond: number;
-  averageResponseMs: number | null;
-  errors: number;
-  rateLimited: number;
-  memoryMb: number;
-  eventLoopDelayMs: number;
   streams: Record<string, Record<string, number>>;
 };
 
