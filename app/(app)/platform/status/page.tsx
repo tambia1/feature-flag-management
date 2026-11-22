@@ -53,31 +53,6 @@ export default async function StatusPage() {
           ))}
         </Table>
       </section>
-
-      <section className={styles.section}>
-        <Text variant="heading">Connections</Text>
-        <Table
-          headers={["Company", "Project", "Environment", "App", "SDK connections"]}
-          isEmpty={connections.length === 0}
-          emptyText="No SDK is connected right now."
-        >
-          {connections.map((row) => (
-            <tr key={`${row.companyId}:${row.projectName}:${row.environmentName}:${row.applicationName}`}>
-              <td>{row.companyName}</td>
-              <td>{row.projectName}</td>
-              <td>{row.environmentName}</td>
-              <td>
-                {row.applicationName || (
-                  <Text variant="plain" color="muted">
-                    Unnamed app
-                  </Text>
-                )}
-              </td>
-              <td className={styles.number}>{row.connections}</td>
-            </tr>
-          ))}
-        </Table>
-      </section>
     </Page>
   );
 }
