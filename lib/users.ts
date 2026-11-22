@@ -1,5 +1,6 @@
 import { hashPassword } from "better-auth/crypto";
-import type { Tx } from "./prisma";
+import type { SessionUser } from "@/app/types";
+import { prisma, type Tx } from "./prisma";
 
 type NewUser = {
   companyId: string;
@@ -39,4 +40,33 @@ export async function setUserPassword(tx: Tx, userId: string, password: string) 
     data: { password: await hashPassword(password) },
   });
   await tx.session.deleteMany({ where: { userId } });
+}
+
+export async function findSessionUser(userId: string): Promise<SessionUser | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      companyId: true,
+      company: { select: { name: true, isPlatform: true, iconThumbUrl: true } },
+    },
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    companyId: user.companyId,
+    companyName: user.company.name,
+    companyIconUrl: user.company.iconThumbUrl,
+    isPlatformAdmin: user.company.isPlatform && user.role === "ADMIN",
+  };
 }
