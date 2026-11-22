@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { SessionUser } from "@/app/types";
 import { auth } from "./auth";
-import { prisma } from "./prisma";
+import { findSessionUser } from "./users";
 
 export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -13,32 +13,7 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
     return null;
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      companyId: true,
-      company: { select: { name: true, isPlatform: true, iconThumbUrl: true } },
-    },
-  });
-
-  if (!user) {
-    return null;
-  }
-
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    companyId: user.companyId,
-    companyName: user.company.name,
-    companyIconUrl: user.company.iconThumbUrl,
-    isPlatformAdmin: user.company.isPlatform && user.role === "ADMIN",
-  };
+  return findSessionUser(session.user.id);
 });
 
 export class AuthError extends Error {
