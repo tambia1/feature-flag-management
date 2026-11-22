@@ -125,7 +125,7 @@ CREATE TABLE "environments" (
 CREATE TABLE "contexts" (
     "id" TEXT NOT NULL,
     "environmentId" TEXT NOT NULL,
-    "application" TEXT NOT NULL DEFAULT '',
+    "applicationName" TEXT NOT NULL DEFAULT '',
     "key" TEXT NOT NULL,
     "attributes" JSONB NOT NULL,
     "results" JSONB NOT NULL,
@@ -248,7 +248,7 @@ CREATE UNIQUE INDEX "environments_projectId_key_key" ON "environments"("projectI
 CREATE INDEX "contexts_environmentId_lastSeenAt_idx" ON "contexts"("environmentId", "lastSeenAt");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "contexts_environmentId_application_key_key" ON "contexts"("environmentId", "application", "key");
+CREATE UNIQUE INDEX "contexts_environmentId_applicationName_key_key" ON "contexts"("environmentId", "applicationName", "key");
 
 -- CreateIndex
 CREATE INDEX "team_environment_roles_environmentId_idx" ON "team_environment_roles"("environmentId");
