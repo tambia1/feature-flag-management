@@ -9,7 +9,7 @@
 
   .input:focus-visible {
     border-color: var(--focus);
-    outline: 2px solid color-mix(in oklab, var(--focus) 30%, transparent);
+    outline: 2px solid #615fff4d;
     outline-offset: 0;
   }
 

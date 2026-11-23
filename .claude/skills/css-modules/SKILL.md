@@ -38,6 +38,7 @@ Style with plain CSS Modules and CSS variables. Don't add Tailwind, utility clas
 Use the variables from `globals.css` for every color, font size, line height, spacing step, radius and shadow. Write a literal only for one-off layout sizes such as a sidebar width.
 
 - Colors: semantic names (`--surface`, `--muted`, `--danger`), not palette names (`--slate-500`).
+- Write every color value as hex (`#0f172b`, or `#0000001a` with alpha). No `oklch()`, `rgb()`, `hsl()` or `color-mix()`; precompute a mix and write its hex.
 - Type: `--text-*` with its matching `--leading-*`, always set together. For headings, hints and muted text, use the shared `Text` component (see the components skill) instead of writing these in a module.
 - Spacing: `--space-N` is N × 0.25rem. For a value between steps, use `calc()` on a token, such as `calc(var(--space-1) * 1.5)`.
 - Radius: `--radius-sm` for inputs and buttons, `--radius-md` for cards and tables, `--radius-lg` for large panels, `--radius-full` for pills.

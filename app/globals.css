@@ -3,24 +3,24 @@
 :root {
   color-scheme: light;
 
-  --background: light-dark(oklch(98.4% 0.003 247.858), #000);
-  --foreground: light-dark(oklch(20.8% 0.042 265.755), oklch(98.4% 0.003 247.858));
-  --surface: light-dark(#fff, oklch(12.9% 0.042 264.695));
-  --input: light-dark(#fff, oklch(20.8% 0.042 265.755));
-  --border: light-dark(oklch(92.9% 0.013 255.508), oklch(27.9% 0.041 260.031));
-  --border-strong: light-dark(oklch(86.9% 0.022 252.894), oklch(37.2% 0.044 257.287));
-  --muted: light-dark(oklch(55.4% 0.046 257.417), oklch(70.4% 0.04 256.788));
-  --placeholder: light-dark(oklch(70.4% 0.04 256.788), oklch(55.4% 0.046 257.417));
-  --hover: light-dark(oklch(96.8% 0.007 247.896), oklch(27.9% 0.041 260.031));
-  --link: light-dark(oklch(51.1% 0.262 276.966), oklch(67.3% 0.182 276.935));
-  --accent: oklch(51.1% 0.262 276.966);
-  --accent-hover: oklch(58.5% 0.233 277.117);
-  --focus: oklch(58.5% 0.233 277.117);
-  --danger: light-dark(oklch(57.7% 0.245 27.325), oklch(70.4% 0.191 22.216));
-  --success: light-dark(oklch(52.7% 0.154 150.069), oklch(79.2% 0.209 151.711));
-  --danger-surface: light-dark(oklch(97.1% 0.013 17.38), oklch(25.8% 0.092 26.042));
-  --success-surface: light-dark(oklch(98.2% 0.018 155.826), oklch(26.6% 0.065 152.934));
-  --overlay: rgb(0 0 0 / 0.45);
+  --background: light-dark(#f8fafc, #000);
+  --foreground: light-dark(#0f172b, #f8fafc);
+  --surface: light-dark(#fff, #020618);
+  --input: light-dark(#fff, #0f172b);
+  --border: light-dark(#e2e8f0, #1d293d);
+  --border-strong: light-dark(#cad5e2, #314158);
+  --muted: light-dark(#62748e, #90a1b9);
+  --placeholder: light-dark(#90a1b9, #62748e);
+  --hover: light-dark(#f1f5f9, #1d293d);
+  --link: light-dark(#4f39f6, #7c86ff);
+  --accent: #4f39f6;
+  --accent-hover: #615fff;
+  --focus: #615fff;
+  --danger: light-dark(#e7000b, #ff6467);
+  --success: light-dark(#008236, #05df72);
+  --danger-surface: light-dark(#fef2f2, #460809);
+  --success-surface: light-dark(#f0fdf4, #032e15);
+  --overlay: #00000073;
 
   --text-xs: 0.75rem;
   --leading-xs: 1rem;
@@ -48,8 +48,8 @@
   --radius-lg: 1rem;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-sm: 0 1px 2px 0 #0000000d;
+  --shadow-lg: 0 20px 25px -5px #0000001a, 0 8px 10px -6px #0000001a;
 }
 
 .dark {
