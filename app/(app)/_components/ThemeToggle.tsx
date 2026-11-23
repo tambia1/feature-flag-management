@@ -18,7 +18,7 @@ export const ThemeToggle = ({ className = "" }: Props) => {
 
   return (
     <Button variant="plain" className={className} onClick={toggle}>
-      Light / dark theme
+      Light / Dark theme
     </Button>
   );
 };
