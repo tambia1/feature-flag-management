@@ -59,13 +59,7 @@ export const FlagToggle = ({ flagId, flagKey, environmentId, environmentName, is
 
   return (
     <span className={styles.toggle}>
-      <Toggle
-        checked={optimisticOn}
-        danger={isProduction}
-        label={`${flagKey} in ${environmentName}`}
-        disabled={disabled || isPending}
-        onClick={onClick}
-      />
+      <Toggle checked={optimisticOn} label={`${flagKey} in ${environmentName}`} disabled={disabled || isPending} onClick={onClick} />
       {showLabel && <span className={styles.label}>{optimisticOn ? "On — serving the rules below" : "Off — serving the off value"}</span>}
       <Message text={error} state="error" />
       <Dialog open={confirming} title={`Turn ${next ? "on" : "off"} in ${environmentName}?`} onClose={() => setConfirming(false)}>

@@ -4,19 +4,11 @@ import styles from "./Toggle.module.css";
 type Props = Omit<ComponentProps<"button">, "onChange"> & {
   checked: boolean;
   label: string;
-  danger?: boolean;
 };
 
-export const Toggle = ({ checked, label, danger = false, className = "", type = "button", ...props }: Props) => {
+export const Toggle = ({ checked, label, className = "", type = "button", ...props }: Props) => {
   return (
-    <button
-      type={type}
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      className={`${styles.toggle} ${danger ? styles.danger : ""} ${className}`}
-      {...props}
-    >
+    <button type={type} role="switch" aria-checked={checked} aria-label={label} className={`${styles.toggle} ${className}`} {...props}>
       <span className={styles.thumb} />
     </button>
   );

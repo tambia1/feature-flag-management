@@ -3,20 +3,20 @@
     position: relative;
     display: inline-flex;
     flex-shrink: 0;
-    width: 2.25rem;
-    height: 1.25rem;
+    font-size: 1.25rem;
+    width: 2.05em;
+    height: 1em;
+    padding: 0;
+    border: none;
     border-radius: var(--radius-full);
-    background: var(--border-strong);
+    background: var(--switch-off);
+    box-shadow: var(--shadow-switch-track);
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background 0.25s;
   }
 
   .toggle[aria-checked="true"] {
-    background: var(--success);
-  }
-
-  .toggle.danger[aria-checked="true"] {
-    background: var(--danger);
+    background: var(--switch-on);
   }
 
   .toggle:disabled {
@@ -26,17 +26,24 @@
 
   .thumb {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 1rem;
-    height: 1rem;
+    top: 0.045em;
+    left: 0.045em;
+    width: 0.91em;
+    height: 0.91em;
     border-radius: var(--radius-full);
-    background: #fff;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.15s;
+    background: linear-gradient(var(--switch-knob), var(--switch-knob-shade));
+    box-shadow: var(--shadow-switch-knob);
+    transition: transform 0.25s cubic-bezier(0.3, 1.3, 0.6, 1);
   }
 
   .toggle[aria-checked="true"] .thumb {
-    transform: translateX(1rem);
+    transform: translateX(1.05em);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toggle,
+    .thumb {
+      transition: none;
+    }
   }
 }

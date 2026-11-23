@@ -21,6 +21,10 @@
   --danger-surface: light-dark(#fef2f2, #460809);
   --success-surface: light-dark(#f0fdf4, #032e15);
   --overlay: #00000073;
+  --switch-on: #70d972;
+  --switch-off: light-dark(#c4c4c4, #314158);
+  --switch-knob: light-dark(#e2e2e2, #f1f5f9);
+  --switch-knob-shade: light-dark(#d6d6d6, #cad5e2);
 
   --text-xs: 0.75rem;
   --leading-xs: 1rem;
@@ -50,6 +54,8 @@
 
   --shadow-sm: 0 1px 2px 0 #0000000d;
   --shadow-lg: 0 20px 25px -5px #0000001a, 0 8px 10px -6px #0000001a;
+  --shadow-switch-track: inset 0.09em 0.13em 0.16em #00000070, inset -0.02em -0.03em 0.05em #ffffff40;
+  --shadow-switch-knob: 0 0 0 0.02em #00000059, 0.02em 0.04em 0.08em #00000040;
 }
 
 .dark {
