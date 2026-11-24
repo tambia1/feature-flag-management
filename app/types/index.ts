@@ -51,7 +51,7 @@ export type EvaluationResult = {
   reason: EvaluationReason;
 };
 
-export type ClauseOperator = "is" | "isNot" | "contains" | "startsWith" | "endsWith" | "greaterThan" | "lessThan";
+export type ClauseOperator = "is" | "isNot" | "contains" | "startsWith" | "endsWith" | "greaterThan" | "lessThan" | "matches";
 
 export type Clause = {
   attribute: string;

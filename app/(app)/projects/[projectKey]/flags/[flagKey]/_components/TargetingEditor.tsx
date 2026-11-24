@@ -35,6 +35,14 @@ const splitList = (text: string) =>
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
+const changeOperator = (clause: Clause, operator: ClauseOperator): Clause => {
+  if ((clause.operator === "matches") === (operator === "matches")) {
+    return { ...clause, operator };
+  }
+
+  const values = operator === "matches" ? [clause.values.join(",")].filter(Boolean) : splitList(clause.values.join(","));
+  return { ...clause, operator, values };
+};
 const newId = () => crypto.randomUUID().slice(0, 8);
 
 export const TargetingEditor = ({ flagId, environmentId, variations, initial, canEdit }: Props) => {
@@ -123,16 +131,20 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
                     aria-label="Operator"
                     value={clause.operator}
                     options={OPERATORS}
-                    onChange={(event) =>
-                      updateClause(ruleIndex, clauseIndex, { ...clause, operator: event.target.value as ClauseOperator })
-                    }
+                    onChange={(event) => updateClause(ruleIndex, clauseIndex, changeOperator(clause, event.target.value as ClauseOperator))}
                   />
                   <Input
+                    key={clause.operator === "matches" ? "pattern" : "list"}
                     compact
-                    placeholder="values, comma separated"
+                    placeholder={clause.operator === "matches" ? "pattern, e.g. ^user-\\d+$" : "values, comma separated"}
                     aria-label="Values"
                     defaultValue={clause.values.join(", ")}
-                    onChange={(event) => updateClause(ruleIndex, clauseIndex, { ...clause, values: splitList(event.target.value) })}
+                    onChange={(event) =>
+                      updateClause(ruleIndex, clauseIndex, {
+                        ...clause,
+                        values: clause.operator === "matches" ? [event.target.value.trim()].filter(Boolean) : splitList(event.target.value),
+                      })
+                    }
                   />
                   <Button
                     variant="link"

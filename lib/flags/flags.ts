@@ -10,6 +10,7 @@ import { publishFlagChange } from "../pubsub";
 import { AuthError } from "../session";
 import { notifySlack } from "../slack";
 import { describeTargetingChange, type TargetingSnapshot } from "./describe";
+import { isValidPattern } from "./evaluate";
 import { formatValue, parseVariationValue } from "./values";
 
 export type Flag = Awaited<ReturnType<typeof findFlag>>;
@@ -177,11 +178,16 @@ export async function setFlagOn(
   }
 }
 
-const clauseSchema = z.object({
-  attribute: z.string().trim().min(1, "Every condition needs an attribute").max(64),
-  operator: z.enum(["is", "isNot", "contains", "startsWith", "endsWith", "greaterThan", "lessThan"]),
-  values: z.array(z.string().trim().min(1)).min(1, "Every condition needs at least one value"),
-});
+const clauseSchema = z
+  .object({
+    attribute: z.string().trim().min(1, "Every condition needs an attribute").max(64),
+    operator: z.enum(["is", "isNot", "contains", "startsWith", "endsWith", "greaterThan", "lessThan", "matches"]),
+    values: z.array(z.string().trim().min(1)).min(1, "Every condition needs at least one value"),
+  })
+  .refine((clause) => clause.operator !== "matches" || clause.values.every(isValidPattern), {
+    message: "Every pattern must be a valid regular expression",
+    path: ["values"],
+  });
 
 const serveSchema = z.union([
   z.object({ variationId: z.string().min(1) }),

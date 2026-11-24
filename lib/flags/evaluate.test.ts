@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Clause, FlagConfig } from "@/app/types";
-import { evaluateFlag, evaluateFlagDetail, hashToPercent } from "./evaluate";
+import { evaluateFlag, evaluateFlagDetail, hashToPercent, isValidPattern } from "./evaluate";
 
 const base: FlagConfig = {
   key: "new-checkout",
@@ -80,6 +80,43 @@ describe("evaluateFlag", () => {
     expect(evaluateFlag(ruleWith({ attribute: "email", operator: "startsWith", values: ["Emma"] }), context)).toBe(true);
     expect(evaluateFlag(ruleWith({ attribute: "email", operator: "endsWith", values: ["@ACME.COM"] }), context)).toBe(false);
     expect(evaluateFlag(ruleWith({ attribute: "email", operator: "endsWith", values: ["@Acme.com"] }), context)).toBe(true);
+  });
+
+  it("matches a regex anywhere in the value, case-sensitively", () => {
+    const ruleWith = (values: string[]): FlagConfig => ({
+      ...base,
+      rules: [
+        { id: "r1", clauses: [{ attribute: "email", operator: "matches", values }], serve: { variationId: "on" } },
+        { id: "default", clauses: [], serve: { variationId: "off" } },
+      ],
+    });
+    const context = { key: "a", email: "emma@acme.com" };
+
+    expect(evaluateFlag(ruleWith(["@acme\\.com$"]), context)).toBe(true);
+    expect(evaluateFlag(ruleWith(["^emma@"]), context)).toBe(true);
+    expect(evaluateFlag(ruleWith(["^@acme"]), context)).toBe(false);
+    expect(evaluateFlag(ruleWith(["ACME"]), context)).toBe(false);
+    expect(evaluateFlag(ruleWith(["(unclosed", "acme"]), context)).toBe(true);
+    expect(evaluateFlag(ruleWith(["(unclosed"]), context)).toBe(false);
+  });
+
+  it("runs a catastrophic-backtracking pattern in linear time", () => {
+    const flag: FlagConfig = {
+      ...base,
+      rules: [
+        { id: "r1", clauses: [{ attribute: "name", operator: "matches", values: ["^(a+)+$"] }], serve: { variationId: "on" } },
+        { id: "default", clauses: [], serve: { variationId: "off" } },
+      ],
+    };
+    const started = performance.now();
+
+    expect(evaluateFlag(flag, { key: "a", name: `${"a".repeat(5000)}!` })).toBe(false);
+    expect(performance.now() - started).toBeLessThan(1000);
+  });
+
+  it("tells valid patterns from invalid ones", () => {
+    expect(isValidPattern("^user-\\d+$")).toBe(true);
+    expect(isValidPattern("(unclosed")).toBe(false);
   });
 
   it("splits a rollout by stable buckets", () => {
