@@ -36,7 +36,6 @@ function matchesClause(clause: Clause, context: EvaluationContext): boolean {
   }
 
   const text = String(actual);
-  const lower = text.toLowerCase();
 
   switch (clause.operator) {
     case "is":
@@ -44,11 +43,11 @@ function matchesClause(clause: Clause, context: EvaluationContext): boolean {
     case "isNot":
       return clause.values.every((value) => value !== text);
     case "contains":
-      return clause.values.some((value) => lower.includes(value.toLowerCase()));
+      return clause.values.some((value) => text.includes(value));
     case "startsWith":
-      return clause.values.some((value) => lower.startsWith(value.toLowerCase()));
+      return clause.values.some((value) => text.startsWith(value));
     case "endsWith":
-      return clause.values.some((value) => lower.endsWith(value.toLowerCase()));
+      return clause.values.some((value) => text.endsWith(value));
     case "greaterThan":
       return clause.values.some((value) => Number(text) > Number(value));
     case "lessThan":
