@@ -46,6 +46,21 @@ describe("TargetingEditor", () => {
     expect(button("Cancel").disabled).toBe(true);
   });
 
+  it("keeps a regex pattern as one value, commas included", () => {
+    renderEditor();
+
+    fireEvent.click(button("Add rule"));
+    fireEvent.change(screen.getByRole("textbox", { name: "Attribute" }), { target: { value: "key" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "Values" }), { target: { value: "a{1,3}" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Operator" }), { target: { value: "matches" } });
+
+    expect(submitted().rules[0].clauses).toEqual([{ attribute: "key", operator: "matches", values: ["a{1,3}"] }]);
+
+    fireEvent.change(screen.getByRole("textbox", { name: "Values" }), { target: { value: "^user-\\d{2,4}$" } });
+
+    expect(submitted().rules[0].clauses[0].values).toEqual(["^user-\\d{2,4}$"]);
+  });
+
   it("adds a rule above the default rule and builds its condition", () => {
     renderEditor();
 

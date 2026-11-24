@@ -1,3 +1,4 @@
+import { RE2JS } from "re2js";
 import type { Clause, EvaluationContext, EvaluationResult, FlagConfig, JsonValue, Serve } from "@/app/types";
 
 export function evaluateFlagDetail(flag: FlagConfig, context: EvaluationContext): EvaluationResult {
@@ -52,6 +53,31 @@ function matchesClause(clause: Clause, context: EvaluationContext): boolean {
       return clause.values.some((value) => Number(text) > Number(value));
     case "lessThan":
       return clause.values.some((value) => Number(text) < Number(value));
+    case "matches":
+      return clause.values.some((value) => compilePattern(value)?.test(text) ?? false);
+  }
+}
+
+const patterns = new Map<string, RE2JS | null>();
+
+function compilePattern(pattern: string): RE2JS | null {
+  if (!patterns.has(pattern)) {
+    if (patterns.size >= 1000) {
+      patterns.clear();
+    }
+
+    patterns.set(pattern, isValidPattern(pattern) ? RE2JS.compile(pattern) : null);
+  }
+
+  return patterns.get(pattern) ?? null;
+}
+
+export function isValidPattern(pattern: string): boolean {
+  try {
+    RE2JS.compile(pattern);
+    return true;
+  } catch {
+    return false;
   }
 }
 

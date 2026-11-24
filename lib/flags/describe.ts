@@ -9,6 +9,7 @@ export const OPERATOR_LABELS: Record<Clause["operator"], string> = {
   endsWith: "ends with",
   greaterThan: "greater than",
   lessThan: "less than",
+  matches: "matches regex",
 };
 
 export type TargetingSnapshot = {
