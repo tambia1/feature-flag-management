@@ -188,7 +188,7 @@ export const TargetingEditor = ({ flagId, environmentId, variations, initial, ca
       <fieldset className={styles.section} disabled={!canEdit}>
         <legend className={styles.legend}>Default rule</legend>
         <Text variant="small" color="muted">
-          Everyone who doesn&apos;t match a rule, while the flag is on. A rollout splits users by their key.
+          Everyone who doesn&apos;t match a rule, while the flag is on.
         </Text>
         <ServeEditor serve={defaultServe} variations={variations} onChange={setDefaultServe} />
       </fieldset>

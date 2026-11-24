@@ -19,6 +19,17 @@ const Editor = ({ start, values }: { start: Serve; values: Variation[] }) => {
 const percents = () => screen.getAllByRole("spinbutton").map((input) => Number((input as HTMLInputElement).value));
 
 describe("ServeEditor", () => {
+  it("explains that users keep their value only for a rollout", () => {
+    const note = /keep getting the same value/;
+    const { rerender } = render(<ServeEditor serve={{ variationId: "v0" }} variations={variations("a", "b")} onChange={() => {}} />);
+
+    expect(screen.queryByText(note)).toBeNull();
+
+    rerender(<ServeEditor serve={rollout(50, 50)} variations={variations("a", "b")} onChange={() => {}} />);
+
+    expect(screen.getByText(note)).toBeTruthy();
+  });
+
   it("shows a slider and a percent box for every value", () => {
     render(<ServeEditor serve={rollout(25, 25, 25, 25)} variations={variations("a", "b", "c", "d")} onChange={() => {}} />);
 

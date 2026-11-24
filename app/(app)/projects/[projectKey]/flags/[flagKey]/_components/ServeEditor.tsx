@@ -147,6 +147,10 @@ export const ServeEditor = ({ serve, variations, onChange }: Props) => {
               Split evenly
             </Button>
           </div>
+          <Text variant="small" color="muted">
+            Each user is placed by their context key, so they keep getting the same value every time, as long as your app sends the same
+            key. Changing the percentages can move some users to another value.
+          </Text>
         </div>
       )}
     </div>
