@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { FlagConfig } from "@/app/types";
+import type { Clause, FlagConfig } from "@/app/types";
 import { evaluateFlag, evaluateFlagDetail, hashToPercent } from "./evaluate";
 
 const base: FlagConfig = {
@@ -58,8 +58,28 @@ describe("evaluateFlag", () => {
 
     expect(evaluateFlag(flag, { key: "a", country: "IL", plan: "pro" })).toBe(true);
     expect(evaluateFlag(flag, { key: "b", country: "IL", plan: "free" })).toBe(false);
-    expect(evaluateFlag(flag, { key: "c", email: "Emma@ACME.com" })).toBe(true);
+    expect(evaluateFlag(flag, { key: "c", email: "emma@acme.com" })).toBe(true);
     expect(evaluateFlag(flag, { key: "d" })).toBe(false);
+  });
+
+  it("compares text case-sensitively in every operator", () => {
+    const ruleWith = (clause: Clause): FlagConfig => ({
+      ...base,
+      rules: [
+        { id: "r1", clauses: [clause], serve: { variationId: "on" } },
+        { id: "default", clauses: [], serve: { variationId: "off" } },
+      ],
+    });
+    const context = { key: "a", email: "Emma@Acme.com" };
+
+    expect(evaluateFlag(ruleWith({ attribute: "email", operator: "is", values: ["emma@acme.com"] }), context)).toBe(false);
+    expect(evaluateFlag(ruleWith({ attribute: "email", operator: "isNot", values: ["emma@acme.com"] }), context)).toBe(true);
+    expect(evaluateFlag(ruleWith({ attribute: "email", operator: "contains", values: ["acme"] }), context)).toBe(false);
+    expect(evaluateFlag(ruleWith({ attribute: "email", operator: "contains", values: ["Acme"] }), context)).toBe(true);
+    expect(evaluateFlag(ruleWith({ attribute: "email", operator: "startsWith", values: ["emma"] }), context)).toBe(false);
+    expect(evaluateFlag(ruleWith({ attribute: "email", operator: "startsWith", values: ["Emma"] }), context)).toBe(true);
+    expect(evaluateFlag(ruleWith({ attribute: "email", operator: "endsWith", values: ["@ACME.COM"] }), context)).toBe(false);
+    expect(evaluateFlag(ruleWith({ attribute: "email", operator: "endsWith", values: ["@Acme.com"] }), context)).toBe(true);
   });
 
   it("splits a rollout by stable buckets", () => {
