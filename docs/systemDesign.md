@@ -149,7 +149,11 @@ Each company's apps read the flag values through an SDK.
 
 ## 2. UI Wireframes
 
+See [systemDesign.excalidraw](systemDesign.excalidraw)
+
 ## 3. Data Models
+
+See [systemDesign.excalidraw](systemDesign.excalidraw)
 
 ## 4. API (REST)
 
@@ -380,6 +384,8 @@ Goal: know about slowness or bugs before users report them — and never guess w
    - If the server is down: use the last values, then the fallback in code
 
 ## 12. Architecture
+
+See [systemDesign.excalidraw](systemDesign.excalidraw)
 
 ## 13. Scalability
 
