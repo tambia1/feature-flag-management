@@ -10,7 +10,7 @@ Each company's apps read the flag values through an SDK.
 
 ## 1. Requierements
 
-### 1. Clarifications
+### 1.1 Clarifications
 
 - Is this a public app or internal?
   public - many companies, each sees only its own data
@@ -64,7 +64,7 @@ Each company's apps read the flag values through an SDK.
 - Can the last admin be removed?
   no - a company must always have at least one admin (same for platform admins)
 
-### 2. Functional requirements (user stories)
+### 1.2 Functional requirements (user stories)
 
 “As a [role], I can [action]”
 
@@ -98,7 +98,7 @@ Each company's apps read the flag values through an SDK.
 - Viewers
   1. view flags.
 
-### 3. Non Functional
+### 1.3 Non Functional
 
 - Scale (assumptions)
   1,000 companies now, 10,000 in 5 years
@@ -136,7 +136,7 @@ Each company's apps read the flag values through an SDK.
 - i18n
   English only at first
 
-### 4. Constrains
+### 1.4 Constrains
 
 - Frontend: React + Next.js + CSS Modules
 - Language: TypeScript
@@ -153,7 +153,7 @@ Each company's apps read the flag values through an SDK.
 
 ## 4. API (REST)
 
-### 1. AUTH
+### 4.1 AUTH
 
 ```
 POST   /api/auth/login                             everyone
@@ -163,7 +163,7 @@ PATCH  /api/me/password                            logged in   change password
 GET    /api/me/roles                               logged in   my teams + role per env
 ```
 
-### 2. COMPANIES
+### 4.2 COMPANIES
 
 ```
 GET    /api/companies                              platform admin
@@ -173,7 +173,7 @@ PATCH  /api/companies/:companyId                   platform admin (any) · compa
 DELETE /api/companies/:companyId                   platform admin   (not the platform company)
 ```
 
-### 3. USERS
+### 4.3 USERS
 
 ```
 GET    /api/users?search=                          company admin
@@ -182,7 +182,7 @@ PATCH  /api/users/:userId                          company admin   name, email, 
 DELETE /api/users/:userId                          company admin   (not the last admin)
 ```
 
-### 4. TEAMS
+### 4.4 TEAMS
 
 ```
 GET    /api/teams                                  company admin
@@ -196,7 +196,7 @@ GET    /api/teams/:teamId/permissions              company admin
 PUT    /api/teams/:teamId/permissions              company admin   whole grid
 ```
 
-### 5. PROJECTS & ENVIRONMENTS
+### 4.5 PROJECTS & ENVIRONMENTS
 
 ```
 GET    /api/projects                               logged in   (only projects I can access)
@@ -210,7 +210,7 @@ DELETE /api/environments/:environmentId            company admin
 POST   /api/environments/:environmentId/rotate-key company admin
 ```
 
-### 6. FLAGS
+### 4.6 FLAGS
 
 ```
 GET    /api/projects/:projectId/flags?environmentId=&search=&status=&archived=
@@ -225,13 +225,13 @@ PATCH  /api/flags/:flagId/environments/:environmentId   editor   + comment
 GET    /api/flags/:flagId/history?environmentId=   viewer
 ```
 
-### 7. LOGS
+### 4.7 LOGS
 
 ```
 GET    /api/logs?userId=&targetType=&from=&to=
 ```
 
-### 8. SDK (used by the companies' apps, not the dashboard)
+### 4.8 SDK (used by the companies' apps, not the dashboard)
 
 ```
 POST   /api/sdk/evaluate                           SDK key
@@ -242,7 +242,7 @@ POST   /api/sdk/evaluate                           SDK key
 GET    /api/sdk/stream                             SDK key   real-time: "flags changed, fetch again"
 ```
 
-### 9. OTHER
+### 4.9 OTHER
 
 ```
 GET    /api/health                                 everyone   (load balancers, monitoring)
@@ -250,7 +250,7 @@ GET    /api/docs                                   dev only, Swagger UI
 GET    /api/docs/spec                              dev only, OpenAPI spec (openapi.yaml)
 ```
 
-### 10. Two rules every endpoint follows
+### 4.10 Two rules every endpoint follows
 
 - 401 if not logged in
 - 403 if the role isn’t allowed
@@ -294,7 +294,7 @@ GET    /api/docs/spec                              dev only, OpenAPI spec (opena
 
 ## 8. Component Architecture
 
-1. app/
+### 8.1 app/
 
 ```
 app/
@@ -317,7 +317,7 @@ app/
   api/sdk/…                                SDK endpoints (route handlers)
 ```
 
-2. layers
+### 8.2 layers
 
 ```
 Pages (server)          fetch data, check permissions, compose features
