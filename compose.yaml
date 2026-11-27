@@ -14,12 +14,51 @@ services:
       interval: 5s
     restart: unless-stopped
 
-  redis:
+  redis-flags:
     image: redis:7-alpine
     ports: ["6379:6379"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
+    restart: unless-stopped
+
+  redis-status:
+    image: redis:7-alpine
+    ports: ["6380:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+    restart: unless-stopped
+
+  s3:
+    image: chrislusf/seaweedfs:4.55
+    command: [server, -s3, -dir=/data]
+    ports: ["8333:8333"]
+    volumes: [s3-data:/data]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8333/"]
+      interval: 5s
+    restart: unless-stopped
+
+  s3-setup:
+    image: amazon/aws-cli:2.42.4
+    environment:
+      AWS_ACCESS_KEY_ID: local
+      AWS_SECRET_ACCESS_KEY: local
+      AWS_REGION: us-east-1
+    volumes: ["./ops/s3/cors.json:/cors.json:ro"]
+    entrypoint: ["sh", "-c"]
+    command:
+      - >-
+        aws --endpoint-url http://s3:8333 s3api create-bucket --bucket feature-flags-uploads || true;
+        aws --endpoint-url http://s3:8333 s3api put-bucket-cors --bucket feature-flags-uploads --cors-configuration file:///cors.json
+    depends_on:
+      s3: { condition: service_healthy }
+
+  sqs:
+    image: softwaremill/elasticmq-native:1.7.1
+    ports: ["9324:9324"]
+    volumes: ["./ops/elasticmq/elasticmq.conf:/opt/elasticmq.conf:ro"]
     restart: unless-stopped
 
   app1: &app
@@ -28,17 +67,41 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/feature_flag_db
-      REDIS_URL: redis://redis:6379
+      FLAGS_REDIS_URL: redis://redis-flags:6379
+      STATUS_REDIS_URL: redis://redis-status:6379
+      S3_ENDPOINT: http://s3:8333
+      S3_PUBLIC_ENDPOINT: http://localhost:8333
+      SQS_ENDPOINT: http://sqs:9324
+      ICON_QUEUE_URL: http://sqs:9324/000000000000/icons
       BETTER_AUTH_URL: http://localhost:8080
       OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
     depends_on:
       db: { condition: service_healthy }
-      redis: { condition: service_healthy }
+      redis-flags: { condition: service_healthy }
+      redis-status: { condition: service_healthy }
+      s3: { condition: service_healthy }
+      sqs: { condition: service_started }
     logging:
       driver: json-file
 
   app2:
     <<: *app
+
+  worker:
+    profiles: [full]
+    build: { context: ., target: worker }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/feature_flag_db
+      S3_ENDPOINT: http://s3:8333
+      SQS_ENDPOINT: http://sqs:9324
+      ICON_QUEUE_URL: http://sqs:9324/000000000000/icons
+    depends_on:
+      db: { condition: service_healthy }
+      s3: { condition: service_healthy }
+      sqs: { condition: service_started }
+    logging:
+      driver: json-file
 
   lb:
     profiles: [full]
@@ -89,4 +152,5 @@ services:
 
 volumes:
   db-data:
+  s3-data:
   uptime-data:

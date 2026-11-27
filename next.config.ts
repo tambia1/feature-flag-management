@@ -6,10 +6,6 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   devIndicators: { position: "bottom-right" },
   serverExternalPackages: ["pino", "pino-pretty", "ioredis", "prom-client"],
-  experimental: {
-    serverActions: { bodySizeLimit: "21mb" },
-    proxyClientMaxBodySize: "21mb",
-  },
   async headers() {
     return [
       {

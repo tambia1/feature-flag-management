@@ -1,11 +1,11 @@
 "use server";
 
 import { refresh } from "next/cache";
-import type { FormState, SessionUser } from "@/app/types";
+import type { FileUpload, FormState, SessionUser } from "@/app/types";
 import { runAction, text } from "@/lib/actions";
 import { track } from "@/lib/analytics";
 import { updateCompany as updateCompanyDetails } from "@/lib/companies";
-import { removeCompanyIcon, setCompanyIcon } from "@/lib/company-icon";
+import { removeCompanyIcon, setCompanyIcon, startIconUpload } from "@/lib/company-icon";
 import { addCompanyUser, editCompanyUser, findUser, removeCompanyUser } from "@/lib/company-users";
 import { companyLog } from "@/lib/logs";
 import {
@@ -29,16 +29,12 @@ import {
   renameTeam as renameCompanyTeam,
   saveTeamRoles,
 } from "@/lib/teams";
+import { requireIconUpload } from "../icon-form";
 import { readUserForm } from "../user-form";
 
 const ownCompany = (admin: SessionUser) => ({ id: admin.companyId, name: admin.companyName });
 
 const savedOrNoChanges = (changed: boolean): FormState => ({ success: changed ? "Saved" : "No changes" });
-
-const iconFile = (formData: FormData) => {
-  const file = formData.get("icon");
-  return file instanceof File ? file : null;
-};
 
 const rolesFrom = (formData: FormData) =>
   Object.fromEntries(
@@ -60,12 +56,17 @@ export async function updateCompany(_state: FormState, formData: FormData): Prom
   });
 }
 
+export async function startCompanyIconUpload(): Promise<FileUpload> {
+  const admin = await assertCompanyAdmin();
+  return startIconUpload(admin.id);
+}
+
 export async function updateCompanyIcon(_state: FormState, formData: FormData): Promise<FormState> {
   return runAction(formData, async () => {
     const admin = await assertCompanyAdmin();
-    await setCompanyIcon(ownCompany(admin), iconFile(formData), companyLog(admin));
+    await setCompanyIcon(ownCompany(admin), requireIconUpload(formData, admin.id), companyLog(admin));
     refresh();
-    return { success: "Icon updated" };
+    return { success: "Icon uploaded" };
   });
 }
 

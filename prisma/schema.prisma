@@ -13,6 +13,8 @@ model Company {
   isPlatform      Boolean  @default(false)
   iconUrl         String?
   iconThumbUrl    String?
+  iconStatus      IconStatus?
+  iconSourceKey   String?
   slackWebhookUrl String?
   createdAt       DateTime @default(now())
 
@@ -21,6 +23,12 @@ model Company {
   projects Project[]
 
   @@map("companies")
+}
+
+enum IconStatus {
+  PROCESSING
+  READY
+  FAILED
 }
 
 enum Role {

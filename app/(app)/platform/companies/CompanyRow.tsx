@@ -2,19 +2,19 @@
 
 import Link from "next/link";
 import { useActionState, useRef, useState } from "react";
-import type { FormState } from "@/app/types";
+import type { FormState, IconStatus } from "@/app/types";
 import { Button } from "@/app/_components/Button";
 import { ConfirmAction } from "@/app/_components/ConfirmAction";
 import { Input } from "@/app/_components/Input";
 import { Message } from "@/app/_components/Message";
-import { MAX_ICON_BYTES } from "@/lib/uploads";
 import { CompanyIcon } from "../../_components/CompanyIcon";
-import { deleteCompany, updateCompany } from "../actions";
+import { uploadIconField } from "../../_components/uploadIcon";
+import { deleteCompany, startCompanyIconUpload, updateCompany } from "../actions";
 import styles from "./CompanyRow.module.css";
 import { Text } from "@/app/_components/Text";
 
 type Props = {
-  company: { id: string; name: string; isPlatform: boolean; iconThumbUrl: string | null };
+  company: { id: string; name: string; isPlatform: boolean; iconThumbUrl: string | null; iconStatus: IconStatus | null };
   admins: string;
   users: number;
   projects: number;
@@ -41,10 +41,8 @@ export const CompanyRow = ({ company, admins, users, projects, flags, created }:
   };
 
   const [state, formAction, isPending] = useActionState(async (previous: FormState, formData: FormData) => {
-    const icon = formData.get("icon");
-    if (icon instanceof File && icon.size > MAX_ICON_BYTES) {
-      return { error: "The image must be 20 MB or smaller", values: { name: String(formData.get("name") ?? "") } };
-    }
+    const error = await uploadIconField(formData, startCompanyIconUpload);
+    if (error) return { error, values: { name: String(formData.get("name") ?? "") } };
     const result = await updateCompany(previous, formData);
     if (!result.error) stopEditing();
     return result;
@@ -117,6 +115,16 @@ export const CompanyRow = ({ company, admins, users, projects, flags, created }:
             {company.isPlatform && (
               <Text variant="plain" color="muted">
                 (platform)
+              </Text>
+            )}
+            {company.iconStatus === "PROCESSING" && (
+              <Text variant="plain" color="muted">
+                (icon processing…)
+              </Text>
+            )}
+            {company.iconStatus === "FAILED" && (
+              <Text variant="plain" color="danger">
+                (icon failed)
               </Text>
             )}
           </span>

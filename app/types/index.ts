@@ -125,3 +125,21 @@ export type SdkConnections = {
   companies: CompanySdkConnections[];
   connections: SdkConnection[];
 };
+
+export type IconStatus = "PROCESSING" | "READY" | "FAILED";
+
+export type FileUpload = {
+  key: string;
+  url: string;
+  fields: Record<string, string>;
+};
+
+export type IconUpload = {
+  key: string;
+  uploadedBy: string;
+};
+
+export type IconJob = {
+  companyId: string;
+  key: string;
+};

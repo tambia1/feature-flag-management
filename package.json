@@ -1,12 +1,13 @@
 {
   "name": "feature-flag-management",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "worker": "tsx --conditions=react-server --env-file-if-exists=.env worker/index.ts",
     "db:seed": "tsx prisma/seed.ts",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
@@ -27,6 +28,9 @@
     "ci": "npm run check && npm run db:validate && npm run db:check-migrations && npm run build && npm run test:e2e"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1178.0",
+    "@aws-sdk/client-sqs": "^3.1178.0",
+    "@aws-sdk/s3-presigned-post": "^3.1178.0",
     "@opentelemetry/api": "^1.9.1",
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",

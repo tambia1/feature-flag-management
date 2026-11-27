@@ -22,7 +22,7 @@ const globalForStatus = globalThis as unknown as { serverStatusReporter?: Report
 async function report(reporter: Reporter): Promise<void> {
   reporter.latest = { ...reporter.latest, reportedAt: Date.now(), streams: openStreamsByEnvironment() };
 
-  const redis = getRedis();
+  const redis = getRedis("status");
 
   if (redis?.status === "ready") {
     await redis.hset(SERVERS_KEY, reporter.latest.id, JSON.stringify(reporter.latest));
@@ -64,7 +64,7 @@ export async function getReportedServers(): Promise<ReportedServer[]> {
     isSilent: false,
     isThisServer: true,
   };
-  const redis = getRedis();
+  const redis = getRedis("status");
 
   if (!redis) {
     return [thisServer];
