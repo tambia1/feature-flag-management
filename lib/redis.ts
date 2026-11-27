@@ -1,24 +1,32 @@
 import Redis from "ioredis";
 import { logger } from "./logger";
 
-const globalForRedis = globalThis as unknown as { redis?: Redis | null };
+type RedisRole = "flags" | "status";
 
-function createRedis(): Redis | null {
-  const url = process.env.REDIS_URL;
+const URL_SETTINGS: Record<RedisRole, string> = {
+  flags: "FLAGS_REDIS_URL",
+  status: "STATUS_REDIS_URL",
+};
+
+const globalForRedis = globalThis as unknown as { redis?: Partial<Record<RedisRole, Redis | null>> };
+const clients = (globalForRedis.redis ??= {});
+
+function createRedis(role: RedisRole): Redis | null {
+  const url = process.env[URL_SETTINGS[role]];
 
   if (!url) {
     return null;
   }
 
   const client = new Redis(url, { maxRetriesPerRequest: 2, enableOfflineQueue: false, commandTimeout: 1000 });
-  client.on("error", (err) => logger.warn({ err }, "Redis connection error"));
+  client.on("error", (err) => logger.warn({ err, redis: role }, "Redis connection error"));
   return client;
 }
 
-export function getRedis(): Redis | null {
-  if (globalForRedis.redis === undefined) {
-    globalForRedis.redis = createRedis();
+export function getRedis(role: RedisRole): Redis | null {
+  if (clients[role] === undefined) {
+    clients[role] = createRedis(role);
   }
 
-  return globalForRedis.redis;
+  return clients[role];
 }

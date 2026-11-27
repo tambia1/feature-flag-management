@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCompanyAdmin } from "@/lib/session";
 import { CompanyIconForm } from "./CompanyIconForm";
 import { Page } from "../../_components/Page";
-import { deleteCompanyIcon, updateCompanyIcon } from "../actions";
+import { deleteCompanyIcon, startCompanyIconUpload, updateCompanyIcon } from "../actions";
 import { CompanyForm } from "./CompanyForm";
 
 export const metadata: Metadata = { title: "Company" };
@@ -12,7 +12,7 @@ export default async function CompanyPage() {
   const admin = await requireCompanyAdmin();
   const company = await prisma.company.findUniqueOrThrow({
     where: { id: admin.companyId },
-    select: { name: true, iconThumbUrl: true, slackWebhookUrl: true },
+    select: { name: true, iconThumbUrl: true, iconStatus: true, slackWebhookUrl: true },
   });
 
   return (
@@ -20,6 +20,8 @@ export default async function CompanyPage() {
       <CompanyIconForm
         name={company.name}
         iconUrl={company.iconThumbUrl}
+        iconStatus={company.iconStatus}
+        startUpload={startCompanyIconUpload}
         uploadAction={updateCompanyIcon}
         removeAction={deleteCompanyIcon}
       />

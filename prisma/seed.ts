@@ -177,7 +177,7 @@ async function seedDemoCompany(demo: DemoCompany) {
 
   await prisma.$transaction(async (tx) => {
     const company = await tx.company.create({
-      data: { name: demo.name, iconUrl: demo.iconUrl, iconThumbUrl: demo.iconThumbUrl },
+      data: { name: demo.name, iconUrl: demo.iconUrl, iconThumbUrl: demo.iconThumbUrl, iconStatus: "READY" },
       select: { id: true },
     });
 

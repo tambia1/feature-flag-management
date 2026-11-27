@@ -15,7 +15,7 @@ function createPubSub(): PubSub {
   const local = new EventEmitter();
   local.setMaxListeners(0);
 
-  const publisher = getRedis();
+  const publisher = getRedis("flags");
 
   if (!publisher) {
     return { local };

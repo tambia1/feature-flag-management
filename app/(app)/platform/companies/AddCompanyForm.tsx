@@ -6,18 +6,16 @@ import { Button } from "@/app/_components/Button";
 import { Field } from "@/app/_components/Field";
 import { Input } from "@/app/_components/Input";
 import { Message } from "@/app/_components/Message";
-import { MAX_ICON_BYTES } from "@/lib/uploads";
 import { PasswordField } from "../../_components/PasswordField";
-import { createCompany } from "../actions";
+import { uploadIconField } from "../../_components/uploadIcon";
+import { createCompany, startCompanyIconUpload } from "../actions";
 import { IconField } from "./IconField";
 import styles from "./AddCompanyForm.module.css";
 
 export const AddCompanyForm = () => {
   const [state, formAction, isPending] = useActionState(async (previous: FormState, formData: FormData) => {
-    const icon = formData.get("icon");
-    if (icon instanceof File && icon.size > MAX_ICON_BYTES) {
-      return { ...previous, error: "The image must be 20 MB or smaller", success: undefined };
-    }
+    const error = await uploadIconField(formData, startCompanyIconUpload);
+    if (error) return { ...previous, error, success: undefined };
     return createCompany(previous, formData);
   }, {});
 

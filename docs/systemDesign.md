@@ -287,7 +287,7 @@ GET    /api/docs/spec                              dev only, OpenAPI spec (opena
    - non-functional requirements ask for consistency.
    - Small data: ~120GB in 5 years fits one server easily
 2. CACHE: read heavy for flags - most reads never reaches database
-3. S3: no need, this is for files like images, and videos.
+3. S3: company icons. The browser uploads straight to S3 (presigned URL), a worker makes the sizes
 
 ## 6. Authentication & Authorization
 
@@ -431,14 +431,16 @@ scale only what your numbers say will break
 6. Uptime: Uptime Kuma (Pings /api/health from outside, then alerts), send slack message
 7. Analytics: PostHog (PostHog = product analytics; Umami = simple privacy-friendly page analytics)
 8. Validation: zod (One schema per form, used on the server)
-9. Cache / pub-sub: Redis (cache)
-10. Lint: oxlint
-11. Format: oxfmt
-12. Typecheck: tsgo
-13. Unused code: Knip
-14. Tests: Vitest, Testing Library, Playwright
-15. CI/CD: GitHub Actions
-16. Package manager: npm
+9. Pub/sub: Redis, one for flag updates and one for server status
+10. Queue: SQS (ElasticMQ locally), feeds the image worker
+11. File storage: S3 (SeaweedFS locally)
+12. Lint: oxlint
+13. Format: oxfmt
+14. Typecheck: tsgo
+15. Unused code: Knip
+16. Tests: Vitest, Testing Library, Playwright
+17. CI/CD: GitHub Actions
+18. Package manager: npm
 
 ## 15. Summary
 

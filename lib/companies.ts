@@ -1,7 +1,7 @@
 import "server-only";
 import { z } from "zod";
-import type { CompanyActivity, SessionUser } from "@/app/types";
-import { deleteIconFiles, prepareIcon, removeCompanyIcon, setCompanyIcon, storeIcon } from "@/lib/company-icon";
+import type { CompanyActivity, IconUpload, SessionUser } from "@/app/types";
+import { checkIconUpload, deleteIconFiles, queueIconJob, removeCompanyIcon, setCompanyIcon } from "@/lib/company-icon";
 import { UserError } from "@/lib/errors";
 import { nameField } from "@/lib/fields";
 import { type LogWriter, writePlatformLog } from "@/lib/logs";
@@ -52,7 +52,7 @@ type Company = { id: string; name: string };
 
 type NewCompany = { name: string; adminName: string; adminEmail: string; password: string };
 
-type CompanyChanges = { name: string; icon: File | null; removeIcon: boolean; slackWebhookUrl?: string };
+type CompanyChanges = { name: string; icon: IconUpload | null; removeIcon: boolean; slackWebhookUrl?: string };
 
 const companyName = nameField("a company name");
 
@@ -69,17 +69,22 @@ export async function findCompany(companyId: string): Promise<Company> {
   return company;
 }
 
-export async function createCompany(actor: SessionUser, newCompany: NewCompany, iconFile: File | null): Promise<string> {
+export async function createCompany(actor: SessionUser, newCompany: NewCompany, icon: IconUpload | null): Promise<string> {
   const input = newCompanySchema.parse(newCompany);
 
   if (await prisma.user.findUnique({ where: { email: input.adminEmail.toLowerCase() }, select: { id: true } })) {
     throw new UserError("A user with this email already exists.");
   }
 
-  const icon = iconFile && iconFile.size > 0 ? await prepareIcon(iconFile) : null;
+  if (icon) {
+    await checkIconUpload(icon);
+  }
 
   const company = await prisma.$transaction(async (tx) => {
-    const created = await tx.company.create({ data: { name: input.name }, select: { id: true } });
+    const created = await tx.company.create({
+      data: { name: input.name, iconStatus: icon ? "PROCESSING" : null, iconSourceKey: icon?.key ?? null },
+      select: { id: true },
+    });
     const user = await createUserWithPassword(tx, {
       companyId: created.id,
       name: input.adminName,
@@ -97,7 +102,7 @@ export async function createCompany(actor: SessionUser, newCompany: NewCompany, 
   });
 
   if (icon) {
-    await prisma.company.update({ where: { id: company.id }, data: await storeIcon(company.id, icon) });
+    await queueIconJob({ companyId: company.id, key: icon.key });
   }
 
   return input.name;
@@ -105,7 +110,7 @@ export async function createCompany(actor: SessionUser, newCompany: NewCompany, 
 
 export async function updateCompany(company: Company, changes: CompanyChanges, log: LogWriter): Promise<boolean> {
   const newName = companyName.parse(changes.name);
-  const hasNewIcon = changes.icon !== null && changes.icon.size > 0;
+  const hasNewIcon = changes.icon !== null;
   const removeIcon = !hasNewIcon && changes.removeIcon;
   const newSlackWebhookUrl =
     changes.slackWebhookUrl === undefined || changes.slackWebhookUrl.trim() === ""
@@ -117,7 +122,7 @@ export async function updateCompany(company: Company, changes: CompanyChanges, l
 
   if (!renamed && !slackChanged && !hasNewIcon && !removeIcon) return false;
 
-  if (hasNewIcon) {
+  if (changes.icon) {
     await setCompanyIcon(company, changes.icon, log);
   } else if (removeIcon) {
     await removeCompanyIcon(company, log);
