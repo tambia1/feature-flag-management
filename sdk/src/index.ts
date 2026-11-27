@@ -34,12 +34,12 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
     } catch {}
   };
 
-  const refresh = async () => {
+  const refresh = async (isRefresh = false) => {
     try {
       const response = await fetch(`${baseUrl}/api/sdk/flags`, {
         method: "POST",
         headers: { Authorization: options.envSdkKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ context, applicationName: options.applicationName }),
+        body: JSON.stringify({ context, applicationName: options.applicationName, ...(isRefresh && { refresh: true }) }),
       });
 
       if (!response.ok) {
@@ -89,7 +89,7 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
           buffer = buffer.slice(end + 2);
 
           if (/^event: changed$/m.test(message)) {
-            await refresh();
+            await refresh(true);
           }
         }
       }
@@ -101,7 +101,7 @@ export function createFlagClient(options: FlagClientOptions): FlagClient {
     const delay = Math.min(30_000, 1000 * 2 ** attempt);
     setTimeout(() => {
       if (!closed) {
-        void refresh();
+        void refresh(true);
         void listen(attempt + 1);
       }
     }, delay);

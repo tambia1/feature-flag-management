@@ -56,7 +56,7 @@ export async function getFlagsForSdkKey(sdkKey: string): Promise<EnvironmentFlag
   return entry;
 }
 
-async function loadFlagConfigs(environmentId: string): Promise<FlagConfig[]> {
+export async function loadFlagConfigs(environmentId: string): Promise<FlagConfig[]> {
   const rows = await prisma.flagEnvironment.findMany({
     where: { environmentId },
     select: {
