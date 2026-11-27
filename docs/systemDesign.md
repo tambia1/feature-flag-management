@@ -379,10 +379,14 @@ Goal: know about slowness or bugs before users report them — and never guess w
    - flag change reaches apps < 5s
    - cache hit rate, open SDK stream connections
    - dashboard 5xx errors, first page load < 2s
-   - Postgres: connections, slow queries, CPU, disk
+   - Postgres: up, connections, long-running queries (postgres_exporter)
+   - Redis: up, memory, blocked clients (redis_exporter)
+   - CPU and memory of every container (cAdvisor; on AWS: CloudWatch)
+   - icon queue: messages waiting and in flight
 3. Alerts:
    - urgent (page): SDK errors > 0.1% / p99 > 50ms / propagation > 5s
-   - Slack: dashboard errors rising
+   - urgent (page): Postgres or Redis down, memory above 90%, Postgres connections above 80%
+   - Slack: dashboard errors rising, CPU above 90%, a query running over a minute, icon queue backlog
    - external uptime check on /api/health every minute
 4. Logs:
    - structured (JSON) with requestId, companyId

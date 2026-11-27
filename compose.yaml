@@ -129,6 +129,33 @@ services:
     ports: ["9090:9090"]
     volumes: ["./ops/prometheus:/etc/prometheus:ro"]
 
+  postgres-exporter:
+    profiles: [full]
+    image: prometheuscommunity/postgres-exporter:v0.21.1
+    environment:
+      DATA_SOURCE_URI: db:5432/feature_flag_db?sslmode=disable
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: postgres
+    depends_on:
+      db: { condition: service_healthy }
+
+  redis-exporter:
+    profiles: [full]
+    image: oliver006/redis_exporter:v1.99.0
+
+  cadvisor:
+    profiles: [full]
+    image: ghcr.io/google/cadvisor:v0.61.1
+    privileged: true
+    devices: [/dev/kmsg]
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    command: [--docker_only=true, --store_container_labels=false, --whitelisted_container_labels=com.docker.compose.service]
+
   tempo:
     profiles: [full]
     image: grafana/tempo:2.7.1
