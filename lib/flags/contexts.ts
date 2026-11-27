@@ -1,5 +1,5 @@
 import "server-only";
-import type { EvaluationContext, EvaluationResult, SessionUser } from "@/app/types";
+import type { EvaluationContext, SessionUser } from "@/app/types";
 import { logger } from "../logger";
 import { writeLog } from "../logs";
 import { prisma } from "../prisma";
@@ -36,14 +36,9 @@ export function startContextCleanup(): void {
   setInterval(run, CLEANUP_EVERY_MS).unref();
 }
 
-export function recordContext(
-  environmentId: string,
-  applicationName: string,
-  context: EvaluationContext,
-  results: Record<string, EvaluationResult>,
-): void {
+export function recordContext(environmentId: string, applicationName: string, context: EvaluationContext): void {
   const id = `${environmentId}|${applicationName}|${context.key}`;
-  const signature = JSON.stringify([context, results]);
+  const signature = JSON.stringify(context);
   const now = Date.now();
   const last = lastWrites.get(id);
 
@@ -58,7 +53,7 @@ export function recordContext(
   lastWrites.set(id, { signature, at: now });
 
   const { key, ...attributes } = context;
-  const data = { attributes: attributes as object, results: results as object, lastSeenAt: new Date(now) };
+  const data = { attributes: attributes as object, lastSeenAt: new Date(now) };
   const fail = (err: unknown) => {
     lastWrites.delete(id);
     logger.warn({ err }, "Could not record SDK context");

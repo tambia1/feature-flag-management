@@ -261,6 +261,8 @@ POST   /api/sdk/flags                              SDK key
        header: Authorization: <sdkKey>
        body:   { "context": { "key": "user-42", "country": "IL", "plan": "pro" }, "applicationName": "web" }
        reply:  { "new-checkout": true, "homepage-banner": "Big sale today!", … }
+       saves the context (who the user is), except when the body has "refresh": true -
+       the SDK sends that when it fetches again after a flag change or a reconnect
 
 GET    /api/sdk/stream?applicationName=            SDK key   real-time: "flags changed, fetch again"
 ```

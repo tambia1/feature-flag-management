@@ -161,7 +161,6 @@ model Context {
   applicationName String   @default("")
   key             String
   attributes      Json
-  results         Json
   lastSeenAt      DateTime
   createdAt       DateTime @default(now())
 

@@ -107,6 +107,15 @@ describe("POST /api/sdk/flags", () => {
       ).toEqual({ applicationName: "web", attributes: { country: "DE" } });
     });
   });
+
+  it("answers a refresh without saving the context", async () => {
+    const response = await getFlags(acme.dev.sdkKey, { context: { key: "refreshed-user" }, refresh: true });
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty(flag.key);
+    expect(await prisma.context.findFirst({ where: { environmentId: acme.dev.id, key: "refreshed-user" } })).toBeNull();
+  });
 });
 
 describe("OPTIONS /api/sdk/flags", () => {

@@ -166,6 +166,9 @@ components:
           type: string
           maxLength: 100
           description: The app's name, shown on the Contexts page
+        refresh:
+          type: boolean
+          description: True when the SDK fetches again after a flag change or a reconnect. The server answers but does not save the context, since it saved it when the app opened.
 
     Error:
       type: object

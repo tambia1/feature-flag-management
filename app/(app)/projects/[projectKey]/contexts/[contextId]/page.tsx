@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Table } from "@/app/_components/Table";
-import type { EvaluationResult, JsonValue } from "@/app/types";
+import { loadFlagConfigs } from "@/lib/flags/cache";
 import { getProjectContext, searchString } from "@/lib/flags/context";
+import { getFlagResults } from "@/lib/flags/evaluate";
 import { describeReason } from "@/lib/flags/reasons";
 import { formatValue } from "@/lib/flags/values";
 import { formatDuration } from "@/lib/format";
@@ -34,7 +35,7 @@ export default async function ContextPage({ params, searchParams }: PageProps<"/
   const { project } = projectContext;
   const item = await prisma.context.findFirst({
     where: { id: contextId, environmentId: { in: project.environments.map((environment) => environment.id) } },
-    select: { key: true, applicationName: true, attributes: true, results: true, lastSeenAt: true, environmentId: true },
+    select: { key: true, applicationName: true, attributes: true, lastSeenAt: true, environmentId: true },
   });
 
   if (!item) {
@@ -42,8 +43,10 @@ export default async function ContextPage({ params, searchParams }: PageProps<"/
   }
 
   const environment = project.environments.find((candidate) => candidate.id === item.environmentId)!;
-  const attributes = Object.entries(item.attributes as Record<string, JsonValue>);
-  const results = Object.entries(item.results as Record<string, EvaluationResult>).sort(([a], [b]) => a.localeCompare(b));
+  const sentAttributes = item.attributes as Record<string, string | number | boolean | null>;
+  const attributes = Object.entries(sentAttributes);
+  const flags = await loadFlagConfigs(item.environmentId);
+  const results = Object.entries(getFlagResults(flags, { ...sentAttributes, key: item.key })).sort(([a], [b]) => a.localeCompare(b));
   const flagHref = (flagKey: string) => `/projects/${project.key}/flags/${flagKey}?env=${environment.key}`;
 
   return (
@@ -68,7 +71,7 @@ export default async function ContextPage({ params, searchParams }: PageProps<"/
       </section>
 
       <section className={styles.section}>
-        <Text variant="heading">Flags it got</Text>
+        <Text variant="heading">Flags it gets</Text>
         <Table headers={["Flag", "Value", "Reason"]} isEmpty={results.length === 0} emptyText="No flags in this environment.">
           {results.map(([flagKey, result]) => (
             <tr key={flagKey}>

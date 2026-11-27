@@ -14,7 +14,7 @@ beforeAll(async () => {
 
 const createContext = (environmentId: string) =>
   prisma.context.create({
-    data: { environmentId, key: `user-${crypto.randomUUID().slice(0, 8)}`, attributes: {}, results: {}, lastSeenAt: new Date() },
+    data: { environmentId, key: `user-${crypto.randomUUID().slice(0, 8)}`, attributes: {}, lastSeenAt: new Date() },
     select: { id: true },
   });
 

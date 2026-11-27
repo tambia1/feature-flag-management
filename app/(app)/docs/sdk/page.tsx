@@ -259,8 +259,9 @@ event: changed
 data: {}`}
           />
           <p>
-            On <code>changed</code>, call <code>/api/sdk/flags</code> again. A ping comes every 25 seconds to keep the connection open.
-            Errors: <code>401</code> for a missing or unknown key, <code>429</code> when a key sends more than 200 requests a second.
+            On <code>changed</code>, call <code>/api/sdk/flags</code> again with <code>&quot;refresh&quot;: true</code> in the body, so the
+            server doesn&apos;t save the context a second time. A ping comes every 25 seconds to keep the connection open. Errors:{" "}
+            <code>401</code> for a missing or unknown key, <code>429</code> when a key sends more than 200 requests a second.
           </p>
         </Card>
       </div>
