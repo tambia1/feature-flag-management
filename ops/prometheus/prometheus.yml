@@ -8,3 +8,30 @@ scrape_configs:
     metrics_path: /api/metrics
     static_configs:
       - targets: ["app1:3000", "app2:3000"]
+
+  - job_name: postgres
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+        labels: { instance: db }
+
+  - job_name: redis
+    metrics_path: /scrape
+    static_configs:
+      - targets: ["redis://redis-flags:6379", "redis://redis-status:6379"]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        regex: redis://([^:]+):.*
+        target_label: instance
+      - target_label: __address__
+        replacement: redis-exporter:9121
+
+  - job_name: containers
+    static_configs:
+      - targets: ["cadvisor:8080"]
+    metric_relabel_configs:
+      - source_labels: [container_label_com_docker_compose_service]
+        target_label: service
+      - regex: container_label_com_docker_compose_service
+        action: labeldrop

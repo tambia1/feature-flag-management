@@ -24,3 +24,64 @@ groups:
         for: 2m
         labels: { severity: page }
         annotations: { summary: "An app server is down" }
+      - alert: ExporterDown
+        expr: up{job!="app"} == 0
+        for: 2m
+        labels: { severity: slack }
+        annotations: { summary: "Prometheus can't read {{ $labels.job }} metrics" }
+      - alert: ContainerCpuHigh
+        expr: sum by (service) (rate(container_cpu_usage_seconds_total{service!=""}[5m])) > 0.9
+        for: 10m
+        labels: { severity: slack }
+        annotations: { summary: "{{ $labels.service }} uses more than 90% of a CPU" }
+      - alert: ContainerMemoryHigh
+        expr: max by (service) (container_memory_working_set_bytes{service!=""} / (container_spec_memory_limit_bytes{service!=""} > 0)) > 0.9
+        for: 5m
+        labels: { severity: page }
+        annotations: { summary: "{{ $labels.service }} is above 90% of its memory limit" }
+  - name: postgres
+    rules:
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels: { severity: page }
+        annotations: { summary: "Postgres isn't answering" }
+      - alert: PostgresConnectionsHigh
+        expr: sum(pg_stat_activity_count) / max(pg_settings_max_connections) > 0.8
+        for: 5m
+        labels: { severity: page }
+        annotations: { summary: "Postgres is above 80% of its connections" }
+      - alert: PostgresQueryStuck
+        expr: max(pg_stat_activity_max_tx_duration{state="active"}) > 60
+        for: 2m
+        labels: { severity: slack }
+        annotations: { summary: "A Postgres query has been running for more than a minute" }
+  - name: redis
+    rules:
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels: { severity: page }
+        annotations: { summary: "{{ $labels.instance }} isn't answering" }
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / (redis_memory_max_bytes > 0) > 0.9
+        for: 5m
+        labels: { severity: page }
+        annotations: { summary: "{{ $labels.instance }} is above 90% of its memory" }
+      - alert: RedisClientsBlocked
+        expr: redis_blocked_clients > 0
+        for: 5m
+        labels: { severity: slack }
+        annotations: { summary: "{{ $labels.instance }} has clients waiting on a blocking command" }
+  - name: queue
+    rules:
+      - alert: IconQueueBacklog
+        expr: max(icon_queue_messages{state="waiting"}) > 100
+        for: 10m
+        labels: { severity: slack }
+        annotations: { summary: "More than 100 icon jobs are waiting" }
+      - alert: IconQueueDepthMissing
+        expr: absent(icon_queue_messages)
+        for: 5m
+        labels: { severity: slack }
+        annotations: { summary: "The icon queue depth can't be read" }

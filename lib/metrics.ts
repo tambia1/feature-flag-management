@@ -1,4 +1,6 @@
 import client from "prom-client";
+import { iconQueueDepth } from "./icon-queue";
+import { logger } from "./logger";
 
 const globalForMetrics = globalThis as unknown as { metricsRegistry?: client.Registry };
 
@@ -45,3 +47,24 @@ export const sdkMetrics = {
     () => new client.Counter({ name: "sdk_rate_limited_total", help: "SDK requests rejected by the rate limit", registers: [registry] }),
   ),
 };
+
+metric(
+  "icon_queue_messages",
+  () =>
+    new client.Gauge({
+      name: "icon_queue_messages",
+      help: "Messages in the icon queue, waiting or being worked on",
+      labelNames: ["state"],
+      registers: [registry],
+      async collect() {
+        try {
+          const depth = await iconQueueDepth();
+          this.set({ state: "waiting" }, depth.waiting);
+          this.set({ state: "in_flight" }, depth.inFlight);
+        } catch (error) {
+          this.reset();
+          logger.warn({ error }, "Couldn't read the icon queue depth");
+        }
+      },
+    }),
+);
