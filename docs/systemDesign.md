@@ -74,6 +74,7 @@ Each company's apps read the flag values through an SDK.
   3. As a platform admin, I can list companies
   4. As a platform admin, I can add other platform admins
   5. As a platform admin, I can see the platform log
+  6. As a platform admin, I can see the status page: open SDK connections across all companies
 - Company admin
   1. As a company admin, I can modify the company's profile details
   2. As a company admin, I can create a project
@@ -89,10 +90,13 @@ Each company's apps read the flag values through an SDK.
 - Member
   1. As a member, I can create/archive/delete a flag in environments where my team is editor (no matter which environment - as long im editor in it)
   2. As a member, I can turn a flag on/off, set targeting rules, restore an archived flag, search and filter flags, see a flag’s history
+  3. As a member, I can see the contexts (users) my apps sent in an environment, with each flag's value and the reason for it
+  4. As a member, I can delete a context in environments where my team is editor
 - SDK (the company's app)
   1. As an app, I can get the flag values for a user in my environment
   2. As an app, I can authenticate with the environment key.
   3. As an app, I receive changes right away.
+  4. As an app, I can send my application name, so contexts are shown per app
 - Everyone
   1. log in, log out, change password, see my teams and permissions.
 - Viewers
@@ -127,6 +131,7 @@ Each company's apps read the flag values through an SDK.
 - Storage
   Small (~12GB of flags, ~7GB of logs per year) - one Postgres database is enough
   Audit log kept for ( ? ) years
+  Contexts kept for 30 days after they were last seen
 - SEO
   No - login required. Use SSR only where it makes pages faster
 - Accessibility
@@ -229,24 +234,38 @@ PATCH  /api/flags/:flagId/environments/:environmentId   editor   + comment
 GET    /api/flags/:flagId/history?environmentId=   viewer
 ```
 
-### 4.7 LOGS
+### 4.7 CONTEXTS
+
+```
+GET    /api/contexts?environmentId=&search=        viewer   users the SDK saw, last seen first
+GET    /api/contexts/:contextId                    viewer   attributes + value and reason per flag
+DELETE /api/contexts/:contextId                    editor
+```
+
+### 4.8 STATUS
+
+```
+GET    /api/platform/status                        platform admin   open SDK connections per company and app
+```
+
+### 4.9 LOGS
 
 ```
 GET    /api/logs?userId=&targetType=&from=&to=
 ```
 
-### 4.8 SDK (used by the companies' apps, not the dashboard)
+### 4.10 SDK (used by the companies' apps, not the dashboard)
 
 ```
-POST   /api/sdk/evaluate                           SDK key
+POST   /api/sdk/flags                              SDK key
        header: Authorization: <sdkKey>
-       body:   { "context": { "key": "user-42", "country": "IL", "plan": "pro" } }
+       body:   { "context": { "key": "user-42", "country": "IL", "plan": "pro" }, "applicationName": "web" }
        reply:  { "new-checkout": true, "homepage-banner": "Big sale today!", … }
 
-GET    /api/sdk/stream                             SDK key   real-time: "flags changed, fetch again"
+GET    /api/sdk/stream?applicationName=            SDK key   real-time: "flags changed, fetch again"
 ```
 
-### 4.9 OTHER
+### 4.11 OTHER
 
 ```
 GET    /api/health                                 everyone   (load balancers, monitoring)
@@ -254,7 +273,7 @@ GET    /api/docs                                   dev only, Swagger UI
 GET    /api/docs/spec                              dev only, OpenAPI spec (openapi.yaml)
 ```
 
-### 4.10 Two rules every endpoint follows
+### 4.12 Two rules every endpoint follows
 
 - 401 if not logged in
 - 403 if the role isn’t allowed
@@ -312,10 +331,12 @@ app/
         history/page.tsx                   History
         settings/page.tsx                  Settings
       archived/page.tsx                    Archived flags
+      contexts/page.tsx                    Contexts list   ?env=production&search=
+      contexts/[contextId]/page.tsx        Context details: value and reason per flag
     settings/
       company/page.tsx · users/page.tsx · teams/page.tsx · projects/page.tsx · log/page.tsx
     platform/
-      companies/page.tsx · admins/page.tsx · log/page.tsx
+      companies/page.tsx · admins/page.tsx · log/page.tsx · status/page.tsx
     account/
       password/page.tsx · roles/page.tsx
   api/sdk/…                                SDK endpoints (route handlers)
