@@ -52,13 +52,13 @@ services:
     image: grafana/loki:3.4.2
     ports: ["3101:3100"]
 
-  promtail:
+  alloy:
     profiles: [full]
-    image: grafana/promtail:3.4.2
+    image: grafana/alloy:v1.22.0
     volumes:
-      - ./ops/promtail/config.yml:/etc/promtail/config.yml:ro
+      - ./ops/alloy/config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: -config.file=/etc/promtail/config.yml
+    command: [run, /etc/alloy/config.alloy, --storage.path=/var/lib/alloy/data]
 
   prometheus:
     profiles: [full]
